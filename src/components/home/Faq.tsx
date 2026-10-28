@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { Plus } from "@/components/icons";
-import { FAQ } from "@/lib/site";
 
-export function Faq() {
+export function Faq({ items }: { items: { q: string; a: string }[] }) {
   const [open, setOpen] = useState(0);
   return (
     <div className="ax-reveal flex flex-col border-t border-line">
-      {FAQ.map((f, i) => {
+      {items.map((f, i) => {
         const on = open === i;
         return (
           <div key={f.q} className="border-b border-line">

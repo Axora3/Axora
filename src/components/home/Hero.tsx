@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Check } from "@/components/icons";
+import type { SiteContent } from "@/lib/content/schema";
 
-export function Hero() {
+export function Hero({ c }: { c: SiteContent }) {
   return (
     <section
       aria-labelledby="hero-title"
@@ -16,20 +17,20 @@ export function Hero() {
           id="hero-title"
           className="ax-in d2 text-[clamp(42px,6.4vw,88px)] leading-[1.02] font-extrabold tracking-[-0.035em] [word-break:keep-all]"
         >
-          Санаагаа дараагийн <span className="serif ax-mark px-[0.06em]">түвшинд.</span>
+          {c.heroTitle}{c.heroAccent && <> <span className="serif ax-mark px-[0.06em]">{c.heroAccent}</span></>}
         </h1>
         <p className="ax-in d3 max-w-[30em] text-[clamp(17px,1.5vw,20px)] leading-relaxed text-muted">
-          Ажлыг хөнгөвчлөх бэлэн загварууд, бизнесийг тань илэрхийлэх веб сайт — нэг дор.
+          {c.heroLead}
         </p>
         <div className="ax-in d4 flex flex-wrap gap-3">
-          <Link href="/templates" className="ax-btn ax-primary inline-flex min-h-[54px] items-center gap-2.5 rounded-xl bg-brand px-6 text-base font-bold text-white no-underline max-[480px]:w-full max-[480px]:justify-center">
-            Загварууд үзэх
+          <Link href={c.heroPrimary.href} className="ax-btn ax-primary inline-flex min-h-[54px] items-center gap-2.5 rounded-xl bg-brand px-6 text-base font-bold text-white no-underline max-[480px]:w-full max-[480px]:justify-center">
+            {c.heroPrimary.label}
             <span className="ax-arrow">
               <ArrowRight />
             </span>
           </Link>
-          <Link href="/builder" className="ax-btn ax-ghost inline-flex min-h-[54px] items-center gap-2.5 rounded-xl border border-line-strong bg-surface px-6 text-base font-bold text-ink no-underline max-[480px]:w-full max-[480px]:justify-center">
-            Вебээ загварчлах
+          <Link href={c.heroSecondary.href} className="ax-btn ax-ghost inline-flex min-h-[54px] items-center gap-2.5 rounded-xl border border-line-strong bg-surface px-6 text-base font-bold text-ink no-underline max-[480px]:w-full max-[480px]:justify-center">
+            {c.heroSecondary.label}
           </Link>
         </div>
         <div className="ax-in d5 flex flex-wrap gap-x-5 gap-y-2 pt-2 text-sm font-semibold text-muted">

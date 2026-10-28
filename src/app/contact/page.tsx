@@ -4,7 +4,7 @@ import { ContactForm } from "@/components/contact/ContactForm";
 import { ArrowRight, Chat, Clock, Mail, PhoneCall } from "@/components/icons";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
-import { CONTACT } from "@/lib/site";
+import { getSiteContent } from "@/lib/content/service";
 import { isBackendConfigured } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -12,14 +12,16 @@ export const metadata: Metadata = {
   description: "AXORA-тай утас, имэйл, Messenger-ээр холбогдох эсвэл богино зурвас үлдээх.",
 };
 
-const CHANNELS = [
-  { Icon: PhoneCall, label: "Утас", value: CONTACT.phone },
-  { Icon: Mail, label: "Имэйл", value: CONTACT.email },
-  { Icon: Chat, label: "Messenger", value: CONTACT.messenger },
-  { Icon: Clock, label: "Ажиллах цаг", value: CONTACT.hours },
-];
 
-export default function ContactPage() {
+
+export default async function ContactPage() {
+  const { contact } = await getSiteContent();
+  const CHANNELS = [
+    { Icon: PhoneCall, label: "Утас", value: contact.phone },
+    { Icon: Mail, label: "Имэйл", value: contact.email },
+    { Icon: Chat, label: "Messenger", value: contact.messenger },
+    { Icon: Clock, label: "Ажиллах цаг", value: contact.hours },
+  ];
   return (
     <>
       <SiteHeader mobileBack={{ href: "/", label: "Нүүр рүү буцах", title: "Холбоо барих" }} />

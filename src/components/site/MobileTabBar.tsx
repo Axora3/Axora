@@ -18,7 +18,7 @@ const TABS = [
  */
 export function MobileTabBar() {
   const pathname = usePathname();
-  const hidden = /^\/templates\/[^/]+/.test(pathname);
+  const hidden = /^\/templates\/[^/]+/.test(pathname) || pathname.startsWith("/admin");
 
   useEffect(() => {
     document.body.classList.toggle("has-tabbar", !hidden);

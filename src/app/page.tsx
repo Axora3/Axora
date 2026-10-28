@@ -7,6 +7,7 @@ import { ArrowRight } from "@/components/icons";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { CardSkeletons, DemoNotice, TemplateCard } from "@/components/templates/TemplateCard";
+import { getSiteContent } from "@/lib/content/service";
 import { getPublishedTemplates } from "@/lib/templates/service";
 
 const H2 = "text-[clamp(28px,3.4vw,44px)] leading-[1.12] font-extrabold tracking-[-0.025em]";
@@ -37,12 +38,13 @@ async function FeaturedTemplates() {
   );
 }
 
-export default function HomePage() {
+export default async function HomePage() {
+  const content = await getSiteContent();
   return (
     <>
       <SiteHeader />
       <main id="main">
-        <Hero />
+        <Hero c={content} />
 
         <section id="services" aria-labelledby="offer-title" className="mx-auto max-w-[1240px] px-[clamp(16px,4vw,40px)] pt-6 pb-14 min-[900px]:pb-[104px]">
           <h2 id="offer-title" className={`ax-reveal max-w-[16em] ${H2}`}>
@@ -169,7 +171,7 @@ export default function HomePage() {
               Хариулт олдохгүй бол <Link href="/contact">бидэнтэй шууд холбогдоорой</Link>.
             </p>
           </div>
-          <Faq />
+          <Faq items={content.faq} />
         </section>
 
         <section aria-labelledby="cta-title" className="px-[clamp(16px,4vw,40px)] pb-[clamp(56px,7vw,96px)]">
