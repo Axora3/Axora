@@ -1,26 +1,528 @@
 @import "tailwindcss";
 
+/*
+ * AXORA design tokens — taken from the approved design canvas.
+ * The live-builder demo has its own, separately scoped tokens in
+ * src/components/builder/demo.css so the two themes never mix.
+ */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --ax-bg: #f7f8f2;
+  --ax-surface: #ffffff;
+  --ax-ink: #17251e;
+  --ax-brand: #245c45;
+  --ax-brand-dark: #194632;
+  --ax-lime: #d9f279;
+  --ax-lime-hover: #cbe85f;
+  --ax-muted: #56645b;
+  --ax-faint: #8a968e;
+  --ax-line: #dce3d9;
+  --ax-line-mid: #c5d0c0;
+  --ax-line-strong: #c9d3c4;
+  --ax-soft: #eef1e6;
+  --ax-soft-2: #f1f3ec;
+  --ax-soft-3: #e9ede3;
+  --ax-dark-muted: #b9c6bd;
+  --ax-dark-line: #34483c;
+  --ax-dark-line-2: #4a6052;
+  --ax-dark-ring: #3c5446;
+  --ax-warn-bg: #f6f0dc;
+  --ax-warn-line: #e9d9a6;
+  --ax-warn: #7a5b12;
+  --ax-warn-ink: #5e4510;
+  --ax-danger: #a63a24;
+  --ax-danger-bg: #fbeae5;
+  --ax-danger-line: #e8b9ac;
+  --ax-danger-ink: #7a2615;
+  --ax-header-h: 72px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-bg: var(--ax-bg);
+  --color-surface: var(--ax-surface);
+  --color-ink: var(--ax-ink);
+  --color-brand: var(--ax-brand);
+  --color-brand-dark: var(--ax-brand-dark);
+  --color-lime: var(--ax-lime);
+  --color-muted: var(--ax-muted);
+  --color-faint: var(--ax-faint);
+  --color-line: var(--ax-line);
+  --color-line-mid: var(--ax-line-mid);
+  --color-line-strong: var(--ax-line-strong);
+  --color-soft: var(--ax-soft);
+  --color-soft-2: var(--ax-soft-2);
+  --color-soft-3: var(--ax-soft-3);
+  --color-dark-muted: var(--ax-dark-muted);
+  --color-dark-line: var(--ax-dark-line);
+  --color-dark-line-2: var(--ax-dark-line-2);
+  --color-warn-bg: var(--ax-warn-bg);
+  --color-warn-line: var(--ax-warn-line);
+  --color-warn: var(--ax-warn);
+  --color-warn-ink: var(--ax-warn-ink);
+  --color-danger: var(--ax-danger);
+  --color-danger-bg: var(--ax-danger-bg);
+  --color-danger-line: var(--ax-danger-line);
+  --color-danger-ink: var(--ax-danger-ink);
+  --font-sans: var(--font-manrope), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-serif: var(--font-lora), Georgia, "Times New Roman", serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+  --container-site: 1240px;
+  --container-wide: 1400px;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Element defaults live in the base layer so Tailwind utilities always win. */
+@layer base {
+* {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-top: calc(var(--ax-header-h) + 16px);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  margin: 0;
+  background: var(--ax-bg);
+  color: var(--ax-ink);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: clip;
+}
+
+h1,
+h2,
+h3,
+h4,
+p {
+  margin: 0;
+  text-wrap: pretty;
+  overflow-wrap: break-word;
+}
+
+/* Plain inline links only; styled links/buttons set their own colour classes. */
+a:not([class]) {
+  color: var(--ax-brand);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 700;
+}
+
+:focus-visible {
+  outline: 3px solid var(--ax-brand);
+  outline-offset: 3px;
+}
+
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 3px solid var(--ax-brand);
+  outline-offset: 1px;
+}
+
+/* Inputs never go below 16px so iOS does not zoom on focus. */
+input,
+select,
+textarea {
+  font-size: max(16px, 1em);
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+  accent-color: var(--ax-brand);
+}
+
+}
+
+@layer components {
+.serif {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+}
+
+.sr-only-focusable:not(:focus) {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+/* ---------- Buttons & links ---------- */
+.ax-btn {
+  transition:
+    background-color 0.2s ease,
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+  text-decoration: none;
+  cursor: pointer;
+}
+.ax-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.ax-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+@media (hover: hover) {
+  .ax-btn:hover:not(:disabled) {
+    transform: translateY(-1px);
+  }
+  .ax-primary:hover:not(:disabled) {
+    background: var(--ax-brand-dark) !important;
+    color: #fff !important;
+  }
+  .ax-lime:hover:not(:disabled) {
+    background: var(--ax-lime-hover) !important;
+    color: var(--ax-ink) !important;
+  }
+  .ax-ghost:hover:not(:disabled) {
+    border-color: var(--ax-brand) !important;
+    color: var(--ax-brand-dark) !important;
+  }
+  .ax-link:hover {
+    color: var(--ax-brand) !important;
+  }
+  .ax-opt:hover {
+    border-color: var(--ax-brand) !important;
+  }
+  .ax-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 22px 44px -26px rgba(23, 37, 30, 0.38);
+    border-color: var(--ax-line-mid) !important;
+  }
+  .ax-card:hover .ax-arrow,
+  .ax-btn:hover .ax-arrow {
+    transform: translateX(4px);
+  }
+  .ax-card:hover .ax-prev {
+    transform: scale(1.04);
+  }
+}
+.ax-link {
+  transition: color 0.2s ease;
+}
+.ax-card {
+  position: relative;
+  transition:
+    transform 0.28s cubic-bezier(0.2, 0.7, 0.2, 1),
+    box-shadow 0.28s ease,
+    border-color 0.28s ease;
+}
+.ax-prev {
+  transition: transform 0.45s cubic-bezier(0.2, 0.7, 0.2, 1);
+}
+.ax-arrow {
+  transition: transform 0.2s ease;
+  display: inline-flex;
+}
+/* Makes a whole card clickable from one real link/button inside it. */
+.ax-stretch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+}
+.ax-tr,
+.ax-tr * {
+  transition:
+    background-color 0.35s ease,
+    color 0.35s ease,
+    border-color 0.35s ease,
+    box-shadow 0.35s ease;
+}
+
+/* ---------- Motion ---------- */
+@keyframes axUp {
+  from {
+    opacity: 0;
+    transform: translateY(24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes axUpSm {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes axSlide {
+  from {
+    opacity: 0;
+    transform: translateX(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes axFade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes axPop {
+  from {
+    opacity: 0;
+    transform: translateY(24px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes axSheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes axFloatA {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-2.5deg);
+  }
+  50% {
+    transform: translateY(-10px) rotate(-2.5deg);
+  }
+}
+@keyframes axFloatB {
+  0%,
+  100% {
+    transform: translateY(0) rotate(2deg);
+  }
+  50% {
+    transform: translateY(9px) rotate(2deg);
+  }
+}
+@keyframes axGrow {
+  from {
+    transform: scaleY(0);
+  }
+  to {
+    transform: scaleY(1);
+  }
+}
+@keyframes axMark {
+  from {
+    background-size: 0% 34%;
+  }
+  to {
+    background-size: 100% 34%;
+  }
+}
+@keyframes axPulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(36, 92, 69, 0.45);
+  }
+  70% {
+    box-shadow: 0 0 0 9px rgba(36, 92, 69, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(36, 92, 69, 0);
+  }
+}
+@keyframes axFill {
+  from {
+    width: 0;
+  }
+}
+@keyframes axSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes axShimmer {
+  from {
+    background-position: -400px 0;
+  }
+  to {
+    background-position: 400px 0;
+  }
+}
+@keyframes axShake {
+  0%,
+  100% {
+    transform: none;
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+@keyframes axDraw {
+  from {
+    stroke-dashoffset: 60;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+.ax-in {
+  animation: axUp 0.85s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.ax-in-sm {
+  animation: axUpSm 0.45s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.ax-slide {
+  animation: axSlide 0.42s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.d1 {
+  animation-delay: 0.06s;
+}
+.d2 {
+  animation-delay: 0.14s;
+}
+.d3 {
+  animation-delay: 0.24s;
+}
+.d4 {
+  animation-delay: 0.36s;
+}
+.d5 {
+  animation-delay: 0.5s;
+}
+.d6 {
+  animation-delay: 0.66s;
+}
+.d7 {
+  animation-delay: 0.82s;
+}
+.ax-floatA {
+  animation: axFloatA 7s 1.6s ease-in-out infinite;
+  transform: rotate(-2.5deg);
+}
+.ax-floatB {
+  animation: axFloatB 8s 1.8s ease-in-out infinite;
+  transform: rotate(2deg);
+}
+.ax-bar {
+  transform-origin: bottom;
+  animation: axGrow 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.ax-mark {
+  background-image: linear-gradient(var(--ax-lime), var(--ax-lime));
+  background-repeat: no-repeat;
+  background-position: 0 86%;
+  background-size: 100% 34%;
+  animation: axMark 1s 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.ax-live {
+  animation: axPulse 2.4s ease-out infinite;
+}
+.ax-fill {
+  animation: axFill 1.4s 1.1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.ax-spin {
+  animation: axSpin 18s linear infinite;
+}
+.ax-shake {
+  animation: axShake 0.3s ease both;
+}
+.ax-draw {
+  stroke-dasharray: 60;
+  animation: axDraw 0.7s 0.15s ease both;
+}
+.ax-sk {
+  background: linear-gradient(90deg, #eceee6 0%, #f6f8f1 40%, #eceee6 80%);
+  background-size: 800px 100%;
+  animation: axShimmer 1.3s linear infinite;
+}
+.ax-reveal {
+  animation: axUp 0.8s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+@supports (animation-timeline: view()) {
+  .ax-reveal {
+    animation: axUp linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 24%;
+  }
+}
+
+/* Horizontal scroller (mobile chips) without a visible scrollbar. */
+.ax-scroll {
+  display: flex;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.ax-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+.ax-color::-webkit-color-swatch-wrapper {
+  padding: 0;
+}
+.ax-color::-webkit-color-swatch {
+  border: 0;
+  border-radius: 8px;
+}
+.ax-fs {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+
+/* Hero composition collapses into a stack on small screens. */
+@media (max-width: 900px) {
+  .ax-comp {
+    height: auto !important;
+    display: flex !important;
+    flex-direction: column;
+    gap: 16px;
+  }
+  .ax-comp > div {
+    position: relative !important;
+    inset: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+  .ax-floatA,
+  .ax-floatB {
+    animation: none !important;
+    transform: none !important;
+  }
+  .ax-steps-line {
+    display: none !important;
+  }
+}
+
+/* Room for the mobile tab bar so it never covers content. */
+@media (max-width: 899px) {
+  body.has-tabbar {
+    padding-bottom: calc(68px + env(safe-area-inset-bottom));
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+
 }
