@@ -65,7 +65,7 @@ export default function TemplatesPage() {
 
         <section
           aria-labelledby="custom-title"
-          className="mt-[72px] flex flex-wrap items-center justify-between gap-5 rounded-[22px] bg-ink p-[clamp(24px,4vw,48px)] text-bg"
+          className="mt-[72px] flex flex-wrap items-center justify-between gap-5 rounded-[22px] bg-band p-[clamp(24px,4vw,48px)] text-on-band"
         >
           <div className="flex max-w-[560px] flex-col gap-2">
             <h2 id="custom-title" className="text-[clamp(22px,2.4vw,30px)] font-extrabold tracking-[-0.02em]">
@@ -73,7 +73,7 @@ export default function TemplatesPage() {
             </h2>
             <p className="text-base leading-relaxed text-dark-muted">Өнгө, хэв маягаа туршаад үнийн санал аваарай.</p>
           </div>
-          <Link href="/builder" className="ax-btn ax-lime inline-flex min-h-[50px] items-center rounded-xl bg-lime px-[22px] text-[15px] font-extrabold text-ink no-underline">
+          <Link href="/builder" className="ax-btn ax-lime inline-flex min-h-[50px] items-center rounded-xl bg-lime px-[22px] text-[15px] font-extrabold text-on-lime no-underline">
             Вебээ загварчлах
           </Link>
         </section>

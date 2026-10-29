@@ -26,7 +26,7 @@ const COLOR_FIELDS: [keyof BuilderConfig["colors"], string][] = [
 
 const fs = "ax-fs rounded-[18px] border border-line bg-surface p-[18px]";
 const legend = "float-left mb-3 w-full p-0 text-[13px] font-extrabold tracking-[0.06em] text-brand uppercase";
-const textInput = "min-h-11 w-full rounded-[10px] border border-line-strong bg-bg px-3 text-base text-ink";
+const textInput = "min-h-11 w-full rounded-[10px] border border-line-strong bg-sunken px-3 text-base text-ink";
 
 export function Builder() {
   const b = useBuilder();
@@ -74,7 +74,7 @@ export function Builder() {
             aria-pressed={tab === k}
             onClick={() => setTab(k)}
             className="min-h-11 flex-1 cursor-pointer rounded-[9px] border-0 text-[15px] font-bold text-ink"
-            style={{ background: tab === k ? "#fff" : "transparent" }}
+            style={{ background: tab === k ? "var(--ax-elevated)" : "transparent" }}
           >
             {label}
           </button>
@@ -82,7 +82,7 @@ export function Builder() {
       </div>
 
       <div className="mt-5 flex flex-wrap items-start gap-6">
-        <aside aria-label="Тохиргоо" className={`flex flex-[1_1_340px] flex-col gap-3.5 min-[960px]:max-w-[400px] ${tab === "prev" ? "max-[959px]:hidden" : ""}`}>
+        <aside aria-label="Тохиргоо" className={`flex min-w-0 flex-[1_1_min(340px,100%)] flex-col gap-3.5 min-[960px]:max-w-[400px] ${tab === "prev" ? "max-[959px]:hidden" : ""}`}>
           <fieldset className={fs}>
             <legend className={legend}>1. Вебийн төрөл</legend>
             <div className="clear-both grid grid-cols-2 gap-2">
@@ -98,7 +98,7 @@ export function Builder() {
                       bump();
                     }}
                     className="ax-btn ax-opt flex min-h-16 flex-col items-start justify-center gap-0.5 rounded-xl px-3 py-2.5 text-left text-ink"
-                    style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line)", background: on ? "var(--ax-soft)" : "#fff" }}
+                    style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line)", background: on ? "var(--ax-soft)" : "var(--ax-surface)" }}
                   >
                     <span className="text-sm font-extrabold">{TYPES[k].label}</span>
                     <span className="text-xs font-semibold text-muted">{TYPES[k].sub}</span>
@@ -127,8 +127,8 @@ export function Builder() {
                     className="ax-btn ax-opt flex min-h-[72px] flex-col items-start justify-between gap-1 rounded-xl p-2.5 text-left"
                     style={{
                       border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line)",
-                      background: dark ? "var(--ax-ink)" : on ? "var(--ax-soft)" : "#fff",
-                      color: dark ? "var(--ax-bg)" : "var(--ax-ink)",
+                      background: dark ? "var(--ax-band)" : on ? "var(--ax-soft)" : "var(--ax-surface)",
+                      color: dark ? "var(--ax-on-band)" : "var(--ax-ink)",
                     }}
                   >
                     <span aria-hidden="true" className="text-[22px] leading-none" style={{ fontFamily: s.fh, fontStyle: s.hst, fontWeight: s.hw }}>
@@ -159,8 +159,8 @@ export function Builder() {
                     style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line)" }}
                   >
                     <span className="flex shrink-0">
-                      <span className="h-[18px] w-[18px] rounded-full shadow-[0_0_0_2px_#fff,0_0_0_3px_#DCE3D9]" style={{ background: p.primary }} />
-                      <span className="-ml-1 h-[18px] w-[18px] rounded-full shadow-[0_0_0_2px_#fff,0_0_0_3px_#DCE3D9]" style={{ background: p.bg }} />
+                      <span className="h-[18px] w-[18px] rounded-full shadow-[0_0_0_2px_var(--ax-surface),0_0_0_3px_var(--ax-line)]" style={{ background: p.primary }} />
+                      <span className="-ml-1 h-[18px] w-[18px] rounded-full shadow-[0_0_0_2px_var(--ax-surface),0_0_0_3px_var(--ax-line)]" style={{ background: p.bg }} />
                     </span>
                     <span className="truncate">{p.label}</span>
                   </button>
@@ -204,7 +204,7 @@ export function Builder() {
                         }}
                         aria-invalid={!valid}
                         aria-describedby={valid ? undefined : `hex-err-${k}`}
-                        className="min-h-11 min-w-0 flex-1 rounded-[10px] bg-bg px-3 font-mono text-base text-ink uppercase"
+                        className="min-h-11 min-w-0 flex-1 rounded-[10px] bg-sunken px-3 font-mono text-base text-ink uppercase"
                         style={{ border: valid ? "1px solid var(--ax-line-strong)" : "2px solid var(--ax-danger)" }}
                       />
                     </div>
@@ -217,7 +217,7 @@ export function Builder() {
                 );
               })}
               {theme.warnings.length > 0 && (
-                <div role="status" className="flex flex-col gap-1 rounded-[10px] border border-[#E9D3A0] bg-[#FBF1DC] px-3 py-2.5 text-[13px] leading-normal font-semibold text-warn-ink">
+                <div role="status" className="flex flex-col gap-1 rounded-[10px] border border-warn-line bg-warn-bg px-3 py-2.5 text-[13px] leading-normal font-semibold text-warn-ink">
                   {theme.warnings.map((w) => (
                     <span key={w}>! {w}</span>
                   ))}
@@ -252,7 +252,7 @@ export function Builder() {
                   maxLength={160}
                   value={config.desc}
                   onChange={(e) => b.setText("desc", e.target.value)}
-                  className="resize-y rounded-[10px] border border-line-strong bg-bg px-3 py-2.5 text-base text-ink"
+                  className="resize-y rounded-[10px] border border-line-strong bg-sunken px-3 py-2.5 text-base text-ink"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -291,7 +291,7 @@ export function Builder() {
           </fieldset>
 
           <div className="flex flex-col gap-2.5">
-            <Link href="/order" onClick={b.commit} className="ax-btn ax-primary flex min-h-[54px] items-center justify-center gap-2.5 rounded-xl bg-brand text-center text-base font-bold text-white no-underline">
+            <Link href="/order" onClick={b.commit} className="ax-btn ax-primary flex min-h-[54px] items-center justify-center gap-2.5 rounded-xl bg-primary text-center text-base font-bold text-on-primary no-underline">
               Энэ загвараар үнийн санал авах
             </Link>
             <button
@@ -322,7 +322,7 @@ export function Builder() {
                     aria-pressed={on}
                     onClick={() => setDevice(k)}
                     className="ax-btn inline-flex min-h-11 items-center gap-2 rounded-[9px] border-0 px-3.5 text-sm font-bold text-ink"
-                    style={{ background: on ? "#fff" : "transparent", boxShadow: on ? "0 1px 2px rgba(23,37,30,.14)" : "none" }}
+                    style={{ background: on ? "var(--ax-elevated)" : "transparent", boxShadow: on ? "0 1px 2px rgba(23,37,30,.14)" : "none" }}
                   >
                     <Icon />
                     {label}
@@ -333,12 +333,12 @@ export function Builder() {
             <span className="text-[13px] font-bold text-muted">{dv.note}</span>
           </div>
 
-          <div className="flex justify-center overflow-x-auto rounded-[22px] border border-line bg-[#E4E9DE] p-[clamp(10px,2vw,24px)]">
+          <div className="flex justify-center overflow-x-auto rounded-[22px] border border-line bg-soft p-[clamp(10px,2vw,24px)]">
             <div
-              className="bx-frame shrink-0 overflow-hidden rounded-2xl border border-[#D3DACE] bg-white shadow-[0_30px_60px_-36px_rgba(23,37,30,.5)]"
+              className="bx-frame ax-light shrink-0 overflow-hidden rounded-2xl border border-line-mid bg-white shadow-[0_30px_60px_-36px_rgba(23,37,30,.5)]"
               style={{ width: dv.width, maxWidth: dv.max }}
             >
-              <div className="flex h-9 items-center gap-[7px] border-b border-line bg-[#F2F4EC] px-3.5">
+              <div className="flex h-9 items-center gap-[7px] border-b border-line bg-soft-2 px-3.5">
                 <span className="h-[9px] w-[9px] rounded-full bg-[#E1A28F]" />
                 <span className="h-[9px] w-[9px] rounded-full bg-[#E8CF84]" />
                 <span className="h-[9px] w-[9px] rounded-full bg-[#9CC59B]" />

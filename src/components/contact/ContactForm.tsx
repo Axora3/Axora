@@ -6,7 +6,7 @@ import { ErrorBox, FieldError, TestModeNotice } from "@/components/ui/Notice";
 import { newIdempotencyKey, postJson } from "@/lib/client/submit";
 import { phoneOrEmailError } from "@/lib/requests/validation";
 
-const box = "w-full rounded-xl bg-bg px-3.5 text-base text-ink";
+const box = "w-full rounded-xl bg-sunken px-3.5 text-base text-ink";
 const border = (bad: boolean) => ({ border: bad ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)" });
 
 export function ContactForm({ backendEnabled }: { backendEnabled: boolean }) {
@@ -102,7 +102,7 @@ export function ContactForm({ backendEnabled }: { backendEnabled: boolean }) {
         {mE && <FieldError id="ct-msg-e">Зурвасаа бичнэ үү.</FieldError>}
       </div>
       {err && <ErrorBox>{err}</ErrorBox>}
-      <button type="submit" disabled={busy} className="ax-btn ax-primary min-h-[54px] rounded-[14px] border-0 bg-brand text-base font-bold text-white">
+      <button type="submit" disabled={busy} className="ax-btn ax-primary min-h-[54px] rounded-[14px] border-0 bg-primary text-base font-bold text-on-primary">
         {busy ? "Илгээж байна…" : backendEnabled ? (err ? "Дахин илгээх" : "Илгээх") : "Илгээх (туршилт)"}
       </button>
     </form>

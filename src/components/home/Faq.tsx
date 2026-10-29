@@ -23,7 +23,7 @@ export function Faq({ items }: { items: { q: string; a: string }[] }) {
                 {f.q}
                 <span
                   className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-line transition-transform duration-[250ms]"
-                  style={{ background: on ? "var(--ax-lime)" : "#fff", transform: on ? "rotate(45deg)" : "none" }}
+                  style={{ background: on ? "var(--ax-lime)" : "var(--ax-surface)", transform: on ? "rotate(45deg)" : "none" }}
                 >
                   <Plus size={16} strokeWidth={2.2} />
                 </span>

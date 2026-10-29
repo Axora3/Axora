@@ -41,3 +41,16 @@ export function resolvePeriod(sp: Record<string, string | string[] | undefined>,
     toDate: toDay,
   };
 }
+
+/** "Today" in Ulaanbaatar as a UTC [from, to) range, plus a display label. */
+export function ubToday(nowMs: number = Date.now()): { day: string; from: string; to: string; label: string } {
+  const day = ubDateString(nowMs);
+  const start = ubStart(day);
+  const weekday = ["Ням", "Даваа", "Мягмар", "Лхагва", "Пүрэв", "Баасан", "Бямба"][new Date(start + OFFSET_MS).getUTCDay()];
+  return { day, from: new Date(start).toISOString(), to: new Date(start + DAY).toISOString(), label: `${day.replaceAll("-", ".")} · ${weekday}` };
+}
+
+/** Request-time clock for server-rendered admin pages (dynamic: they run per request after connection()). */
+export function serverNow(): number {
+  return Date.now();
+}

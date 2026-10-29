@@ -430,7 +430,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
         <div role="status" className="mt-3 flex flex-wrap items-center justify-between gap-2.5 rounded-[14px] border border-line bg-surface px-4 py-3 text-sm font-bold">
           <span>Энэ төхөөрөмж дээр хадгалсан ноорог олдлоо.</span>
           <span className="flex gap-2">
-            <button type="button" onClick={restoreDraft} className="ax-btn ax-primary min-h-11 rounded-[10px] border-0 bg-brand px-3.5 text-sm font-bold text-white">
+            <button type="button" onClick={restoreDraft} className="ax-btn ax-primary min-h-11 rounded-[10px] border-0 bg-primary px-3.5 text-sm font-bold text-on-primary">
               Сэргээх
             </button>
             <button type="button" onClick={deleteDraft} className="ax-btn ax-ghost min-h-11 rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink">
@@ -461,13 +461,13 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                     aria-current={cur ? "step" : undefined}
                     onClick={() => go(i, { fromReview: step === REVIEW || fromReview })}
                     className="ax-btn flex min-h-12 w-full items-center gap-3 rounded-xl border-0 px-2.5 py-1.5 text-left text-[15px] font-bold disabled:opacity-100"
-                    style={{ background: cur ? "#fff" : "transparent", color: locked && !done ? "var(--ax-faint)" : "var(--ax-ink)", cursor: locked ? "not-allowed" : "pointer" }}
+                    style={{ background: cur ? "var(--ax-elevated)" : "transparent", color: locked && !done ? "var(--ax-faint)" : "var(--ax-ink)", cursor: locked ? "not-allowed" : "pointer" }}
                   >
                     <span
                       className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[13px] font-extrabold"
                       style={{
-                        background: cur ? "var(--ax-brand)" : done && i < REVIEW ? "var(--ax-lime)" : "#fff",
-                        color: cur ? "#fff" : "var(--ax-ink)",
+                        background: cur ? "var(--ax-primary)" : done && i < REVIEW ? "var(--ax-lime)" : "var(--ax-surface)",
+                        color: cur ? "var(--ax-on-primary)" : done && i < REVIEW ? "var(--ax-on-lime)" : "var(--ax-ink)",
                         border: cur || (done && i < REVIEW) ? 0 : "1px solid var(--ax-line-mid)",
                       }}
                     >
@@ -503,7 +503,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
               <span className="text-muted">{pct}%</span>
             </div>
             <div role="progressbar" aria-valuemin={0} aria-valuemax={7} aria-valuenow={progressNow} aria-label="Анкетын явц" className="h-2 overflow-hidden rounded-lg bg-soft">
-              <div className="h-full rounded-lg bg-brand transition-[width] duration-500" style={{ width: `${pct}%` }} />
+              <div className="h-full rounded-lg bg-primary transition-[width] duration-500" style={{ width: `${pct}%` }} />
             </div>
           </div>
 
@@ -579,7 +579,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                       Шалгах руу буцах
                     </button>
                   )}
-                  <button type="submit" className="ax-btn ax-primary inline-flex min-h-[52px] items-center gap-2 rounded-xl border-0 bg-brand px-6 text-base font-bold text-white max-[480px]:w-full max-[480px]:justify-center">
+                  <button type="submit" className="ax-btn ax-primary inline-flex min-h-[52px] items-center gap-2 rounded-xl border-0 bg-primary px-6 text-base font-bold text-on-primary max-[480px]:w-full max-[480px]:justify-center">
                     {step === 6 || fromReview ? "Шалгах" : "Үргэлжлүүлэх"}
                     <ArrowRight size={16} />
                   </button>
@@ -598,7 +598,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
               </div>
               {STEPS.map((st, i) => (
                 <section key={st.title} className="overflow-hidden rounded-2xl border border-line" aria-labelledby={`rv-${i}`}>
-                  <div className="flex items-center justify-between gap-3 border-b border-line bg-bg py-2.5 pr-2.5 pl-4">
+                  <div className="flex items-center justify-between gap-3 border-b border-line bg-sunken py-2.5 pr-2.5 pl-4">
                     <h3 id={`rv-${i}`} className="text-base font-extrabold">
                       {i + 1}. {st.title}
                     </h3>
@@ -679,7 +679,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                   onClick={submitAll}
                   disabled={phase === "submitting"}
                   aria-busy={phase === "submitting"}
-                  className="ax-btn ax-primary min-h-[52px] rounded-xl border-0 bg-brand px-[26px] text-base font-bold text-white max-[480px]:w-full"
+                  className="ax-btn ax-primary min-h-[52px] rounded-xl border-0 bg-primary px-[26px] text-base font-bold text-on-primary max-[480px]:w-full"
                 >
                   {phase === "submitting" ? "Илгээж байна…" : !backendEnabled ? "Илгээх (туршилт)" : serverErr ? "Дахин илгээх" : "Илгээх"}
                 </button>
@@ -744,7 +744,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                     <button
                       type="button"
                       onClick={() => receipt && runUploads(receipt, files)}
-                      className="ax-btn ax-primary inline-flex min-h-12 items-center gap-2 self-start rounded-xl border-0 bg-brand px-5 text-[15px] font-bold text-white"
+                      className="ax-btn ax-primary inline-flex min-h-12 items-center gap-2 self-start rounded-xl border-0 bg-primary px-5 text-[15px] font-bold text-on-primary"
                     >
                       <Refresh size={16} />
                       Бүх дутуу файлыг дахин илгээх
@@ -757,7 +757,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                 <button
                   type="button"
                   onClick={downloadJson}
-                  className={`ax-btn inline-flex min-h-[52px] items-center gap-2 rounded-xl px-[22px] text-base font-bold ${phase === "test-done" ? "ax-primary border-0 bg-brand text-white" : "ax-ghost border border-line-strong bg-surface text-ink"}`}
+                  className={`ax-btn inline-flex min-h-[52px] items-center gap-2 rounded-xl px-[22px] text-base font-bold ${phase === "test-done" ? "ax-primary border-0 bg-primary text-on-primary" : "ax-ghost border border-line-strong bg-surface text-ink"}`}
                 >
                   <Download size={18} />
                   Хариултаа JSON-оор татах

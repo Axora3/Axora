@@ -3,9 +3,10 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
-import { saveTemplateAction, uploadTicketAction } from "@/app/admin/template-actions";
+import { checkSlugAction, saveTemplateAction, uploadTicketAction } from "@/app/admin/template-actions";
 import { TemplateCard } from "@/components/templates/TemplateCard";
-import { PREVIEW_EXT, slugify, validateTemplate, type FormErrors, type TemplateForm } from "@/lib/admin/template-schema";
+import { FILE_MAX, PREVIEW_EXT, PREVIEW_MAX, slugify, validateTemplate, type FormErrors, type TemplateForm } from "@/lib/admin/template-schema";
+import { formatSize } from "@/lib/order/attachments";
 import { TEMPLATE_CATEGORIES, type Template } from "@/lib/templates/types";
 import { PubPill, btn, field } from "./ui";
 import { publicPreviewUrl, uploadWithProgress } from "./upload";
@@ -20,7 +21,7 @@ type Props = {
   previewStyle: Template["previewStyle"];
 };
 
-type Upload = { key: string; name: string; pct: number; error?: string };
+type Upload = { key: string; kind: "preview" | "file"; file: File; pct: number; error?: string; thumb?: string };
 
 const lines = (s: string) => s.split("\n").map((x) => x.trim()).filter(Boolean);
 
@@ -30,6 +31,48 @@ function Err({ id, text }: { id: string; text?: string }) {
     <span id={id} className="text-[13px] font-bold text-danger">
       ✕ {text}
     </span>
+  );
+}
+
+function UploadRow({ u, onRetry, onRemove }: { u: Upload; onRetry: () => void; onRemove: () => void }) {
+  const ext = /\.([a-z0-9]+)$/i.exec(u.file.name)?.[1]?.toUpperCase() ?? "Файл";
+  return (
+    <div role={u.error ? "alert" : "status"} className={`flex items-center gap-3 rounded-xl border p-2.5 text-sm ${u.error ? "border-danger-line bg-danger-bg" : "border-line bg-sunken"}`}>
+      {u.thumb ? (
+        // eslint-disable-next-line @next/next/no-img-element -- local object URL preview before upload finishes
+        <img src={u.thumb} alt="" className="ax-light h-12 w-16 shrink-0 rounded-lg border border-line object-cover" />
+      ) : (
+        <span aria-hidden="true" className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-lg bg-soft text-[11px] font-extrabold">
+          {ext}
+        </span>
+      )}
+      <span className="flex min-w-0 flex-1 flex-col gap-1">
+        <span className="font-bold [overflow-wrap:anywhere]">{u.file.name}</span>
+        <span className="text-xs text-muted">
+          {u.file.type || ext} · {formatSize(u.file.size)}
+        </span>
+        {u.error ? (
+          <span className="font-bold text-danger-ink">✕ {u.error}</span>
+        ) : (
+          <span className="flex items-center gap-2">
+            <span className="h-2 flex-1 overflow-hidden rounded bg-soft" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={u.pct} aria-label={`${u.file.name} хуулж байна`}>
+              <span className="block h-full bg-primary transition-[width]" style={{ width: `${u.pct}%` }} />
+            </span>
+            <span className="text-xs text-muted tabular-nums">{u.pct}%</span>
+          </span>
+        )}
+      </span>
+      {u.error && (
+        <span className="flex shrink-0 flex-col gap-1.5">
+          <button type="button" onClick={onRetry} className={btn.ghost}>
+            Дахин
+          </button>
+          <button type="button" onClick={onRemove} aria-label={`${u.file.name} — хасах`} className={btn.ghost}>
+            Хасах
+          </button>
+        </span>
+      )}
+    </div>
   );
 }
 
@@ -75,6 +118,15 @@ export function TemplateEditor(p: Props) {
       if (!r.ok) {
         setErrors(r.errors ?? {});
         setMsg({ kind: "err", text: r.message });
+        // Partly saved (e.g. draft stored, publish refused): continue from the stored row.
+        if ("saved" in r && r.saved) {
+          setSaved(JSON.stringify(form));
+          setExpected(r.saved.updatedAt);
+          setStatus(r.saved.status as "draft" | "published");
+          if (!p.id) router.replace(`/admin/templates/${r.saved.id}/edit`);
+        }
+        const first = Object.keys(r.errors ?? {})[0];
+        if (first) document.getElementById(`tf-${first}`)?.focus();
         return;
       }
       setSaved(JSON.stringify(form));
@@ -86,44 +138,69 @@ export function TemplateEditor(p: Props) {
     });
   }
 
-  async function addImages(list: FileList | null) {
-    if (!list) return;
-    for (const file of Array.from(list)) {
-      const key = `${Date.now()}-${file.name}`;
-      const ext = /\.([a-z0-9]+)$/i.exec(file.name)?.[1]?.toLowerCase() ?? "";
-      if (!PREVIEW_EXT.includes(ext)) {
-        setUploads((u) => [...u, { key, name: file.name, pct: 0, error: "PNG, JPG, WEBP биш байна." }]);
-        continue;
-      }
-      setUploads((u) => [...u, { key, name: file.name, pct: 0 }]);
-      const t = await uploadTicketAction({ kind: "preview", folder: p.folder, name: file.name, size: file.size });
-      if (!t.ok) {
-        setUploads((u) => u.map((x) => (x.key === key ? { ...x, error: t.message } : x)));
-        continue;
-      }
-      try {
-        await uploadWithProgress(t.bucket, t.path, t.token, file, (pct) => setUploads((u) => u.map((x) => (x.key === key ? { ...x, pct } : x))));
-        setF((x) => ({ ...x, previewImages: [...x.previewImages, { path: t.path, alt: form.title || file.name.replace(/\.[^.]+$/, "") }] }));
-        setUploads((u) => u.filter((x) => x.key !== key));
-      } catch {
-        setUploads((u) => u.map((x) => (x.key === key ? { ...x, error: "Хуулж чадсангүй. Дахин оролдоно уу." } : x)));
-      }
+  const patchUpload = (key: string, patch: Partial<Upload>) => setUploads((u) => u.map((x) => (x.key === key ? { ...x, ...patch } : x)));
+  const dropUpload = (key: string) =>
+    setUploads((u) => {
+      const gone = u.find((x) => x.key === key);
+      if (gone?.thumb) URL.revokeObjectURL(gone.thumb);
+      return u.filter((x) => x.key !== key);
+    });
+
+  /**
+   * One upload, retryable with the same File. The form (and so the database)
+   * only points at the new object after the upload finished; the old object
+   * is removed by the server after the save succeeds.
+   */
+  async function runUpload(u: Upload) {
+    patchUpload(u.key, { pct: 0, error: undefined });
+    const t = await uploadTicketAction({ kind: u.kind, folder: p.folder, name: u.file.name, size: u.file.size });
+    if (!t.ok) return patchUpload(u.key, { error: t.message });
+    try {
+      await uploadWithProgress(t.bucket, t.path, t.token, u.file, (pct) => patchUpload(u.key, { pct }));
+      if (u.kind === "preview") setF((x) => ({ ...x, previewImages: [...x.previewImages, { path: t.path, alt: x.title || u.file.name.replace(/\.[^.]+$/, "") }] }));
+      else setF((x) => ({ ...x, file: { storagePath: t.path, externalUrl: null, label: u.file.name } }));
+      dropUpload(u.key);
+    } catch {
+      patchUpload(u.key, { error: "Хуулж чадсангүй. Сүлжээгээ шалгаад дахин оролдоно уу." });
     }
   }
 
-  async function uploadPrivate(file: File) {
-    const key = `file-${Date.now()}`;
-    setUploads((u) => [...u, { key, name: file.name, pct: 0 }]);
-    const t = await uploadTicketAction({ kind: "file", folder: p.folder, name: file.name, size: file.size });
-    if (!t.ok) return setUploads((u) => u.map((x) => (x.key === key ? { ...x, error: t.message } : x)));
-    try {
-      await uploadWithProgress(t.bucket, t.path, t.token, file, (pct) => setUploads((u) => u.map((x) => (x.key === key ? { ...x, pct } : x))));
-      set("file", { storagePath: t.path, externalUrl: null, label: f.file?.label || file.name });
-      setUploads((u) => u.filter((x) => x.key !== key));
-    } catch {
-      setUploads((u) => u.map((x) => (x.key === key ? { ...x, error: "Хуулж чадсангүй. Дахин оролдоно уу." } : x)));
+  function queue(kind: Upload["kind"], files: File[]) {
+    for (const file of files) {
+      const ext = /\.([a-z0-9]+)$/i.exec(file.name)?.[1]?.toLowerCase() ?? "";
+      const u: Upload = { key: `${kind}-${Date.now()}-${file.name}`, kind, file, pct: 0, thumb: /^image\/(png|jpeg|webp)$/.test(file.type) ? URL.createObjectURL(file) : undefined };
+      if (kind === "preview" && !PREVIEW_EXT.includes(ext)) u.error = "Зөвхөн PNG, JPG, WEBP зураг.";
+      else if (kind === "preview" && file.size > PREVIEW_MAX) u.error = "Зураг 5MB-аас их байна.";
+      else if (kind === "file" && file.size > FILE_MAX) u.error = "Файл 200MB-аас их байна.";
+      setUploads((list) => [...list.filter((x) => kind === "preview" || x.kind !== "file"), u]);
+      if (!u.error) runUpload(u);
     }
   }
+  const addImages = (list: FileList | null) => list && queue("preview", Array.from(list));
+  const uploadPrivate = (file: File) => queue("file", [file]);
+
+  // Free object URLs when the editor unmounts.
+  const thumbsRef = useRef<Upload[]>([]);
+  useEffect(() => {
+    thumbsRef.current = uploads;
+  }, [uploads]);
+  useEffect(() => () => thumbsRef.current.forEach((u) => u.thumb && URL.revokeObjectURL(u.thumb)), []);
+
+  // Slug: server duplicate check (the product being edited is not a duplicate of itself).
+  const [slugState, setSlugState] = useState<"" | "checking" | "ok" | "taken" | "error">("");
+  useEffect(() => {
+    if (!f.slug || !/^[a-z0-9]+(-[a-z0-9]+)*$/.test(f.slug)) return;
+    let live = true;
+    const h = setTimeout(async () => {
+      setSlugState("checking");
+      const r = await checkSlugAction(f.slug, p.id);
+      if (live) setSlugState(!r.ok ? "error" : r.available ? "ok" : "taken");
+    }, 450);
+    return () => {
+      live = false;
+      clearTimeout(h);
+    };
+  }, [f.slug, p.id]);
 
   const move = (i: number, d: -1 | 1) =>
     setF((x) => {
@@ -205,9 +282,21 @@ export function TemplateEditor(p: Props) {
                 set("slug", e.target.value.toLowerCase());
               }}
             />
-            <span className={field.hint}>/templates/{f.slug || "…"} — нийтэлсний дараа солиход хуучин холбоос ажиллахаа болино.</span>
+            <span className={field.hint}>
+              /templates/{f.slug || "…"} — {status === "published" ? "нийтлэгдсэн тул нэр солиход slug автоматаар өөрчлөгдөхгүй; гараар солиход хуучин холбоос ажиллахаа болино." : "латин жижиг үсэг, тоо, зураас."}
+            </span>
+            {f.slug && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(f.slug) && slugState && (
+              <span aria-live="polite" className={`text-[13px] font-bold ${slugState === "taken" ? "text-danger" : slugState === "ok" ? "text-brand" : "text-muted"}`}>
+                {slugState === "checking" ? "Шалгаж байна…" : slugState === "ok" ? "✓ Боломжтой" : slugState === "taken" ? "✕ Энэ slug өөр бүтээгдэхүүнд ашиглагдсан" : "Шалгаж чадсангүй — хадгалахад сервер дахин шалгана"}
+              </span>
+            )}
             <Err id="tf-slug-e" text={errors.slug} />
           </label>
+          {f.title && slugify(f.title) && slugify(f.title) !== f.slug && (
+            <button type="button" onClick={() => set("slug", slugify(f.title))} className={`${btn.ghost} -mt-2 self-start`}>
+              Нэрээс санал болгох: <span className="font-mono">{slugify(f.title)}</span>
+            </button>
+          )}
           <div className="grid gap-4 min-[600px]:grid-cols-2">
             <label className="flex flex-col gap-1.5">
               <span className={field.label}>Ангилал *</span>
@@ -265,7 +354,7 @@ export function TemplateEditor(p: Props) {
           {f.previewImages.length > 0 && (
             <ol className="m-0 flex list-none flex-col gap-2 p-0">
               {f.previewImages.map((img, i) => (
-                <li key={img.path} className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-bg p-2.5">
+                <li key={img.path} className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-sunken p-2.5">
                   {/* eslint-disable-next-line @next/next/no-img-element -- admin thumbnail from the public bucket */}
                   <img src={publicPreviewUrl(img.path)} alt="" className="h-16 w-24 rounded-lg border border-line object-cover" />
                   <span className="flex min-w-0 flex-[1_1_180px] flex-col gap-1">
@@ -300,21 +389,11 @@ export function TemplateEditor(p: Props) {
               ))}
             </ol>
           )}
-          {uploads.map((u) => (
-            <div key={u.key} role={u.error ? "alert" : "status"} className="flex flex-col gap-1.5 rounded-xl border border-line p-2.5 text-sm">
-              <span className="font-bold [overflow-wrap:anywhere]">{u.name}</span>
-              {u.error ? (
-                <span className="font-bold text-danger">✕ {u.error}</span>
-              ) : (
-                <>
-                  <span className="h-2 overflow-hidden rounded bg-soft" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={u.pct} aria-label={`${u.name} хуулж байна`}>
-                    <span className="block h-full bg-brand transition-[width]" style={{ width: `${u.pct}%` }} />
-                  </span>
-                  <span className="text-muted">{u.pct}%</span>
-                </>
-              )}
-            </div>
-          ))}
+          {uploads
+            .filter((u) => u.kind === "preview")
+            .map((u) => (
+              <UploadRow key={u.key} u={u} onRetry={() => runUpload(u)} onRemove={() => dropUpload(u.key)} />
+            ))}
           <label className={`${btn.ghost} cursor-pointer self-start has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-brand`}>
             Зураг нэмэх
             <input ref={fileInput} type="file" multiple accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp" className="sr-only" onChange={(e) => { addImages(e.target.files); e.target.value = ""; }} />
@@ -358,20 +437,30 @@ export function TemplateEditor(p: Props) {
           <h2 id="sec-file" className={h2}>
             4. Хамгаалагдсан файл / хүргэх холбоос
           </h2>
-          <p className={field.hint}>Нийтэд хэзээ ч харагдахгүй. Хүсэлтийн хуудаснаас хугацаатай татах холбоос үүсгэж гараар илгээнэ.</p>
+          <p className={field.hint}>
+            Нийтэд хэзээ ч харагдахгүй. Төлбөртэй бүтээгдэхүүнийг нийтлэхэд заавал. Хэрэглэгчид зөвхөн төлбөр гараар баталгаажсаны дараа хүсэлтийн хуудаснаас хугацаатай холбоос үүсгэж илгээнэ.
+          </p>
+          {uploads
+            .filter((u) => u.kind === "file")
+            .map((u) => (
+              <UploadRow key={u.key} u={u} onRetry={() => runUpload(u)} onRemove={() => dropUpload(u.key)} />
+            ))}
           {f.file?.storagePath ? (
-            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-bg p-3">
+            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-sunken p-3">
               <span className="min-w-0 flex-1 text-sm">
                 <strong className="[overflow-wrap:anywhere]">{f.file.label || "Файл"}</strong>
-                <span className="block text-xs text-muted">Private bucket-д хадгалагдсан</span>
+                <span className="block text-xs text-muted">
+                  Хамгаалагдсан (private) storage-д · {f.file.storagePath === p.initial.file?.storagePath ? "хадгалагдсан" : "шинэ — хадгалсны дараа хуучин файл устгагдана"}
+                </span>
               </span>
-              <label className={`${btn.ghost} cursor-pointer`}>
+              <label className={`${btn.ghost} cursor-pointer has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-focus`}>
                 Файл солих
-                <input type="file" className="sr-only" onChange={(e) => e.target.files?.[0] && uploadPrivate(e.target.files[0])} />
+                <input type="file" className="sr-only" onChange={(e) => { if (e.target.files?.[0]) uploadPrivate(e.target.files[0]); e.target.value = ""; }} />
               </label>
               <button type="button" className={btn.danger} onClick={() => set("file", null)}>
                 Устгах
               </button>
+              <Err id="tf-file-e" text={errors.file} />
             </div>
           ) : (
             <div className="flex flex-col gap-3">
@@ -439,6 +528,22 @@ export function TemplateEditor(p: Props) {
           </div>
         </section>
       </aside>
+
+      {/* Phones/tablets: the two save actions stay reachable above the tab bar. */}
+      <div className="sticky bottom-[calc(84px+env(safe-area-inset-bottom))] z-20 col-span-full -mx-1 flex gap-2 rounded-2xl border border-line bg-elevated p-2 shadow-[0_16px_40px_-20px_var(--ax-shadow)] min-[1100px]:hidden">
+        <button type="button" disabled={pending} onClick={() => save("draft")} className={`${btn.ghost} min-h-12 flex-1`}>
+          {pending ? "Хадгалж байна…" : status === "published" ? "Хадгалах" : "Ноорог хадгалах"}
+        </button>
+        {status !== "published" ? (
+          <button type="button" disabled={pending} onClick={() => save("publish")} className={`${btn.primary} min-h-12 flex-1`}>
+            Нийтлэх
+          </button>
+        ) : (
+          <button type="button" disabled={pending} onClick={() => save("unpublish")} className={`${btn.danger} min-h-12 flex-1`}>
+            Ноорог болгох
+          </button>
+        )}
+      </div>
     </div>
   );
 }

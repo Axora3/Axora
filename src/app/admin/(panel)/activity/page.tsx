@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import Link from "next/link";
 import { Body, EmptyState, LoadFailed, PageHeader, Pagination, Panel, btn, field } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/admin/auth";
@@ -16,7 +18,7 @@ function entityHref(type: string, id: string | null): string | null {
   return null;
 }
 
-export default async function ActivityPage({ searchParams }: PageProps<"/admin/activity">) {
+async function ActivityPageContent({ searchParams }: PageProps<"/admin/activity">) {
   const c = await requireAdminPage();
   if (c.kind !== "ok") return null;
   const sp = await searchParams;
@@ -82,5 +84,13 @@ export default async function ActivityPage({ searchParams }: PageProps<"/admin/a
         </Panel>
       </Body>
     </>
+  );
+}
+
+export default function ActivityPage(props: PageProps<"/admin/activity">) {
+  return (
+    <Suspense fallback={<AdminPageSkeleton />}>
+      <ActivityPageContent {...props} />
+    </Suspense>
   );
 }

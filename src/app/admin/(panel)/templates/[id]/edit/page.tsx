@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import { notFound } from "next/navigation";
 import { TemplateEditor } from "@/components/admin/TemplateEditor";
 import { Body, LoadFailed, PageHeader } from "@/components/admin/ui";
@@ -6,7 +8,7 @@ import { TEMPLATE_CATEGORIES, type TemplateCategory } from "@/lib/templates/type
 
 export const metadata = { title: "Загвар засах" };
 
-export default async function EditTemplate({ params }: PageProps<"/admin/templates/[id]/edit">) {
+async function EditTemplateContent({ params }: PageProps<"/admin/templates/[id]/edit">) {
   const c = await requireAdminPage();
   if (c.kind !== "ok") return null;
   const { id } = await params;
@@ -51,5 +53,13 @@ export default async function EditTemplate({ params }: PageProps<"/admin/templat
         />
       </Body>
     </>
+  );
+}
+
+export default function EditTemplate(props: PageProps<"/admin/templates/[id]/edit">) {
+  return (
+    <Suspense fallback={<AdminPageSkeleton />}>
+      <EditTemplateContent {...props} />
+    </Suspense>
   );
 }

@@ -24,7 +24,7 @@ export async function NotesHistory({ db, entityType, entityId, meId }: { db: Sup
         ) : (
           <ul className="m-0 flex list-none flex-col gap-2 p-0">
             {notes.data.map((n) => (
-              <li key={n.id} className="rounded-xl border border-line bg-bg p-3">
+              <li key={n.id} className="rounded-xl border border-line bg-sunken p-3">
                 <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{n.body}</p>
                 <p className="mt-1.5 text-xs text-muted">
                   {who(n.author_id)} · {fmtDateTime(n.created_at)}

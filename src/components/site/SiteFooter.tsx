@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSiteContent } from "@/lib/content/service";
+import { emailHref, phoneHref } from "@/lib/contact-links";
 
 export async function SiteFooter() {
   const c = await getSiteContent();
@@ -17,6 +18,7 @@ export async function SiteFooter() {
             ["/builder", "Live demo"],
             ["/order", "Анкет"],
             ["/#faq", "Түгээмэл асуулт"],
+            ["/privacy", "Нууцлал"],
           ].map(([href, label]) => (
             <Link key={href} href={href} className="ax-link inline-flex min-h-11 items-center text-ink no-underline">
               {label}
@@ -27,8 +29,8 @@ export async function SiteFooter() {
           <Link href="/contact" className="ax-link font-extrabold text-ink no-underline">
             Холбоо барих
           </Link>
-          <span>{c.contact.phone}</span>
-          <span>{c.contact.email}</span>
+          {phoneHref(c.contact.phone) ? <a href={phoneHref(c.contact.phone)!} className="ax-link text-muted no-underline">{c.contact.phone}</a> : <span>{c.contact.phone}</span>}
+          {emailHref(c.contact.email) ? <a href={emailHref(c.contact.email)!} className="ax-link text-muted no-underline">{c.contact.email}</a> : <span>{c.contact.email}</span>}
           {c.social.map((s) => (
             <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="ax-link inline-flex min-h-11 items-center text-muted no-underline">
               {s.label}

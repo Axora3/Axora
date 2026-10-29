@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import { ContentEditor } from "@/components/admin/ContentEditor";
 import { Body, LoadFailed, PageHeader } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/admin/auth";
@@ -5,7 +7,7 @@ import { DEFAULT_CONTENT, parseContent } from "@/lib/content/schema";
 
 export const metadata = { title: "Сайтын агуулга" };
 
-export default async function ContentPage() {
+async function ContentPageContent() {
   const c = await requireAdminPage();
   if (c.kind !== "ok") return null;
   const { data, error } = await c.ctx.db.from("site_content").select("draft, published, published_at, updated_at").eq("key", "site").maybeSingle();
@@ -25,5 +27,13 @@ export default async function ContentPage() {
         )}
       </Body>
     </>
+  );
+}
+
+export default function ContentPage() {
+  return (
+    <Suspense fallback={<AdminPageSkeleton />}>
+      <ContentPageContent />
+    </Suspense>
   );
 }

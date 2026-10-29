@@ -1,3 +1,4 @@
+import { publicSupabaseKey } from "@/lib/supabase/config";
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import type { SupabaseClient, User } from "@supabase/supabase-js";
@@ -13,7 +14,7 @@ import { isCatalogConfigured, supabaseUrl } from "@/lib/supabase/server";
  */
 export async function sessionClient(): Promise<SupabaseClient> {
   const store = await cookies();
-  return createServerClient(supabaseUrl()!, process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!, {
+  return createServerClient(supabaseUrl()!, publicSupabaseKey()!, {
     cookies: {
       getAll: () => store.getAll(),
       setAll: (list) => {

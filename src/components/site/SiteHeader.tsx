@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ArrowLeft, ChevronLeft, Close, LogoMark, Menu } from "@/components/icons";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useDialog } from "@/components/ui/use-dialog";
 
 export const NAV = [
@@ -31,7 +32,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
   const max = wide ? "max-w-[1400px] px-[clamp(16px,3vw,32px)]" : "max-w-[1240px] px-[clamp(16px,4vw,40px)]";
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-[rgba(247,248,242,0.92)] backdrop-blur-[10px]">
+    <header className="sticky top-0 z-30 border-b border-line bg-header backdrop-blur-[10px]">
       {mobileBack && (
         <div className="flex h-[60px] items-center gap-2 px-3 min-[900px]:hidden">
           <Link
@@ -42,6 +43,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
             <ChevronLeft size={22} />
           </Link>
           <span className="flex-1 truncate text-base font-extrabold">{mobileBack.title}</span>
+          <ThemeToggle />
         </div>
       )}
 
@@ -71,9 +73,10 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
               })}
             </nav>
             <div className="flex items-center gap-2">
+              <ThemeToggle />
               <Link
                 href="/order"
-                className="ax-btn ax-primary hidden min-h-11 items-center rounded-[11px] bg-brand px-[18px] text-[15px] font-bold text-white min-[900px]:inline-flex"
+                className="ax-btn ax-primary hidden min-h-11 items-center rounded-[11px] bg-primary px-[18px] text-[15px] font-bold text-on-primary min-[900px]:inline-flex"
               >
                 Үнийн санал авах
               </Link>
@@ -92,12 +95,15 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
         ) : (
           <>
             {label && <span className="hidden text-sm font-bold text-muted sm:inline">{label}</span>}
+            <span className="flex items-center gap-2">
+              <ThemeToggle />
             {back && (
               <Link href={back.href} className="ax-link inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-ink no-underline">
                 <ArrowLeft size={16} />
                 {back.label}
               </Link>
             )}
+            </span>
           </>
         )}
       </div>
@@ -109,7 +115,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
           role="dialog"
           aria-modal="true"
           aria-label="Цэс"
-          className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-bg p-4 pb-[calc(16px+env(safe-area-inset-bottom))] [animation:axFade_.2s_ease_both]"
+          className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-sunken p-4 pb-[calc(16px+env(safe-area-inset-bottom))] [animation:axFade_.2s_ease_both]"
         >
           <div className="flex h-14 items-center justify-between">
             <span className="text-[19px] font-extrabold tracking-[0.08em]">AXORA</span>
@@ -138,7 +144,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
           <Link
             href="/order"
             onClick={() => setOpen(false)}
-            className="ax-btn ax-primary mt-auto flex min-h-[52px] items-center justify-center rounded-xl bg-brand pt-0 text-[17px] font-bold text-white no-underline"
+            className="ax-btn ax-primary mt-auto flex min-h-[52px] items-center justify-center rounded-xl bg-primary pt-0 text-[17px] font-bold text-on-primary no-underline"
           >
             Үнийн санал авах
           </Link>

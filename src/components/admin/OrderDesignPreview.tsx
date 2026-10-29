@@ -22,8 +22,8 @@ export function OrderDesignPreview({ config }: { config: BuilderConfig }) {
           </button>
         ))}
       </div>
-      <div className="overflow-x-auto rounded-[18px] border border-line bg-[#E4E9DE] p-3">
-        <div className="mx-auto overflow-hidden rounded-xl border border-[#D3DACE] bg-white" style={{ width: w, maxWidth: w === "100%" ? "100%" : undefined }}>
+      <div className="overflow-x-auto rounded-[18px] border border-line bg-soft p-3">
+        <div className="ax-light mx-auto overflow-hidden rounded-xl border border-line-mid bg-white" style={{ width: w, maxWidth: w === "100%" ? "100%" : undefined }}>
           <DemoPreview config={config} logo={null} animKey={0} />
         </div>
       </div>

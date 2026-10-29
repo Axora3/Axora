@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import { SignOutButton } from "@/components/admin/AdminShell";
 import { Body, PageHeader, Panel, btn } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/admin/auth";
@@ -6,7 +8,7 @@ import { isBackendConfigured } from "@/lib/supabase/server";
 
 export const metadata = { title: "Тохиргоо" };
 
-export default async function SettingsPage() {
+async function SettingsPageContent() {
   const c = await requireAdminPage();
   if (c.kind !== "ok") return null;
   const { user } = c.ctx;
@@ -62,5 +64,13 @@ export default async function SettingsPage() {
         </Panel>
       </Body>
     </>
+  );
+}
+
+export default function SettingsPage() {
+  return (
+    <Suspense fallback={<AdminPageSkeleton />}>
+      <SettingsPageContent />
+    </Suspense>
   );
 }

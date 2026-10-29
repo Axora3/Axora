@@ -59,20 +59,20 @@ export default async function HomePage() {
               <h3 className="text-[clamp(24px,2.4vw,32px)] leading-[1.18] font-extrabold tracking-[-0.02em]">Бэлэн загвараар ажлаа хялбарчил.</h3>
               <p className="text-[17px] leading-relaxed text-muted">Хичээл, контент, төсөв, сошиал пост — өөрийн бүртгэл рүү хуулаад шууд ашиглах загварууд.</p>
               <div className="grid grid-cols-3 gap-2.5">
-                <div className="flex flex-col gap-2 rounded-xl border border-line bg-bg px-3 py-3.5">
-                  <span className="inline-flex h-[26px] w-[26px] items-center justify-center rounded-[7px] bg-ink text-[13px] font-extrabold text-white">N</span>
+                <div className="flex flex-col gap-2 rounded-xl border border-line bg-sunken px-3 py-3.5">
+                  <span className="inline-flex h-[26px] w-[26px] items-center justify-center rounded-[7px] bg-band text-[13px] font-extrabold text-white">N</span>
                   <span className="text-sm font-bold">Notion</span>
                 </div>
-                <div className="flex flex-col gap-2 rounded-xl border border-line bg-bg px-3 py-3.5">
+                <div className="flex flex-col gap-2 rounded-xl border border-line bg-sunken px-3 py-3.5">
                   <span className="h-[26px] w-[26px] rounded-full bg-[#2B8C8C]" />
                   <span className="text-sm font-bold">Canva</span>
                 </div>
-                <div className="flex flex-col gap-2 rounded-xl border border-line bg-bg px-3 py-3.5">
+                <div className="flex flex-col gap-2 rounded-xl border border-line bg-sunken px-3 py-3.5">
                   <span className="inline-flex h-[26px] w-[26px] items-center justify-center rounded-[7px] bg-[#2F7A4D] text-[13px] font-extrabold text-white">X</span>
                   <span className="text-sm font-bold">Excel</span>
                 </div>
               </div>
-              <Link href="/templates" className="ax-btn ax-primary mt-auto inline-flex min-h-12 items-center gap-2.5 self-start rounded-xl bg-brand px-5 text-[15px] font-bold text-white no-underline">
+              <Link href="/templates" className="ax-btn ax-primary mt-auto inline-flex min-h-12 items-center gap-2.5 self-start rounded-xl bg-primary px-5 text-[15px] font-bold text-on-primary no-underline">
                 Загварууд үзэх
                 <span className="ax-arrow">
                   <ArrowRight />
@@ -80,7 +80,7 @@ export default async function HomePage() {
               </Link>
             </article>
 
-            <article className="ax-reveal ax-card relative flex flex-col gap-6 overflow-hidden rounded-[20px] border border-ink bg-ink p-[clamp(24px,3vw,40px)] text-bg">
+            <article className="ax-reveal ax-card relative flex flex-col gap-6 overflow-hidden rounded-[20px] border border-band bg-band p-[clamp(24px,3vw,40px)] text-on-band">
               <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
                 <span className="text-[13px] font-extrabold tracking-[0.08em] text-lime uppercase">02 — Захиалгат веб</span>
                 <span className="text-[13px] font-bold text-dark-muted">Жижиг бизнест</span>
@@ -97,13 +97,13 @@ export default async function HomePage() {
                 ))}
               </ul>
               <div className="mt-auto flex flex-wrap gap-2.5">
-                <Link href="/builder" className="ax-btn ax-lime inline-flex min-h-12 items-center gap-2.5 rounded-xl bg-lime px-5 text-[15px] font-extrabold text-ink no-underline">
+                <Link href="/builder" className="ax-btn ax-lime inline-flex min-h-12 items-center gap-2.5 rounded-xl bg-lime px-5 text-[15px] font-extrabold text-on-lime no-underline">
                   Вебээ загварчлах
                   <span className="ax-arrow">
                     <ArrowRight />
                   </span>
                 </Link>
-                <Link href="/services" className="ax-btn inline-flex min-h-12 items-center rounded-xl border border-dark-line-2 px-[18px] text-[15px] font-bold text-bg no-underline">
+                <Link href="/services" className="ax-btn inline-flex min-h-12 items-center rounded-xl border border-dark-line-2 px-[18px] text-[15px] font-bold text-on-band no-underline">
                   Дэлгэрэнгүй
                 </Link>
               </div>
@@ -143,10 +143,10 @@ export default async function HomePage() {
             <ol className="relative m-0 mt-12 grid list-none gap-5 p-0 [grid-template-columns:repeat(auto-fit,minmax(min(230px,100%),1fr))]">
               <li className="ax-steps-line absolute top-[27px] right-6 left-6 h-px bg-line-mid" aria-hidden="true" />
               {[
-                ["Загвар эсвэл үйлчилгээ сонгоно", "Бэлэн загварын дэлгүүр эсвэл захиалгат вебийн demo-оос эхэлнэ.", "bg-brand text-white"],
+                ["Загвар эсвэл үйлчилгээ сонгоно", "Бэлэн загварын дэлгүүр эсвэл захиалгат вебийн demo-оос эхэлнэ.", "bg-primary text-on-primary"],
                 ["Хэрэгцээгээ тодорхойлно", "Авах хүсэлт эсвэл 7 алхамтай анкетаар шаардлагаа илгээнэ.", "border border-line-mid bg-surface text-brand"],
                 ["Ажлын хүрээ, үнэ, хугацааг тохирно", "Таны сонгосон сувгаар холбогдож, үнийн санал илгээнэ.", "border border-line-mid bg-surface text-brand"],
-                ["Бэлэн шийдлээ хүлээн авна", "Загвар эсвэл веб сайтаа хэрхэн ашиглах заавартай нь авна.", "bg-lime text-ink"],
+                ["Бэлэн шийдлээ хүлээн авна", "Загвар эсвэл веб сайтаа хэрхэн ашиглах заавартай нь авна.", "bg-lime text-on-lime"],
               ].map(([t, d, c], i) => (
                 <li key={t} className="ax-reveal relative flex flex-col gap-3.5">
                   <span className={`serif inline-flex h-14 w-14 items-center justify-center rounded-2xl text-[26px] ${c}`}>{i + 1}</span>
@@ -175,22 +175,22 @@ export default async function HomePage() {
         </section>
 
         <section aria-labelledby="cta-title" className="px-[clamp(16px,4vw,40px)] pb-[clamp(56px,7vw,96px)]">
-          <div className="ax-reveal relative mx-auto grid max-w-[1240px] items-end gap-8 overflow-hidden rounded-[28px] bg-ink p-[clamp(28px,6vw,80px)] text-bg [grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr))]">
-            <div aria-hidden="true" className="ax-spin absolute -top-[120px] -right-[120px] h-[340px] w-[340px] rounded-full border border-dashed border-[#3C5446]" />
-            <div aria-hidden="true" className="absolute -top-10 -right-10 h-[180px] w-[180px] rounded-full border border-[#3C5446]" />
+          <div className="ax-reveal relative mx-auto grid max-w-[1240px] items-end gap-8 overflow-hidden rounded-[28px] bg-band p-[clamp(28px,6vw,80px)] text-on-band [grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr))]">
+            <div aria-hidden="true" className="ax-spin absolute -top-[120px] -right-[120px] h-[340px] w-[340px] rounded-full border border-dashed border-band-ring" />
+            <div aria-hidden="true" className="absolute -top-10 -right-10 h-[180px] w-[180px] rounded-full border border-band-ring" />
             <h2 id="cta-title" className="relative text-[clamp(32px,4.4vw,60px)] leading-[1.05] font-extrabold tracking-[-0.03em]">
               Санаагаа бидэнтэй <span className="serif text-lime">хуваалц.</span>
             </h2>
             <div className="relative flex flex-col gap-5">
               <p className="text-[17px] leading-relaxed text-dark-muted">Анкет бөглөхөд 10 орчим минут. Хариултаа шалгаад илгээх хүртэл алхам хооронд хадгална.</p>
               <div className="flex flex-wrap gap-3">
-                <Link href="/order" className="ax-btn ax-lime inline-flex min-h-[54px] items-center gap-2.5 rounded-xl bg-lime px-6 text-base font-extrabold text-ink no-underline">
+                <Link href="/order" className="ax-btn ax-lime inline-flex min-h-[54px] items-center gap-2.5 rounded-xl bg-lime px-6 text-base font-extrabold text-on-lime no-underline">
                   Үнийн санал авах
                   <span className="ax-arrow">
                     <ArrowRight />
                   </span>
                 </Link>
-                <Link href="/templates" className="ax-btn inline-flex min-h-[54px] items-center rounded-xl border border-dark-line-2 px-[22px] text-base font-bold text-bg no-underline">
+                <Link href="/templates" className="ax-btn inline-flex min-h-[54px] items-center rounded-xl border border-dark-line-2 px-[22px] text-base font-bold text-on-band no-underline">
                   Загварууд үзэх
                 </Link>
               </div>

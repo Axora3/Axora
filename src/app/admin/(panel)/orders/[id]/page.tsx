@@ -1,9 +1,12 @@
+import { Suspense } from "react";
+import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import { notFound } from "next/navigation";
 import { BackToList, CopyButton, Tabs } from "@/components/admin/client";
 import { AttachmentActions, OrderStatusForm } from "@/components/admin/forms";
 import { NotesHistory } from "@/components/admin/NotesHistory";
 import { OrderDesignPreview } from "@/components/admin/OrderDesignPreview";
-import { Body, LoadFailed, PageHeader, Panel, StatusPill } from "@/components/admin/ui";
+import { OrderStatusControl } from "@/components/admin/OrderStatusControl";
+import { Body, LoadFailed, PageHeader, Panel } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { CHANNEL_LABEL, fmtDate, fmtDateTime } from "@/lib/admin/labels";
 import { STYLES, TYPES, type BuilderConfig, type BusinessType, type StyleId } from "@/lib/builder/config";
@@ -61,7 +64,7 @@ function Answer({ f, a }: { f: Field; a: Answers }) {
   return v ? <span className="whitespace-pre-wrap">{v}</span> : <span className="text-faint">Бөглөөгүй</span>;
 }
 
-export default async function OrderDetail({ params, searchParams }: PageProps<"/admin/orders/[id]">) {
+async function OrderDetailContent({ params, searchParams }: PageProps<"/admin/orders/[id]">) {
   const c = await requireAdminPage();
   if (c.kind !== "ok") return null;
   const { id } = await params;
@@ -209,15 +212,13 @@ export default async function OrderDetail({ params, searchParams }: PageProps<"/
         title={o.business_name}
         description={
           <span className="inline-flex flex-wrap items-center gap-2">
-            <span className="font-mono">{o.reference}</span> · {fmtDateTime(o.created_at)} · <StatusPill kind="order" status={o.status} />
+            <span className="font-mono">{o.reference}</span> · {fmtDateTime(o.created_at)}
           </span>
         }
         actions={
           <>
-            <BackToList storageKey="admin-orders-list" fallback="/admin/orders" label="Жагсаалт руу буцах" />
-            <a href="#status-panel" className="ax-btn ax-primary inline-flex min-h-11 items-center rounded-[11px] bg-brand px-4 text-sm font-bold text-white no-underline">
-              Төлөв шинэчлэх
-            </a>
+            <OrderStatusControl id={o.id} updatedAt={o.updated_at} status={o.status} title={o.business_name} reference={o.reference} size="md" />
+            <BackToList storageKey="admin-orders-list" fallback="/admin/orders" label="Жагсаалт" />
           </>
         }
       />
@@ -272,5 +273,13 @@ export default async function OrderDetail({ params, searchParams }: PageProps<"/
         </div>
       </Body>
     </>
+  );
+}
+
+export default function OrderDetail(props: PageProps<"/admin/orders/[id]">) {
+  return (
+    <Suspense fallback={<AdminPageSkeleton />}>
+      <OrderDetailContent {...props} />
+    </Suspense>
   );
 }

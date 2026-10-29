@@ -9,9 +9,13 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
+// Admin navigation must validate the current session on the server per request.
+// These routes can block on auth, so don't treat them as instant-navigation UI.
+export const instant = false;
+
 function Centered({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <main id="main" className="flex min-h-dvh items-center justify-center bg-[#F3F5EE] p-5">
+    <main id="main" className="flex min-h-dvh items-center justify-center bg-bg-admin p-5">
       <div className="flex w-full max-w-[460px] flex-col gap-3.5 rounded-[20px] border border-line bg-surface p-6">
         <h1 className="text-2xl font-extrabold">{title}</h1>
         {children}
@@ -40,7 +44,7 @@ async function Guard({ children }: { children: React.ReactNode }) {
         <p className="text-[15px] leading-relaxed text-muted">
           {c.email ? `“${c.email}” хаягаар нэвтэрсэн` : "Та нэвтэрсэн"} боловч энэ бүртгэлд админ эрх олгогдоогүй байна. Эрхийг зөвхөн серверийн тохиргоогоор олгоно.
         </p>
-        <SignOutButton className="ax-btn ax-primary min-h-12 rounded-xl border-0 bg-brand px-5 font-bold text-white" />
+        <SignOutButton className="ax-btn ax-primary min-h-12 rounded-xl border-0 bg-primary px-5 font-bold text-on-primary" />
       </Centered>
     );
   }
@@ -67,8 +71,8 @@ async function Guard({ children }: { children: React.ReactNode }) {
 
 function ShellLoading() {
   return (
-    <div className="flex min-h-dvh bg-[#F3F5EE]" aria-busy="true" aria-label="Ачаалж байна">
-      <div className="hidden w-[240px] shrink-0 bg-ink min-[1024px]:block" />
+    <div className="flex min-h-dvh bg-bg-admin" aria-busy="true" aria-label="Ачаалж байна">
+      <div className="hidden w-[240px] shrink-0 bg-band min-[1024px]:block" />
       <div className="flex-1 p-8">
         <div className="ax-sk h-8 w-60 rounded-lg" />
         <div className="ax-sk mt-6 h-40 rounded-2xl" />

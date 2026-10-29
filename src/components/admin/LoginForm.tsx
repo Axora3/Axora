@@ -56,7 +56,7 @@ export function LoginForm({ configured }: { configured: boolean }) {
 
   const border = (bad: boolean) => ({ border: bad ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)" });
   return (
-    <form noValidate onSubmit={submit} className="ax-in-sm flex flex-col gap-4 rounded-[20px] border border-line bg-surface p-6 shadow-[0_30px_60px_-44px_rgba(23,37,30,.4)]">
+    <form noValidate onSubmit={submit} className="ax-in-sm flex flex-col gap-4 min-[861px]:rounded-[20px] min-[861px]:border min-[861px]:border-line min-[861px]:bg-surface min-[861px]:p-6 min-[861px]:shadow-[0_30px_60px_-44px_var(--ax-shadow)]">
       {reason && !err && <p role="status" className="rounded-[10px] bg-soft px-3 py-2.5 text-sm font-semibold text-brand">{reason}</p>}
       {err && <ErrorBox>{err}</ErrorBox>}
       <div className="flex flex-col gap-1.5">
@@ -67,11 +67,13 @@ export function LoginForm({ configured }: { configured: boolean }) {
           id="lg-email"
           type="email"
           autoComplete="username"
+          inputMode="email"
+          enterKeyHint="next"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           aria-invalid={eE}
           aria-describedby={eE ? "lg-email-e" : undefined}
-          className="min-h-[50px] rounded-xl bg-bg px-3.5 text-base"
+          className="min-h-[54px] rounded-[14px] bg-surface px-4 text-base text-ink"
           style={border(eE)}
         />
         {eE && <FieldError id="lg-email-e">Имэйл хаягаа зөв оруулна уу.</FieldError>}
@@ -85,11 +87,12 @@ export function LoginForm({ configured }: { configured: boolean }) {
             id="lg-pass"
             type={show ? "text" : "password"}
             autoComplete="current-password"
+            enterKeyHint="go"
             value={pass}
             onChange={(e) => setPass(e.target.value)}
             aria-invalid={pE}
             aria-describedby={pE ? "lg-pass-e" : undefined}
-            className="min-h-[50px] flex-1 rounded-xl bg-bg py-0 pr-[100px] pl-3.5 text-base"
+            className="min-h-[54px] flex-1 rounded-[14px] bg-surface py-0 pr-[100px] pl-4 text-base text-ink"
             style={border(pE)}
           />
           <button
@@ -103,7 +106,7 @@ export function LoginForm({ configured }: { configured: boolean }) {
         </div>
         {pE && <FieldError id="lg-pass-e">Нууц үгээ оруулна уу.</FieldError>}
       </div>
-      <button type="submit" disabled={busy} className="ax-btn ax-primary flex min-h-[52px] items-center justify-center gap-2.5 rounded-[13px] border-0 bg-brand text-base font-bold text-white">
+      <button type="submit" disabled={busy} className="ax-btn ax-primary flex min-h-[56px] items-center justify-center gap-2.5 rounded-[15px] border-0 bg-primary text-base font-bold text-on-primary">
         {busy ? "Шалгаж байна…" : "Нэвтрэх"}
       </button>
     </form>

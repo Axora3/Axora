@@ -88,7 +88,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Хайх: төсөв, контент, кофе…"
-              className="min-h-12 w-full rounded-[11px] border border-line-strong bg-bg py-0 pr-3.5 pl-[42px] text-base text-ink"
+              className="min-h-12 w-full rounded-[11px] border border-line-strong bg-sunken py-0 pr-3.5 pl-[42px] text-base text-ink"
             />
           </div>
           <div className="flex flex-[1_1_220px] items-center gap-2.5">
@@ -118,7 +118,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
                   aria-pressed={on}
                   onClick={() => setParam({ cat: v })}
                   className="ax-btn min-h-11 shrink-0 rounded-[9px] border-0 px-4 text-[15px] font-bold"
-                  style={{ background: on ? "#fff" : "transparent", color: on ? "var(--ax-ink)" : "var(--ax-muted)", boxShadow: on ? "0 1px 2px rgba(23,37,30,.12), 0 0 0 1px #DCE3D9" : "none" }}
+                  style={{ background: on ? "var(--ax-elevated)" : "transparent", color: on ? "var(--ax-ink)" : "var(--ax-muted)", boxShadow: on ? "0 1px 2px var(--ax-shadow), 0 0 0 1px var(--ax-line)" : "none" }}
                 >
                   {label}
                 </button>
@@ -135,7 +135,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
                   aria-pressed={on}
                   onClick={() => setParam({ price: v })}
                   className="ax-btn ax-opt min-h-11 rounded-[10px] px-3.5 text-sm font-bold text-ink"
-                  style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line-strong)", background: on ? "var(--ax-soft)" : "#fff" }}
+                  style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line-strong)", background: on ? "var(--ax-soft)" : "var(--ax-surface)" }}
                 >
                   {label}
                 </button>
@@ -175,7 +175,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
           <h2 className="text-[22px] font-extrabold">Тохирох загвар олдсонгүй</h2>
           <p className="max-w-[26em] text-base leading-relaxed text-muted">Өөр түлхүүр үгээр хайх эсвэл шүүлтүүрээ цэвэрлээд дахин үзээрэй.</p>
           {hasFilters && (
-            <button type="button" onClick={clearAll} className="ax-btn ax-primary min-h-12 rounded-xl border-0 bg-brand px-5 text-[15px] font-bold text-white">
+            <button type="button" onClick={clearAll} className="ax-btn ax-primary min-h-12 rounded-xl border-0 bg-primary px-5 text-[15px] font-bold text-on-primary">
               Шүүлтүүр цэвэрлэх
             </button>
           )}

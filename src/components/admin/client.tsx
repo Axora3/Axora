@@ -88,7 +88,7 @@ export function Tabs({ tabs, initial }: { tabs: { id: string; label: string; con
               pick(n.id);
               document.getElementById(`tab-${n.id}`)?.focus();
             }}
-            className={`min-h-11 shrink-0 cursor-pointer rounded-[9px] border-0 px-3.5 text-sm font-bold ${cur === t.id ? "bg-surface text-ink shadow-[0_1px_2px_rgba(23,37,30,.14)]" : "bg-transparent text-muted"}`}
+            className={`min-h-11 shrink-0 cursor-pointer rounded-[9px] border-0 px-3.5 text-sm font-bold ${cur === t.id ? "bg-surface text-ink shadow-[0_1px_2px_var(--ax-shadow)]" : "bg-transparent text-muted"}`}
           >
             {t.label}
           </button>

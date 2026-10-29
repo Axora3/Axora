@@ -54,7 +54,7 @@ export function FileField(p: Props) {
             p.onAdd(e.dataTransfer?.files ?? null);
           }}
           className="flex cursor-pointer flex-col items-center gap-2 rounded-[14px] border-2 border-dashed px-4 py-[22px] text-center transition-colors has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand"
-          style={{ borderColor: drag ? "var(--ax-brand)" : "var(--ax-line-mid)", background: drag ? "var(--ax-soft)" : "#fff" }}
+          style={{ borderColor: drag ? "var(--ax-brand)" : "var(--ax-line-mid)", background: drag ? "var(--ax-soft)" : "var(--ax-surface)" }}
         >
           <Upload size={26} className="text-brand" />
           <span className="text-[15px] font-bold">Файл сонгох эсвэл энд чирж оруулах</span>
@@ -86,7 +86,7 @@ export function FileField(p: Props) {
           {p.files.map((f) => {
             const s = STATUS[f.status];
             return (
-              <li key={f.ref} className="ax-in-sm flex items-center gap-3 rounded-xl border border-line bg-bg py-2 pr-2 pl-3.5">
+              <li key={f.ref} className="ax-in-sm flex items-center gap-3 rounded-xl border border-line bg-sunken py-2 pr-2 pl-3.5">
                 <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                   <span className="truncate text-sm font-bold">{f.name}</span>
                   <span className="text-xs" style={{ color: s.color, fontWeight: f.status === "selected" ? 400 : 700 }}>
@@ -135,7 +135,7 @@ export function FileField(p: Props) {
               onChange={(e) => p.onDrive(e.target.value)}
               aria-invalid={!!p.driveErr}
               aria-describedby={p.driveErr ? `e-${p.id}` : undefined}
-              className="min-h-12 rounded-[11px] bg-bg px-3.5 text-base text-ink"
+              className="min-h-12 rounded-[11px] bg-sunken px-3.5 text-base text-ink"
               style={{ border: p.driveErr ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)" }}
             />
           </div>

@@ -9,7 +9,7 @@ export default function TemplateNotFound() {
       </span>
       <h1 className="text-[26px] font-extrabold">Загвар олдсонгүй</h1>
       <p className="max-w-[28em] text-base leading-relaxed text-muted">Энэ холбоосоор загвар байхгүй, эсвэл одоогоор нийтлэгдээгүй байна.</p>
-      <Link href="/templates" className="ax-btn ax-primary inline-flex min-h-12 items-center rounded-xl bg-brand px-5 text-[15px] font-bold text-white no-underline">
+      <Link href="/templates" className="ax-btn ax-primary inline-flex min-h-12 items-center rounded-xl bg-primary px-5 text-[15px] font-bold text-on-primary no-underline">
         Бүх загвар үзэх
       </Link>
     </div>

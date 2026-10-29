@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { addNoteAction, createDownloadLinkAction, signAttachmentAction, updateOrderAction, updateRequestAction } from "@/app/admin/actions";
+import { addNoteAction, signAttachmentAction, updateOrderAction, updateRequestAction } from "@/app/admin/actions";
 import { ORDER_STATUS, ORDER_STATUSES, REQUEST_STATUS, REQUEST_STATUSES } from "@/lib/admin/labels";
-import { CopyButton } from "./client";
+import { canOrderTransition, canRequestTransition, requestTransitionHint } from "@/lib/admin/transitions";
 import { btn, field } from "./ui";
 
 type Msg = { kind: "ok" | "err"; text: string; conflict?: boolean } | null;
@@ -59,7 +59,7 @@ export function OrderStatusForm(p: { id: string; updatedAt: string; status: stri
         <span className={field.label}>Төлөв</span>
         <select value={status} onChange={(e) => setStatus(e.target.value)} className={field.input}>
           {ORDER_STATUSES.map((s) => (
-            <option key={s} value={s}>
+            <option key={s} value={s} disabled={s !== p.status && !canOrderTransition(p.status, s)}>
               {ORDER_STATUS[s].label}
             </option>
           ))}
@@ -83,7 +83,7 @@ export function OrderStatusForm(p: { id: string; updatedAt: string; status: stri
   );
 }
 
-export function RequestStatusForm(p: { id: string; updatedAt: string; status: string }) {
+export function RequestStatusForm(p: { id: string; updatedAt: string; status: string; paymentStatus: string }) {
   const router = useRouter();
   const [status, setStatus] = useState(p.status);
   const [expected, setExpected] = useState(p.updatedAt);
@@ -107,15 +107,19 @@ export function RequestStatusForm(p: { id: string; updatedAt: string; status: st
     >
       <fieldset className="ax-fs flex flex-col gap-2">
         <legend className="mb-1 text-sm font-bold">Төлөв</legend>
-        {REQUEST_STATUSES.map((s) => (
-          <label key={s} className="flex min-h-11 cursor-pointer items-start gap-2.5 rounded-xl border p-2.5" style={{ borderColor: status === s ? "var(--ax-brand)" : "var(--ax-line)" }}>
-            <input type="radio" name="req-status" checked={status === s} onChange={() => setStatus(s)} className="mt-0.5 h-5 w-5" />
-            <span className="flex flex-col">
-              <strong className="text-sm">{REQUEST_STATUS[s].label}</strong>
-              <span className="text-[13px] text-muted">{REQUEST_STATUS[s].hint}</span>
-            </span>
-          </label>
-        ))}
+        {REQUEST_STATUSES.map((s) => {
+          const allowed = s === p.status || canRequestTransition(p.status, s, p.paymentStatus);
+          const why = requestTransitionHint(p.status, s, p.paymentStatus);
+          return (
+            <label key={s} className={`flex min-h-11 items-start gap-2.5 rounded-xl border p-2.5 ${allowed ? "cursor-pointer" : "cursor-not-allowed opacity-60"}`} style={{ borderColor: status === s ? "var(--ax-brand)" : "var(--ax-line)" }}>
+              <input type="radio" name="req-status" checked={status === s} disabled={!allowed} onChange={() => setStatus(s)} className="mt-0.5 h-5 w-5" />
+              <span className="flex flex-col">
+                <strong className="text-sm">{REQUEST_STATUS[s].label}</strong>
+                <span className="text-[13px] text-muted">{why ?? REQUEST_STATUS[s].hint}</span>
+              </span>
+            </label>
+          );
+        })}
       </fieldset>
       <Feedback msg={msg} />
       <button type="submit" disabled={pending || status === p.status} className={btn.primary}>
@@ -190,55 +194,6 @@ export function AttachmentActions({ id, name, mime, uploaded }: { id: string; na
       {img && (
         // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL, not an optimisable asset
         <img src={img} alt={name} className="max-h-[360px] w-auto max-w-full rounded-xl border border-line object-contain" />
-      )}
-    </div>
-  );
-}
-
-export function DownloadLinkForm({ requestId }: { requestId: string }) {
-  const [hours, setHours] = useState(72);
-  const [res, setRes] = useState<{ url: string; expiresAt: string | null; external: boolean } | null>(null);
-  const [err, setErr] = useState("");
-  const [pending, start] = useTransition();
-  return (
-    <div className="flex flex-col gap-3">
-      <p className={field.hint}>
-        Төлбөр, нөхцөлөө тохирсны дараа хугацаатай холбоос үүсгээд хэрэглэгчид <strong>өөрөө</strong> илгээнэ. Энд юу ч автоматаар илгээгдэхгүй, төлбөр баталгаажсан гэж тэмдэглэгдэхгүй.
-      </p>
-      <label className="flex flex-col gap-1.5">
-        <span className={field.label}>Холбоосын хугацаа</span>
-        <select value={hours} onChange={(e) => setHours(Number(e.target.value))} className={field.input}>
-          <option value={24}>24 цаг</option>
-          <option value={72}>72 цаг</option>
-          <option value={168}>7 хоног</option>
-        </select>
-      </label>
-      <button
-        type="button"
-        disabled={pending}
-        onClick={() =>
-          start(async () => {
-            setErr("");
-            setRes(null);
-            const r = await createDownloadLinkAction(requestId, hours);
-            if (r.ok) setRes({ url: r.url, expiresAt: r.expiresAt, external: r.external });
-            else setErr(r.message);
-          })
-        }
-        className={`${btn.ghost} self-start`}
-      >
-        {pending ? "Үүсгэж байна…" : "Татах холбоос үүсгэх"}
-      </button>
-      {err && <p role="alert" className="text-[13px] font-bold text-danger">✕ {err}</p>}
-      {res && (
-        <div role="status" className="flex flex-col gap-2 rounded-xl border border-line bg-bg p-3">
-          <span className="text-[13px] font-bold">{res.external ? "Хүргэх холбоос (хугацаагүй)" : "Хугацаатай холбоос үүслээ"}</span>
-          <input readOnly value={res.url} aria-label="Үүсгэсэн холбоос" className={`${field.input} font-mono text-[13px]`} onFocus={(e) => e.currentTarget.select()} />
-          <div className="flex flex-wrap items-center gap-2">
-            <CopyButton value={res.url} label="Холбоос" />
-            {res.expiresAt && <span className={field.hint}>Хүчинтэй хугацаа: {new Date(res.expiresAt).toLocaleString("mn-MN")} хүртэл</span>}
-          </div>
-        </div>
       )}
     </div>
   );

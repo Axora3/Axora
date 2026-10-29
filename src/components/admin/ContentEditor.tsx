@@ -88,8 +88,8 @@ export function ContentEditor(p: Props) {
     <div className="grid items-start gap-5 min-[1100px]:grid-cols-[minmax(0,1fr)_320px]">
       <div className="flex min-w-0 flex-col gap-4">
         {preview ? (
-          <section aria-label="Нооргийн preview" className="overflow-hidden rounded-[18px] border-2 border-dashed border-brand bg-bg">
-            <p className="bg-brand px-4 py-2 text-sm font-bold text-white">Preview — зөвхөн танд харагдаж байна, нийтлэгдээгүй.</p>
+          <section aria-label="Нооргийн preview" className="overflow-hidden rounded-[18px] border-2 border-dashed border-brand bg-sunken">
+            <p className="bg-primary px-4 py-2 text-sm font-bold text-on-primary">Preview — зөвхөн танд харагдаж байна, нийтлэгдээгүй.</p>
             <div className="pointer-events-none" aria-hidden="true">
               <Hero c={c} />
             </div>
@@ -151,7 +151,7 @@ export function ContentEditor(p: Props) {
             <section className={box} aria-labelledby="c-faq">
               <h2 id="c-faq" className="text-[17px] font-extrabold">Түгээмэл асуулт</h2>
               {c.faq.map((q, i) => (
-                <div key={i} className="flex flex-col gap-2 rounded-xl border border-line bg-bg p-3">
+                <div key={i} className="flex flex-col gap-2 rounded-xl border border-line bg-sunken p-3">
                   {T({ label: `${i + 1}. Асуулт`, value: q.q, max: 200, onChange: (v) => set({ faq: c.faq.map((x, j) => (j === i ? { ...x, q: v } : x)) }) })}
                   {T({ label: "Хариулт", value: q.a, max: 1200, rows: 3, onChange: (v) => set({ faq: c.faq.map((x, j) => (j === i ? { ...x, a: v } : x)) }) })}
                   <span className="flex flex-wrap gap-2">

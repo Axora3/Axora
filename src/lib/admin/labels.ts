@@ -4,11 +4,11 @@ export const ORDER_STATUSES = ["new", "contacted", "in_progress", "completed", "
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
 export const ORDER_STATUS: Record<OrderStatus, { label: string; bg: string; fg: string; bar: string }> = {
-  new: { label: "Шинэ", bg: "#E3EDF5", fg: "#1A4F75", bar: "#1F5F8B" },
-  contacted: { label: "Холбогдсон", bg: "#F6F0DC", fg: "#6B4F0E", bar: "#C9A227" },
-  in_progress: { label: "Хийгдэж байгаа", bg: "#E4EFE6", fg: "#1E5039", bar: "#245C45" },
-  completed: { label: "Дууссан", bg: "#EEF6CF", fg: "#3D4A12", bar: "#9DBB2E" },
-  cancelled: { label: "Цуцлагдсан", bg: "#EEEEEC", fg: "#55585A", bar: "#A3A7A9" },
+  new: { label: "Шинэ", bg: "var(--ax-info-bg)", fg: "var(--ax-info)", bar: "var(--ax-info-bar)" },
+  contacted: { label: "Холбогдсон", bg: "var(--ax-warn-bg)", fg: "var(--ax-warn)", bar: "var(--ax-warn-bar)" },
+  in_progress: { label: "Хийгдэж байгаа", bg: "var(--ax-success-bg)", fg: "var(--ax-success)", bar: "var(--ax-success-bar)" },
+  completed: { label: "Дууссан", bg: "var(--ax-done-bg)", fg: "var(--ax-done)", bar: "var(--ax-done-bar)" },
+  cancelled: { label: "Цуцлагдсан", bg: "var(--ax-neutral-bg)", fg: "var(--ax-neutral)", bar: "var(--ax-neutral-bar)" },
 };
 
 /**
@@ -20,15 +20,36 @@ export const REQUEST_STATUSES = ["new", "contacted", "fulfilled", "cancelled"] a
 export type RequestStatus = (typeof REQUEST_STATUSES)[number];
 
 export const REQUEST_STATUS: Record<RequestStatus, { label: string; hint: string; bg: string; fg: string }> = {
-  new: { label: "Шинэ", hint: "Хүсэлт ирсэн, хараахан холбогдоогүй.", bg: "#E3EDF5", fg: "#1A4F75" },
-  contacted: { label: "Холбогдсон", hint: "Хэрэглэгчтэй холбогдож, нөхцөлөө тохирч байгаа.", bg: "#F6F0DC", fg: "#6B4F0E" },
-  fulfilled: { label: "Хүргэж дууссан", hint: "Та загварыг гараар хүргэсэн гэдгийг тэмдэглэнэ. Файл автоматаар илгээгддэггүй.", bg: "#EEF6CF", fg: "#3D4A12" },
-  cancelled: { label: "Цуцлагдсан", hint: "Хүсэлтийг цааш үргэлжлүүлэхгүй.", bg: "#EEEEEC", fg: "#55585A" },
+  new: { label: "Шинэ", hint: "Хүсэлт ирсэн, хараахан холбогдоогүй.", bg: "var(--ax-info-bg)", fg: "var(--ax-info)" },
+  contacted: { label: "Холбогдсон", hint: "Хэрэглэгчтэй холбогдож, нөхцөлөө тохирч байгаа.", bg: "var(--ax-warn-bg)", fg: "var(--ax-warn)" },
+  fulfilled: { label: "Хүргэж дууссан", hint: "Та загварыг гараар хүргэсэн гэдгийг тэмдэглэнэ. Файл автоматаар илгээгддэггүй.", bg: "var(--ax-done-bg)", fg: "var(--ax-done)" },
+  cancelled: { label: "Цуцлагдсан", hint: "Хүсэлтийг цааш үргэлжлүүлэхгүй.", bg: "var(--ax-neutral-bg)", fg: "var(--ax-neutral)" },
+};
+
+/**
+ * Payment is tracked apart from the request status. "confirmed_manual" only
+ * means an admin confirmed it by hand — no bank or gateway checked it.
+ */
+export const PAYMENT_STATUSES = ["not_required", "pending", "needs_review", "confirmed_manual"] as const;
+export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
+export const PAYMENT_STATUS: Record<PaymentStatus, { label: string; bg: string; fg: string; icon: string }> = {
+  not_required: { label: "Үнэгүй", bg: "var(--ax-neutral-bg)", fg: "var(--ax-neutral)", icon: "—" },
+  pending: { label: "Төлбөр хүлээгдэж байна", bg: "var(--ax-warn-bg)", fg: "var(--ax-warn)", icon: "…" },
+  needs_review: { label: "Баталгаажуулах шаардлагатай", bg: "var(--ax-danger-bg)", fg: "var(--ax-danger)", icon: "!" },
+  confirmed_manual: { label: "Төлбөр гараар баталгаажсан", bg: "var(--ax-success-bg)", fg: "var(--ax-success)", icon: "✓" },
+};
+
+/** Creating or copying a link is not sending it, and not a download. */
+export const DELIVERY_STATUS: Record<string, string> = {
+  not_sent: "Хүргэх холбоос үүсгээгүй",
+  link_created: "Холбоос үүсгэсэн (илгээсэн эсэх тодорхойгүй)",
+  delivered: "Хүргэсэн гэж тэмдэглэсэн",
 };
 
 export const CHANNEL_LABEL: Record<string, string> = { phone: "Утас", email: "Имэйл", messenger: "Messenger", instagram: "Instagram" };
 
 export const AUDIT_ACTION: Record<string, string> = {
+  payment_confirmed: "Төлбөр гараар баталгаажуулсан",
   status_changed: "Төлөв өөрчилсөн",
   dates_changed: "Огноо шинэчилсэн",
   note_added: "Тэмдэглэл нэмсэн",
@@ -64,4 +85,20 @@ export function fmtDate(iso: string | null | undefined): string {
 }
 export function shortId(id: string): string {
   return id.slice(0, 8).toUpperCase();
+}
+
+/** "3 цагийн өмнө" — coarse age of a timestamp, for list cards. */
+export function fmtAgo(iso: string, nowMs: number = Date.now()): string {
+  const min = Math.max(0, Math.floor((nowMs - Date.parse(iso)) / 60000));
+  if (min < 1) return "Дөнгөж сая";
+  if (min < 60) return `${min} минутын өмнө`;
+  const h = Math.floor(min / 60);
+  if (h < 24) return `${h} цагийн өмнө`;
+  const d = Math.floor(h / 24);
+  if (d < 30) return `${d} хоногийн өмнө`;
+  return fmtDate(iso);
+}
+
+export function hoursSince(iso: string, nowMs: number = Date.now()): number {
+  return (nowMs - Date.parse(iso)) / 3600000;
 }

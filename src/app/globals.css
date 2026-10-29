@@ -1,67 +1,228 @@
 @import "tailwindcss";
 
 /*
- * AXORA design tokens — taken from the approved design canvas.
- * The live-builder demo has its own, separately scoped tokens in
- * src/components/builder/demo.css so the two themes never mix.
+ * AXORA design tokens — light/dark values from the approved design canvas
+ * ("Цайвар" / "Бараан" pages).
+ *
+ * How theming works
+ *  - <html data-theme="light|dark"> is set before first paint by the inline
+ *    script in app/layout.tsx (components/theme/theme-script.ts). The stored
+ *    preference ("light" | "dark" | "system") lives in localStorage.
+ *  - Components use semantic tokens only (bg-surface, text-ink, bg-primary…),
+ *    never raw hex, so one component renders both themes.
+ *  - .ax-light is a theme boundary: it resets every token to its light value.
+ *    Product previews, mock-ups, builder demos and customers' palettes sit
+ *    inside it, so the AXORA dark mode never recolours them.
+ *  - The live-builder demo has its own, separately scoped tokens in
+ *    src/components/builder/demo.css (its "Dark" style is the demo's own state).
  */
-:root {
-  --ax-bg: #f7f8f2;
-  --ax-surface: #ffffff;
+:root,
+.ax-light {
+  color-scheme: light;
+  /* surfaces */
+  --ax-bg: #f7f8f2; /* page (public) */
+  --ax-bg-admin: #f3f5ee; /* page (admin) */
+  --ax-sunken: #f7f8f2; /* inputs, wells */
+  --ax-surface: #ffffff; /* cards */
+  --ax-elevated: #ffffff; /* sheets, dialogs, menus, selected segment */
+  /* text */
   --ax-ink: #17251e;
-  --ax-brand: #245c45;
-  --ax-brand-dark: #194632;
-  --ax-lime: #d9f279;
-  --ax-lime-hover: #cbe85f;
   --ax-muted: #56645b;
   --ax-faint: #8a968e;
+  /* borders */
   --ax-line: #dce3d9;
+  --ax-line-soft: #e3e8df;
   --ax-line-mid: #c5d0c0;
   --ax-line-strong: #c9d3c4;
+  --ax-line-dashed: #9aa89f;
+  /* tints */
   --ax-soft: #eef1e6;
   --ax-soft-2: #f1f3ec;
   --ax-soft-3: #e9ede3;
-  --ax-dark-muted: #b9c6bd;
-  --ax-dark-line: #34483c;
+  /* brand: text/links vs. filled buttons are separate tokens on purpose */
+  --ax-brand: #245c45;
+  --ax-brand-dark: #194632;
+  --ax-primary: #245c45;
+  --ax-primary-hover: #194632;
+  --ax-on-primary: #ffffff;
+  --ax-lime: #d9f279;
+  --ax-lime-hover: #cbe85f;
+  --ax-on-lime: #17251e;
+  --ax-mark: #d9f279;
+  --ax-focus: #245c45;
+  /* the dark green "band" (admin sidebar, bottom nav, promo panels) */
+  --ax-band: #17251e;
+  --ax-on-band: #f7f8f2;
+  --ax-band-muted: #b9c6bd;
+  --ax-band-faint: #9db0a3;
+  --ax-band-line: #34483c;
+  --ax-band-ring: #3c5446;
+  --ax-band-hover: #22352b;
+  --ax-band-chip: #2e4438;
+  --ax-dark-muted: var(--ax-band-muted);
+  --ax-dark-line: var(--ax-band-line);
   --ax-dark-line-2: #4a6052;
-  --ax-dark-ring: #3c5446;
+  --ax-dark-ring: var(--ax-band-ring);
+  /* status — always shown with text or an icon, never colour alone */
+  --ax-info-bg: #e3edf5;
+  --ax-info: #1a4f75;
+  --ax-info-bar: #1f5f8b;
   --ax-warn-bg: #f6f0dc;
   --ax-warn-line: #e9d9a6;
   --ax-warn: #7a5b12;
   --ax-warn-ink: #5e4510;
+  --ax-warn-bar: #c9a227;
+  --ax-success-bg: #e4efe6;
+  --ax-success: #1e5039;
+  --ax-success-bar: #245c45;
+  --ax-done-bg: #eef6cf;
+  --ax-done: #3d4a12;
+  --ax-done-bar: #9dbb2e;
+  --ax-neutral-bg: #eeeeec;
+  --ax-neutral: #55585a;
+  --ax-neutral-bar: #a3a7a9;
   --ax-danger: #a63a24;
   --ax-danger-bg: #fbeae5;
   --ax-danger-line: #e8b9ac;
   --ax-danger-ink: #7a2615;
+  /* chrome */
+  --ax-overlay: rgba(23, 37, 30, 0.5);
+  --ax-header: rgba(247, 248, 242, 0.92);
+  --ax-header-admin: rgba(243, 245, 238, 0.95);
+  --ax-tabbar: rgba(255, 255, 255, 0.96);
+  --ax-shadow: rgba(23, 37, 30, 0.38);
+  --ax-sk-a: #eceee6;
+  --ax-sk-b: #f6f8f1;
   --ax-header-h: 72px;
 }
 
+/* Dark: page #0F1512 · card #18211C · text #E9EEE7 · brand #9BD3AE. */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --ax-bg: #0f1512;
+  --ax-bg-admin: #0f1512;
+  --ax-sunken: #121915;
+  --ax-surface: #18211c;
+  --ax-elevated: #1f2a24;
+  --ax-ink: #e9eee7;
+  --ax-muted: #a7b4ab;
+  --ax-faint: #8d9b93;
+  --ax-line: #2c3a32;
+  --ax-line-soft: #232f29;
+  --ax-line-mid: #3b4b41;
+  --ax-line-strong: #4a5c51;
+  --ax-line-dashed: #56685c;
+  --ax-soft: #213029;
+  --ax-soft-2: #1c2722;
+  --ax-soft-3: #0c110e;
+  --ax-brand: #9bd3ae;
+  --ax-brand-dark: #b5e0c2;
+  /* the light brand green is never a button background under white text */
+  --ax-primary: #2e7556;
+  --ax-primary-hover: #286a4d;
+  --ax-on-primary: #ffffff;
+  --ax-mark: rgba(217, 242, 121, 0.38);
+  --ax-focus: #9bd3ae;
+  --ax-band: #1c2c24;
+  --ax-on-band: #f0f4ee;
+  --ax-band-hover: #26392f;
+  --ax-info-bg: #1c2d3a;
+  --ax-info: #a9cbe6;
+  --ax-info-bar: #5d9fd0;
+  --ax-warn-bg: #322e1b;
+  --ax-warn-line: #4a4128;
+  --ax-warn: #ead58c;
+  --ax-warn-ink: #ead58c;
+  --ax-warn-bar: #d7b33a;
+  --ax-success-bg: #1e3327;
+  --ax-success: #a8d9b6;
+  --ax-success-bar: #4fa678;
+  --ax-done-bg: #2c3419;
+  --ax-done: #d3e68c;
+  --ax-done-bar: #a9c94a;
+  --ax-neutral-bg: #2a2d2c;
+  --ax-neutral: #c3c6c4;
+  --ax-neutral-bar: #7c8280;
+  --ax-danger: #f29a85;
+  --ax-danger-bg: #3a2420;
+  --ax-danger-line: #5a3328;
+  --ax-danger-ink: #f6b3a3;
+  --ax-overlay: rgba(0, 0, 0, 0.62);
+  --ax-header: rgba(15, 21, 18, 0.9);
+  --ax-header-admin: rgba(15, 21, 18, 0.92);
+  --ax-tabbar: rgba(24, 33, 28, 0.94);
+  --ax-shadow: rgba(0, 0, 0, 0.75);
+  --ax-sk-a: #1b2520;
+  --ax-sk-b: #28342d;
+}
+
+/* The boundary also restores the inherited text colour. */
+.ax-light {
+  color: var(--ax-ink);
+}
+
 @theme inline {
+  /* semantic names (background, surface, elevated, text, muted, border,
+     primary, on-primary, accent, focus, success, warning, danger) */
   --color-bg: var(--ax-bg);
+  --color-bg-admin: var(--ax-bg-admin);
+  --color-sunken: var(--ax-sunken);
   --color-surface: var(--ax-surface);
+  --color-elevated: var(--ax-elevated);
   --color-ink: var(--ax-ink);
-  --color-brand: var(--ax-brand);
-  --color-brand-dark: var(--ax-brand-dark);
-  --color-lime: var(--ax-lime);
+  --color-text: var(--ax-ink);
   --color-muted: var(--ax-muted);
   --color-faint: var(--ax-faint);
   --color-line: var(--ax-line);
+  --color-border: var(--ax-line);
+  --color-line-soft: var(--ax-line-soft);
   --color-line-mid: var(--ax-line-mid);
   --color-line-strong: var(--ax-line-strong);
+  --color-line-dashed: var(--ax-line-dashed);
   --color-soft: var(--ax-soft);
   --color-soft-2: var(--ax-soft-2);
   --color-soft-3: var(--ax-soft-3);
-  --color-dark-muted: var(--ax-dark-muted);
-  --color-dark-line: var(--ax-dark-line);
+  --color-brand: var(--ax-brand);
+  --color-brand-dark: var(--ax-brand-dark);
+  --color-primary: var(--ax-primary);
+  --color-primary-hover: var(--ax-primary-hover);
+  --color-on-primary: var(--ax-on-primary);
+  --color-lime: var(--ax-lime);
+  --color-accent: var(--ax-lime);
+  --color-on-lime: var(--ax-on-lime);
+  --color-focus: var(--ax-focus);
+  --color-band: var(--ax-band);
+  --color-on-band: var(--ax-on-band);
+  --color-band-muted: var(--ax-band-muted);
+  --color-band-faint: var(--ax-band-faint);
+  --color-band-line: var(--ax-band-line);
+  --color-band-ring: var(--ax-band-ring);
+  --color-band-hover: var(--ax-band-hover);
+  --color-band-chip: var(--ax-band-chip);
+  --color-dark-muted: var(--ax-band-muted);
+  --color-dark-line: var(--ax-band-line);
   --color-dark-line-2: var(--ax-dark-line-2);
+  --color-info-bg: var(--ax-info-bg);
+  --color-info: var(--ax-info);
   --color-warn-bg: var(--ax-warn-bg);
   --color-warn-line: var(--ax-warn-line);
   --color-warn: var(--ax-warn);
+  --color-warning: var(--ax-warn);
   --color-warn-ink: var(--ax-warn-ink);
+  --color-success-bg: var(--ax-success-bg);
+  --color-success: var(--ax-success);
+  --color-done-bg: var(--ax-done-bg);
+  --color-done: var(--ax-done);
+  --color-neutral-bg: var(--ax-neutral-bg);
+  --color-neutral: var(--ax-neutral);
   --color-danger: var(--ax-danger);
   --color-danger-bg: var(--ax-danger-bg);
   --color-danger-line: var(--ax-danger-line);
   --color-danger-ink: var(--ax-danger-ink);
+  --color-overlay: var(--ax-overlay);
+  --color-header: var(--ax-header);
+  --color-header-admin: var(--ax-header-admin);
+  --color-tabbar: var(--ax-tabbar);
   --font-sans: var(--font-manrope), system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --font-serif: var(--font-lora), Georgia, "Times New Roman", serif;
   --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
@@ -109,14 +270,14 @@ a:not([class]) {
 }
 
 :focus-visible {
-  outline: 3px solid var(--ax-brand);
+  outline: 3px solid var(--ax-focus);
   outline-offset: 3px;
 }
 
 input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
-  outline: 3px solid var(--ax-brand);
+  outline: 3px solid var(--ax-focus);
   outline-offset: 1px;
 }
 
@@ -129,7 +290,41 @@ textarea {
 
 input[type="checkbox"],
 input[type="radio"] {
-  accent-color: var(--ax-brand);
+  accent-color: var(--ax-primary);
+}
+
+::placeholder {
+  color: var(--ax-faint);
+  opacity: 1;
+}
+
+:is(input, select, textarea):disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Native dropdown lists follow the theme too. */
+option {
+  background: var(--ax-elevated);
+  color: var(--ax-ink);
+}
+
+/* Lime is always paired with dark text, in both themes. */
+[class~="bg-lime"] {
+  color: var(--ax-on-lime);
+}
+
+/* Theme toggle: the icon follows <html data-theme> so SSR and hydration agree. */
+.ax-theme-moon,
+:root[data-theme="dark"] .ax-theme-sun {
+  display: inline-flex;
+}
+.ax-theme-sun,
+:root[data-theme="dark"] .ax-theme-moon {
+  display: none;
+}
+:root[data-theme="dark"] .ax-theme-sun {
+  color: var(--ax-lime);
 }
 
 }
@@ -174,12 +369,12 @@ input[type="radio"] {
     transform: translateY(-1px);
   }
   .ax-primary:hover:not(:disabled) {
-    background: var(--ax-brand-dark) !important;
-    color: #fff !important;
+    background: var(--ax-primary-hover) !important;
+    color: var(--ax-on-primary) !important;
   }
   .ax-lime:hover:not(:disabled) {
     background: var(--ax-lime-hover) !important;
-    color: var(--ax-ink) !important;
+    color: var(--ax-on-lime) !important;
   }
   .ax-ghost:hover:not(:disabled) {
     border-color: var(--ax-brand) !important;
@@ -193,7 +388,7 @@ input[type="radio"] {
   }
   .ax-card:hover {
     transform: translateY(-4px);
-    box-shadow: 0 22px 44px -26px rgba(23, 37, 30, 0.38);
+    box-shadow: 0 22px 44px -26px var(--ax-shadow);
     border-color: var(--ax-line-mid) !important;
   }
   .ax-card:hover .ax-arrow,
@@ -421,7 +616,7 @@ input[type="radio"] {
   animation: axGrow 1s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 .ax-mark {
-  background-image: linear-gradient(var(--ax-lime), var(--ax-lime));
+  background-image: linear-gradient(var(--ax-mark), var(--ax-mark));
   background-repeat: no-repeat;
   background-position: 0 86%;
   background-size: 100% 34%;
@@ -444,7 +639,7 @@ input[type="radio"] {
   animation: axDraw 0.7s 0.15s ease both;
 }
 .ax-sk {
-  background: linear-gradient(90deg, #eceee6 0%, #f6f8f1 40%, #eceee6 80%);
+  background: linear-gradient(90deg, var(--ax-sk-a) 0%, var(--ax-sk-b) 40%, var(--ax-sk-a) 80%);
   background-size: 800px 100%;
   animation: axShimmer 1.3s linear infinite;
 }
@@ -505,6 +700,36 @@ input[type="radio"] {
   }
   .ax-steps-line {
     display: none !important;
+  }
+}
+
+/* Theme icon: a short, quiet swap (disabled by reduced motion below). */
+@keyframes axThemeIn {
+  from {
+    opacity: 0;
+    transform: rotate(-60deg) scale(0.7);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+.ax-theme-ic {
+  animation: axThemeIn 0.3s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+}
+.ax-theme-btn {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease;
+}
+
+/* Bottom sheet: slides up on phones, centred dialog from 768px. */
+.ax-sheet-panel {
+  animation: axSheet 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+@media (min-width: 768px) {
+  .ax-sheet-panel {
+    animation: axPop 0.22s cubic-bezier(0.2, 0.7, 0.2, 1) both;
   }
 }
 

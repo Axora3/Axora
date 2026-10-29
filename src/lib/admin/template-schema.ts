@@ -41,7 +41,10 @@ export function validateTemplate(f: TemplateForm, mode: "draft" | "publish"): Fo
   else if (!SLUG_RE.test(f.slug)) e.slug = "Зөвхөн латин жижиг үсэг, тоо, зураас (-). Жишээ: kofe-shop-post";
   if (!f.isFree && f.price <= 0) e.price = "Төлбөртэй загварын үнэ 0-ээс их байна. Үнэгүй бол “Үнэгүй загвар”-ыг сонгоно уу.";
   if (f.file?.externalUrl && !/^https:\/\/\S+$/.test(f.file.externalUrl)) e.file = "Холбоос https:// -ээр эхэлнэ.";
+  if (f.isFree && f.price !== 0) e.price = "Үнэгүй загварын үнэ 0 байна.";
   if (mode === "publish") {
+    if (!f.isFree && !(f.file?.storagePath || f.file?.externalUrl))
+      e.file = "Төлбөртэй загварыг нийтлэхэд хамгаалагдсан файл эсвэл хүргэх холбоос шаардлагатай.";
     if (!f.shortDescription) e.shortDescription = "Нийтлэхэд товч тайлбар шаардлагатай.";
     if (!f.longDescription) e.longDescription = "Нийтлэхэд дэлгэрэнгүй тайлбар шаардлагатай.";
     if (!f.forWhom) e.forWhom = "Нийтлэхэд “Хэнд тохирох” шаардлагатай.";

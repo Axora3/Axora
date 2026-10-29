@@ -15,7 +15,7 @@ export function TemplatePreview({ category, s, size = "sm" }: { category: Templa
     const bar = lg ? "h-[7px]" : "h-1.5";
     return (
       <div
-        className={`flex w-full flex-col bg-white text-ink ${lg ? "max-w-[320px] gap-2.5 rounded-xl p-[18px]" : "max-w-[250px] gap-2 rounded-[10px] p-3.5"}`}
+        className={`ax-light flex w-full flex-col bg-white text-ink ${lg ? "max-w-[320px] gap-2.5 rounded-xl p-[18px]" : "max-w-[250px] gap-2 rounded-[10px] p-3.5"}`}
         style={{ boxShadow: shadow }}
       >
         <div className="flex items-center gap-2">
@@ -24,7 +24,7 @@ export function TemplatePreview({ category, s, size = "sm" }: { category: Templa
         </div>
         <div className={`grid grid-cols-3 ${lg ? "gap-2" : "gap-1.5"}`}>
           {[s.c1, s.c2, s.c3].map((c, i) => (
-            <span key={i} className={`border border-[#E3E8DF] bg-soft-2 font-bold text-muted ${cell}`}>
+            <span key={i} className={`border border-line-soft bg-soft-2 font-bold text-muted ${cell}`}>
               {c}
             </span>
           ))}
@@ -44,7 +44,7 @@ export function TemplatePreview({ category, s, size = "sm" }: { category: Templa
 
   if (category === "Canva") {
     return (
-      <div className={`grid w-full grid-cols-2 ${lg ? "max-w-[340px] gap-3.5" : "max-w-[260px] gap-2.5"}`}>
+      <div className={`ax-light grid w-full grid-cols-2 ${lg ? "max-w-[340px] gap-3.5" : "max-w-[260px] gap-2.5"}`}>
         <div
           className={`flex aspect-[4/5] flex-col justify-end text-white ${lg ? "rounded-xl p-4" : "rounded-[10px] p-3"}`}
           style={{ background: s.accent, boxShadow: shadow }}
@@ -70,7 +70,7 @@ export function TemplatePreview({ category, s, size = "sm" }: { category: Templa
   ];
   return (
     <div
-      className={`w-full overflow-hidden bg-white text-ink ${lg ? "max-w-[340px] rounded-[10px] text-[11px]" : "max-w-[270px] rounded-lg text-[9.5px]"}`}
+      className={`ax-light w-full overflow-hidden bg-white text-ink ${lg ? "max-w-[340px] rounded-[10px] text-[11px]" : "max-w-[270px] rounded-lg text-[9.5px]"}`}
       style={{ boxShadow: shadow }}
     >
       <div className={`font-extrabold text-white ${lg ? "px-3 py-2" : "px-[9px] py-1.5"}`} style={{ background: s.accent }}>
@@ -78,13 +78,13 @@ export function TemplatePreview({ category, s, size = "sm" }: { category: Templa
       </div>
       <div className="grid grid-cols-[1.2fr_1fr_1fr]">
         {[s.c1, s.c2, s.c3].map((c, i) => (
-          <span key={i} className={`bg-[#EEF3EC] font-extrabold ${pad}`}>
+          <span key={i} className={`bg-soft-2 font-extrabold ${pad}`}>
             {c}
           </span>
         ))}
         {lines.flatMap((row, r) =>
           row.map((w, i) => (
-            <span key={`${r}-${i}`} className={`border-t border-[#E3E8DF] ${pad}`}>
+            <span key={`${r}-${i}`} className={`border-t border-line-soft ${pad}`}>
               <span
                 className={`mt-[3px] block rounded-[3px] ${lg ? "h-1.5" : "h-[5px]"}`}
                 style={{ width: `${w}%`, background: i === 2 ? s.accent : "#D5DED1" }}

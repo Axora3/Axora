@@ -1,3 +1,5 @@
+import { Suspense } from "react";
+import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import { randomUUID } from "node:crypto";
 import { connection } from "next/server";
 import { TemplateEditor } from "@/components/admin/TemplateEditor";
@@ -6,7 +8,7 @@ import { requireAdminPage } from "@/lib/admin/auth";
 
 export const metadata = { title: "Шинэ загвар" };
 
-export default async function NewTemplate() {
+async function NewTemplateContent() {
   const c = await requireAdminPage();
   if (c.kind !== "ok") return null;
   await connection();
@@ -24,5 +26,13 @@ export default async function NewTemplate() {
         />
       </Body>
     </>
+  );
+}
+
+export default function NewTemplate() {
+  return (
+    <Suspense fallback={<AdminPageSkeleton />}>
+      <NewTemplateContent />
+    </Suspense>
   );
 }
