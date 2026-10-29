@@ -53,8 +53,8 @@ export function PaletteDemo() {
                 style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line)" }}
               >
                 <span className="flex shrink-0">
-                  <span className="h-[22px] w-[22px] rounded-full border-2 border-white shadow-[0_0_0_1px_#DCE3D9]" style={{ background: p.primary }} />
-                  <span className="-ml-2 h-[22px] w-[22px] rounded-full border-2 border-white shadow-[0_0_0_1px_#DCE3D9]" style={{ background: p.secondary }} />
+                  <span className="h-[22px] w-[22px] rounded-full border-2 border-surface shadow-[0_0_0_1px_var(--ax-line)]" style={{ background: p.primary }} />
+                  <span className="-ml-2 h-[22px] w-[22px] rounded-full border-2 border-surface shadow-[0_0_0_1px_var(--ax-line)]" style={{ background: p.secondary }} />
                 </span>
                 {p.label}
               </button>
@@ -63,7 +63,7 @@ export function PaletteDemo() {
         </div>
         <Link
           href="/builder"
-          className="ax-btn ax-primary inline-flex min-h-[52px] items-center gap-2.5 self-start rounded-xl bg-brand px-[22px] text-base font-bold text-white no-underline"
+          className="ax-btn ax-primary inline-flex min-h-[52px] items-center gap-2.5 self-start rounded-xl bg-primary px-[22px] text-base font-bold text-on-primary no-underline"
         >
           Бүрэн туршиж үзэх
           <span className="ax-arrow">
@@ -73,11 +73,11 @@ export function PaletteDemo() {
       </div>
 
       <div
-        className="ax-reveal ax-tr overflow-hidden rounded-3xl border border-line bg-surface shadow-[0_40px_80px_-50px_rgba(23,37,30,.45)]"
+        className="ax-reveal ax-tr ax-light overflow-hidden rounded-3xl border border-line bg-surface shadow-[0_40px_80px_-50px_rgba(23,37,30,.45)]"
         style={vars}
         aria-live="polite"
       >
-        <div className="flex h-10 items-center gap-2 border-b border-line bg-[#F2F4EC] px-4">
+        <div className="flex h-10 items-center gap-2 border-b border-line bg-soft-2 px-4">
           <span className="h-2.5 w-2.5 rounded-full bg-[#E1A28F]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#E8CF84]" />
           <span className="h-2.5 w-2.5 rounded-full bg-[#9CC59B]" />

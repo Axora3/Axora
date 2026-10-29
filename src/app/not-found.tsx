@@ -12,7 +12,7 @@ export default function NotFound() {
         </h1>
         <p className="text-[17px] leading-relaxed text-muted">Хаяг буруу эсвэл хуудас устсан байж болзошгүй.</p>
         <div className="flex flex-wrap gap-3">
-          <Link href="/" className="ax-btn ax-primary inline-flex min-h-12 items-center rounded-xl bg-brand px-5 font-bold text-white no-underline">
+          <Link href="/" className="ax-btn ax-primary inline-flex min-h-12 items-center rounded-xl bg-primary px-5 font-bold text-on-primary no-underline">
             Нүүр хуудас
           </Link>
           <Link href="/templates" className="ax-btn ax-ghost inline-flex min-h-12 items-center rounded-xl border border-line-strong bg-surface px-5 font-bold text-ink no-underline">

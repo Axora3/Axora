@@ -12,7 +12,7 @@ export function RetryButton({ label = "Дахин оролдох" }: { label?: s
       type="button"
       disabled={pending}
       onClick={() => start(() => router.refresh())}
-      className="ax-btn ax-primary inline-flex min-h-12 items-center gap-2 rounded-xl border-0 bg-brand px-5 text-[15px] font-bold text-white"
+      className="ax-btn ax-primary inline-flex min-h-12 items-center gap-2 rounded-xl border-0 bg-primary px-5 text-[15px] font-bold text-on-primary"
     >
       <Refresh size={16} />
       {pending ? "Ачаалж байна…" : label}

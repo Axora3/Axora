@@ -18,7 +18,7 @@ const TABS = [
  */
 export function MobileTabBar() {
   const pathname = usePathname();
-  const hidden = /^\/templates\/[^/]+/.test(pathname);
+  const hidden = /^\/templates\/[^/]+/.test(pathname) || pathname.startsWith("/admin") || pathname.startsWith("/dev");
 
   useEffect(() => {
     document.body.classList.toggle("has-tabbar", !hidden);
@@ -29,7 +29,7 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label="Доод цэс"
-      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-line bg-[rgba(255,255,255,0.96)] px-2 pt-1.5 pb-[calc(8px+env(safe-area-inset-bottom))] backdrop-blur-[12px] min-[900px]:hidden"
+      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-line bg-tabbar px-2 pt-1.5 pb-[calc(8px+env(safe-area-inset-bottom))] backdrop-blur-[12px] min-[900px]:hidden"
     >
       {TABS.map(({ href, label, Icon, match }) => {
         const on = match(pathname);

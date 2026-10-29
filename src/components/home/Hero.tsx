@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { ArrowRight, Check } from "@/components/icons";
+import type { SiteContent } from "@/lib/content/schema";
 
-export function Hero() {
+export function Hero({ c }: { c: SiteContent }) {
   return (
     <section
       aria-labelledby="hero-title"
@@ -9,32 +10,32 @@ export function Hero() {
     >
       <div className="flex flex-col gap-7">
         <div className="ax-in d1 inline-flex items-center gap-2.5 self-start rounded-full border border-line bg-surface py-2 pr-3.5 pl-2.5 text-sm font-bold text-brand">
-          <span className="ax-live h-2 w-2 rounded-full bg-brand" />
+          <span className="ax-live h-2 w-2 rounded-full bg-primary" />
           Бэлэн загвар • Захиалгат веб
         </div>
         <h1
           id="hero-title"
           className="ax-in d2 text-[clamp(42px,6.4vw,88px)] leading-[1.02] font-extrabold tracking-[-0.035em] [word-break:keep-all]"
         >
-          Санаагаа дараагийн <span className="serif ax-mark px-[0.06em]">түвшинд.</span>
+          {c.heroTitle}{c.heroAccent && <> <span className="serif ax-mark px-[0.06em]">{c.heroAccent}</span></>}
         </h1>
         <p className="ax-in d3 max-w-[30em] text-[clamp(17px,1.5vw,20px)] leading-relaxed text-muted">
-          Ажлыг хөнгөвчлөх бэлэн загварууд, бизнесийг тань илэрхийлэх веб сайт — нэг дор.
+          {c.heroLead}
         </p>
         <div className="ax-in d4 flex flex-wrap gap-3">
-          <Link href="/templates" className="ax-btn ax-primary inline-flex min-h-[54px] items-center gap-2.5 rounded-xl bg-brand px-6 text-base font-bold text-white no-underline max-[480px]:w-full max-[480px]:justify-center">
-            Загварууд үзэх
+          <Link href={c.heroPrimary.href} className="ax-btn ax-primary inline-flex min-h-[54px] items-center gap-2.5 rounded-xl bg-primary px-6 text-base font-bold text-on-primary no-underline max-[480px]:w-full max-[480px]:justify-center">
+            {c.heroPrimary.label}
             <span className="ax-arrow">
               <ArrowRight />
             </span>
           </Link>
-          <Link href="/builder" className="ax-btn ax-ghost inline-flex min-h-[54px] items-center gap-2.5 rounded-xl border border-line-strong bg-surface px-6 text-base font-bold text-ink no-underline max-[480px]:w-full max-[480px]:justify-center">
-            Вебээ загварчлах
+          <Link href={c.heroSecondary.href} className="ax-btn ax-ghost inline-flex min-h-[54px] items-center gap-2.5 rounded-xl border border-line-strong bg-surface px-6 text-base font-bold text-ink no-underline max-[480px]:w-full max-[480px]:justify-center">
+            {c.heroSecondary.label}
           </Link>
         </div>
         <div className="ax-in d5 flex flex-wrap gap-x-5 gap-y-2 pt-2 text-sm font-semibold text-muted">
           <span className="inline-flex items-center gap-2">
-            <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-[5px] bg-ink text-[11px] font-extrabold text-white">N</span>Notion
+            <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-[5px] bg-band text-[11px] font-extrabold text-white">N</span>Notion
           </span>
           <span className="inline-flex items-center gap-2">
             <span className="h-[18px] w-[18px] rounded-full bg-[#2B8C8C]" />Canva
@@ -48,10 +49,10 @@ export function Hero() {
         </div>
       </div>
 
-      <div className="ax-comp relative h-[580px]" role="img" aria-label="Бүтээгдэхүүний жишээ: кофе шопын веб, Notion самбар, Excel төсөв">
+      <div className="ax-comp ax-light relative h-[580px]" role="img" aria-label="Бүтээгдэхүүний жишээ: кофе шопын веб, Notion самбар, Excel төсөв">
         {/* Coffee-shop website mock */}
         <div className="ax-in d3 absolute top-14 left-[4%] w-[90%] overflow-hidden rounded-[22px] border border-line bg-surface shadow-[0_40px_80px_-48px_rgba(23,37,30,.45)]">
-          <div className="flex h-10 items-center gap-2 border-b border-line bg-[#F2F4EC] px-4">
+          <div className="flex h-10 items-center gap-2 border-b border-line bg-soft-2 px-4">
             <span className="h-2.5 w-2.5 rounded-full bg-[#E1A28F]" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#E8CF84]" />
             <span className="h-2.5 w-2.5 rounded-full bg-[#9CC59B]" />
@@ -104,9 +105,9 @@ export function Hero() {
               Сарын төсөв.xlsx
             </div>
             <div className="flex flex-col gap-2.5 px-3 pt-2.5 pb-3">
-              <div className="grid grid-cols-[1.1fr_1fr_1fr] overflow-hidden rounded-md border border-[#E3E8DF] text-[10.5px]">
+              <div className="grid grid-cols-[1.1fr_1fr_1fr] overflow-hidden rounded-md border border-line-soft text-[10.5px]">
                 {["Ангилал", "Төлөв.", "Бодит"].map((h) => (
-                  <span key={h} className="bg-[#EEF3EC] px-1.5 py-[5px] font-extrabold">
+                  <span key={h} className="bg-soft-2 px-1.5 py-[5px] font-extrabold">
                     {h}
                   </span>
                 ))}
@@ -116,9 +117,9 @@ export function Hero() {
                   ["Түрээс", "650,000", "650,000", false],
                 ].map(([a, b, c, g]) => (
                   <span key={String(a)} className="contents">
-                    <span className="border-t border-[#E3E8DF] px-1.5 py-[5px]">{a}</span>
-                    <span className="border-t border-[#E3E8DF] px-1.5 py-[5px] text-muted">{b}</span>
-                    <span className={`border-t border-[#E3E8DF] px-1.5 py-[5px] font-bold ${g ? "text-brand" : ""}`}>{c}</span>
+                    <span className="border-t border-line-soft px-1.5 py-[5px]">{a}</span>
+                    <span className="border-t border-line-soft px-1.5 py-[5px] text-muted">{b}</span>
+                    <span className={`border-t border-line-soft px-1.5 py-[5px] font-bold ${g ? "text-brand" : ""}`}>{c}</span>
                   </span>
                 ))}
               </div>
@@ -142,7 +143,7 @@ export function Hero() {
         <div className="ax-in d6 absolute bottom-1.5 -left-3.5 w-[262px]">
           <div className="ax-floatA flex flex-col gap-2.5 rounded-2xl border border-line bg-surface p-3.5 shadow-[0_26px_50px_-30px_rgba(23,37,30,.5)]">
             <div className="flex items-center gap-2">
-              <span className="inline-flex h-[22px] w-[22px] items-center justify-center rounded-md bg-ink text-xs font-extrabold text-white">N</span>
+              <span className="inline-flex h-[22px] w-[22px] items-center justify-center rounded-md bg-band text-xs font-extrabold text-white">N</span>
               <span className="text-[13px] font-extrabold">Хичээлийн төлөвлөгөө</span>
             </div>
             <div className="flex gap-1.5 text-[10.5px] font-bold">
@@ -152,28 +153,28 @@ export function Hero() {
             <div className="flex flex-col gap-[7px] text-xs">
               {["Математик — бие даалт 3", "Англи хэл — эссе"].map((t) => (
                 <div key={t} className="flex items-center gap-2">
-                  <span className="inline-flex h-[15px] w-[15px] items-center justify-center rounded bg-brand text-white">
+                  <span className="inline-flex h-[15px] w-[15px] items-center justify-center rounded bg-primary text-on-primary">
                     <Check size={11} strokeWidth={3.2} />
                   </span>
                   <span className="text-muted line-through">{t}</span>
                 </div>
               ))}
               <div className="flex items-center gap-2">
-                <span className="h-[15px] w-[15px] rounded border-[1.5px] border-[#9AA89F]" />
+                <span className="h-[15px] w-[15px] rounded border-[1.5px] border-line-dashed" />
                 <span className="font-semibold">Програмчлал — лаб 5</span>
               </div>
             </div>
             <div className="h-1.5 overflow-hidden rounded-md bg-soft">
-              <div className="ax-fill h-full w-[67%] rounded-md bg-brand" />
+              <div className="ax-fill h-full w-[67%] rounded-md bg-primary" />
             </div>
           </div>
         </div>
 
-        <div className="ax-in d7 absolute right-[22px] bottom-[54px] flex items-center gap-2.5 self-start rounded-xl bg-ink px-3.5 py-2.5 text-xs font-bold text-white shadow-[0_18px_36px_-20px_rgba(23,37,30,.6)] max-[900px]:w-max">
+        <div className="ax-in d7 absolute right-[22px] bottom-[54px] flex items-center gap-2.5 self-start rounded-xl bg-band px-3.5 py-2.5 text-xs font-bold text-white shadow-[0_18px_36px_-20px_rgba(23,37,30,.6)] max-[900px]:w-max">
           <span className="flex">
-            <span className="h-4 w-4 rounded-full border-2 border-ink bg-lime" />
-            <span className="-ml-[5px] h-4 w-4 rounded-full border-2 border-ink bg-[#8A4B2E]" />
-            <span className="-ml-[5px] h-4 w-4 rounded-full border-2 border-ink bg-[#1F5F8B]" />
+            <span className="h-4 w-4 rounded-full border-2 border-band bg-lime" />
+            <span className="-ml-[5px] h-4 w-4 rounded-full border-2 border-band bg-[#8A4B2E]" />
+            <span className="-ml-[5px] h-4 w-4 rounded-full border-2 border-band bg-[#1F5F8B]" />
           </span>
           Өнгөө өөрөө сонго
         </div>

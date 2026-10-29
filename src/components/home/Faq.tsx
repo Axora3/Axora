@@ -2,13 +2,12 @@
 
 import { useState } from "react";
 import { Plus } from "@/components/icons";
-import { FAQ } from "@/lib/site";
 
-export function Faq() {
+export function Faq({ items }: { items: { q: string; a: string }[] }) {
   const [open, setOpen] = useState(0);
   return (
     <div className="ax-reveal flex flex-col border-t border-line">
-      {FAQ.map((f, i) => {
+      {items.map((f, i) => {
         const on = open === i;
         return (
           <div key={f.q} className="border-b border-line">
@@ -24,7 +23,7 @@ export function Faq() {
                 {f.q}
                 <span
                   className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[10px] border border-line transition-transform duration-[250ms]"
-                  style={{ background: on ? "var(--ax-lime)" : "#fff", transform: on ? "rotate(45deg)" : "none" }}
+                  style={{ background: on ? "var(--ax-lime)" : "var(--ax-surface)", transform: on ? "rotate(45deg)" : "none" }}
                 >
                   <Plus size={16} strokeWidth={2.2} />
                 </span>

@@ -1,0 +1,15 @@
+"use client";
+
+import { publicSupabaseKey } from "@/lib/supabase/config";
+import { createBrowserClient } from "@supabase/ssr";
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+/** Cookie-based browser auth client (publishable key only) for sign-in, sign-out and admin uploads. */
+let client: SupabaseClient | null = null;
+export function browserAuthClient(): SupabaseClient | null {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const key = publicSupabaseKey();
+  if (!url || !key) return null;
+  client ??= createBrowserClient(url, key);
+  return client;
+}

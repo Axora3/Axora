@@ -1,3 +1,4 @@
+import { publicSupabaseKey } from "@/lib/supabase/config";
 import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
@@ -26,7 +27,7 @@ export function supabaseUrl(): string | undefined {
 
 /** Catalogue reads only need the URL + anon key. */
 export function isCatalogConfigured(): boolean {
-  return !!(supabaseUrl() && env("NEXT_PUBLIC_SUPABASE_ANON_KEY"));
+  return !!(supabaseUrl() && publicSupabaseKey());
 }
 
 /** Submissions also need the server key. Without it the site runs in test mode. */
@@ -41,7 +42,7 @@ let admin: SupabaseClient | null = null;
 
 export function publicReadClient(): SupabaseClient {
   if (!isCatalogConfigured()) throw new Error("Supabase is not configured");
-  publicClient ??= createClient(supabaseUrl()!, env("NEXT_PUBLIC_SUPABASE_ANON_KEY")!, opts);
+  publicClient ??= createClient(supabaseUrl()!, publicSupabaseKey()!, opts);
   return publicClient;
 }
 

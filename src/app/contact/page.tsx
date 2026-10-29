@@ -4,22 +4,25 @@ import { ContactForm } from "@/components/contact/ContactForm";
 import { ArrowRight, Chat, Clock, Mail, PhoneCall } from "@/components/icons";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
-import { CONTACT } from "@/lib/site";
+import { getSiteContent } from "@/lib/content/service";
 import { isBackendConfigured } from "@/lib/supabase/server";
+import { emailHref, httpsHref, phoneHref } from "@/lib/contact-links";
 
 export const metadata: Metadata = {
   title: "Холбоо барих",
   description: "AXORA-тай утас, имэйл, Messenger-ээр холбогдох эсвэл богино зурвас үлдээх.",
 };
 
-const CHANNELS = [
-  { Icon: PhoneCall, label: "Утас", value: CONTACT.phone },
-  { Icon: Mail, label: "Имэйл", value: CONTACT.email },
-  { Icon: Chat, label: "Messenger", value: CONTACT.messenger },
-  { Icon: Clock, label: "Ажиллах цаг", value: CONTACT.hours },
-];
 
-export default function ContactPage() {
+
+export default async function ContactPage() {
+  const { contact } = await getSiteContent();
+  const CHANNELS = [
+    { Icon: PhoneCall, label: "Утас", value: contact.phone, href: phoneHref(contact.phone) },
+    { Icon: Mail, label: "Имэйл", value: contact.email, href: emailHref(contact.email) },
+    { Icon: Chat, label: "Messenger", value: contact.messenger, href: httpsHref(contact.messenger) },
+    { Icon: Clock, label: "Ажиллах цаг", value: contact.hours, href: null },
+  ];
   return (
     <>
       <SiteHeader mobileBack={{ href: "/", label: "Нүүр рүү буцах", title: "Холбоо барих" }} />
@@ -33,23 +36,23 @@ export default function ContactPage() {
           </div>
 
           <ul aria-label="Холбоо барих сувгууд" className="ax-in d2 m-0 list-none rounded-[20px] border border-line bg-surface px-4 py-1">
-            {CHANNELS.map(({ Icon, label, value }, i) => (
+            {CHANNELS.map(({ Icon, label, value, href }, i) => (
               <li key={label} className={`flex min-h-16 items-center gap-3.5 ${i < CHANNELS.length - 1 ? "border-b border-soft" : ""}`}>
                 <span className="inline-flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl bg-soft text-brand">
                   <Icon size={20} />
                 </span>
                 <span className="flex flex-col gap-0.5">
                   <span className="text-[13px] font-bold text-muted">{label}</span>
-                  <span className="text-base font-extrabold">{value}</span>
+                  {href ? <a href={href} className="ax-link text-base font-extrabold text-ink no-underline">{value}</a> : <span className="text-base font-extrabold">{value}</span>}
                 </span>
               </li>
             ))}
           </ul>
 
           <div className="ax-in d3 grid grid-cols-2 gap-2.5">
-            <Link href="/order" className="ax-btn flex min-h-[104px] flex-col justify-between rounded-[18px] bg-ink p-3.5 text-bg no-underline">
+            <Link href="/order" className="ax-btn flex min-h-[104px] flex-col justify-between rounded-[18px] bg-band p-3.5 text-on-band no-underline">
               <span className="text-[15px] leading-[1.3] font-extrabold">Үнийн санал авах</span>
-              <span className="inline-flex h-[34px] w-[34px] items-center justify-center self-end rounded-[10px] bg-lime text-ink">
+              <span className="inline-flex h-[34px] w-[34px] items-center justify-center self-end rounded-[10px] bg-lime text-on-lime">
                 <ArrowRight size={16} strokeWidth={2.2} />
               </span>
             </Link>

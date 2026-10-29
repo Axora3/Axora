@@ -69,7 +69,7 @@ export function SiteTypes() {
                 }
               }}
               className="ax-btn min-h-11 shrink-0 rounded-xl px-4 text-sm font-bold"
-              style={{ background: on ? "var(--ax-ink)" : "#fff", color: on ? "var(--ax-bg)" : "var(--ax-ink)", border: on ? "1px solid var(--ax-ink)" : "1px solid var(--ax-line)" }}
+              style={{ background: on ? "var(--ax-band)" : "var(--ax-surface)", color: on ? "var(--ax-on-band)" : "var(--ax-ink)", border: on ? "1px solid var(--ax-band)" : "1px solid var(--ax-line)" }}
             >
               {t.label}
             </button>
@@ -81,7 +81,7 @@ export function SiteTypes() {
         <div key={anim} className="ax-slide flex items-start gap-3.5 min-[900px]:gap-10">
           <div
             aria-hidden="true"
-            className="flex h-[236px] w-[132px] shrink-0 flex-col gap-[7px] overflow-hidden rounded-[22px] border-[5px] border-ink px-[9px] py-3 min-[900px]:h-[360px] min-[900px]:w-[200px] min-[900px]:gap-2.5 min-[900px]:rounded-[30px] min-[900px]:border-[7px] min-[900px]:px-3.5 min-[900px]:py-4"
+            className="ax-light flex h-[236px] w-[132px] shrink-0 flex-col gap-[7px] overflow-hidden rounded-[22px] border-[5px] border-band px-[9px] py-3 min-[900px]:h-[360px] min-[900px]:w-[200px] min-[900px]:gap-2.5 min-[900px]:rounded-[30px] min-[900px]:border-[7px] min-[900px]:px-3.5 min-[900px]:py-4"
             style={{ background: cur.bg, color: cur.text }}
           >
             <span className="flex items-center gap-[5px] text-[8.5px] font-extrabold min-[900px]:text-xs">

@@ -12,7 +12,7 @@ import { SUCCESS_TEXT } from "@/lib/site";
 type Props = { slug: string; title: string; category: string; priceLabel: string; tint: string; isDemo: boolean; backendEnabled: boolean };
 type Phase = "closed" | "form" | "done";
 
-const input = "min-h-[50px] w-full rounded-xl px-3.5 text-base text-ink bg-bg";
+const input = "min-h-[50px] w-full rounded-xl px-3.5 text-base text-ink bg-sunken";
 
 /**
  * “Авах хүсэлт гаргах”. Desktop: inline under the product info.
@@ -131,7 +131,7 @@ export function TemplateRequest(p: Props) {
               <label
                 key={k}
                 className="flex min-h-12 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-2 text-center text-sm font-bold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-brand"
-                style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line-strong)", background: on ? "var(--ax-soft)" : "#fff" }}
+                style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line-strong)", background: on ? "var(--ax-soft)" : "var(--ax-surface)" }}
               >
                 <input type="radio" name="rq-ch" checked={on} onChange={() => setChannel(k)} className="sr-only" />
                 {CHANNELS[k].label}
@@ -170,7 +170,7 @@ export function TemplateRequest(p: Props) {
           maxLength={2000}
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className="w-full resize-y rounded-xl border border-line-strong bg-bg px-3.5 py-3 text-base text-ink"
+          className="w-full resize-y rounded-xl border border-line-strong bg-sunken px-3.5 py-3 text-base text-ink"
         />
       </div>
       {serverErr && (
@@ -187,7 +187,7 @@ export function TemplateRequest(p: Props) {
         <button
           type="submit"
           disabled={busy}
-          className="ax-btn ax-primary min-h-[52px] flex-1 rounded-[13px] border-0 bg-brand px-[22px] text-base font-bold text-white"
+          className="ax-btn ax-primary min-h-[52px] flex-1 rounded-[13px] border-0 bg-primary px-[22px] text-base font-bold text-on-primary"
         >
           {busy ? "Илгээж байна…" : p.backendEnabled ? (serverErr ? "Дахин илгээх" : "Хүсэлт илгээх") : "Хүсэлт шалгах"}
         </button>
@@ -222,7 +222,7 @@ export function TemplateRequest(p: Props) {
           </button>
         )}
         {!desktop && (
-          <button type="button" onClick={closeSheet} className="ax-btn ax-primary min-h-[50px] flex-1 rounded-[13px] border-0 bg-brand text-[15px] font-bold text-white">
+          <button type="button" onClick={closeSheet} className="ax-btn ax-primary min-h-[50px] flex-1 rounded-[13px] border-0 bg-primary text-[15px] font-bold text-on-primary">
             Хаах
           </button>
         )}
@@ -236,29 +236,29 @@ export function TemplateRequest(p: Props) {
       {desktop && (
         <div>
           {phase === "closed" && (
-            <button type="button" onClick={open} className="ax-btn ax-primary min-h-[54px] w-full rounded-xl border-0 bg-brand text-base font-bold text-white">
+            <button type="button" onClick={open} className="ax-btn ax-primary min-h-[54px] w-full rounded-xl border-0 bg-primary text-base font-bold text-on-primary">
               Авах хүсэлт гаргах
             </button>
           )}
-          {phase !== "closed" && <div className="ax-in-sm rounded-2xl border border-line bg-bg p-[18px]">{phase === "form" ? form : done}</div>}
+          {phase !== "closed" && <div className="ax-in-sm rounded-2xl border border-line bg-sunken p-[18px]">{phase === "form" ? form : done}</div>}
         </div>
       )}
 
       {/* Mobile sticky bar + sheet */}
       {!desktop && (
         <>
-          <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3.5 border-t border-line bg-[rgba(255,255,255,0.97)] px-5 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] backdrop-blur-[12px]">
+          <div className="fixed inset-x-0 bottom-0 z-40 flex items-center gap-3.5 border-t border-line bg-tabbar px-5 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] backdrop-blur-[12px]">
             <div className="flex flex-col">
               <span className="text-xs font-bold text-muted">{p.isDemo ? "Жишээ үнэ" : "Үнэ"}</span>
               <span className="text-[19px] font-extrabold">{p.priceLabel}</span>
             </div>
-            <button type="button" onClick={open} className="ax-btn ax-primary min-h-[54px] flex-1 rounded-[14px] border-0 bg-brand text-base font-bold text-white">
+            <button type="button" onClick={open} className="ax-btn ax-primary min-h-[54px] flex-1 rounded-[14px] border-0 bg-primary text-base font-bold text-on-primary">
               Авах хүсэлт гаргах
             </button>
           </div>
           {sheet && (
             <div className="fixed inset-0 z-[60] flex flex-col justify-end">
-              <div onClick={closeSheet} aria-hidden="true" className="absolute inset-0 bg-[rgba(23,37,30,0.5)] [animation:axFade_.2s_ease_both]" />
+              <div onClick={closeSheet} aria-hidden="true" className="absolute inset-0 bg-overlay [animation:axFade_.2s_ease_both]" />
               <div
                 ref={sheetRef}
                 role="dialog"
@@ -280,7 +280,7 @@ export function TemplateRequest(p: Props) {
                     <Close size={18} />
                   </button>
                 </div>
-                <div className="flex items-center gap-3 rounded-[14px] bg-bg p-2.5">
+                <div className="flex items-center gap-3 rounded-[14px] bg-sunken p-2.5">
                   <span className="h-11 w-11 shrink-0 rounded-[10px] border border-line" style={{ background: p.tint }} />
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <strong className="truncate text-sm">{p.title}</strong>

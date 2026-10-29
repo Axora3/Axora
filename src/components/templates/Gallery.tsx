@@ -49,7 +49,7 @@ export function Gallery({ category, style, images, title }: { category: Template
             <TemplatePreview category={category} s={style} size="lg" />
           </div>
         )}
-        <span aria-live="polite" className="absolute bottom-3 left-3 rounded-[7px] bg-[rgba(255,255,255,0.92)] px-[9px] py-[5px] text-xs font-bold text-ink max-[899px]:top-3 max-[899px]:bottom-auto">
+        <span aria-live="polite" className="absolute bottom-3 left-3 rounded-[7px] bg-tabbar px-[9px] py-[5px] text-xs font-bold text-ink max-[899px]:top-3 max-[899px]:bottom-auto">
           <span className="min-[900px]:hidden">
             {i + 1} / {count} ·{" "}
           </span>

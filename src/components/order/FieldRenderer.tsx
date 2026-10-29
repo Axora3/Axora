@@ -53,7 +53,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
           type="button"
           onClick={() => onToggle(f.id)}
           aria-expanded={open}
-          className="ax-btn ax-ghost inline-flex min-h-[46px] items-center gap-2.5 self-start rounded-[11px] border border-dashed border-[#9AA89F] bg-surface px-4 text-left text-sm font-bold text-ink"
+          className="ax-btn ax-ghost inline-flex min-h-[46px] items-center gap-2.5 self-start rounded-[11px] border border-dashed border-line-dashed bg-surface px-4 text-left text-sm font-bold text-ink"
         >
           <span className="inline-flex transition-transform duration-200" style={{ transform: open ? "rotate(45deg)" : "none" }}>
             <Plus size={16} strokeWidth={2.4} />
@@ -77,7 +77,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
     case "builder": {
       if (!builder) {
         return (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[14px] border border-dashed border-[#9AA89F] px-4 py-3.5 text-sm leading-normal text-muted">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[14px] border border-dashed border-line-dashed px-4 py-3.5 text-sm leading-normal text-muted">
             <span>Live demo дээр өнгө, хэв маягаа туршвал энд автоматаар бөглөгдөнө.</span>
             <Link href="/builder" className="inline-flex min-h-11 items-center font-bold">
               Вебээ загварчлах
@@ -88,7 +88,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
       const { bg, primary, secondary } = builder.colors;
       return (
         <div className="ax-in-sm grid gap-4 rounded-2xl border border-line-mid bg-soft p-4 [grid-template-columns:repeat(auto-fit,minmax(min(240px,100%),1fr))]">
-          <div className="flex flex-col gap-2 overflow-hidden rounded-xl border border-line p-3.5" style={{ background: bg, color: luminance(bg) < 0.2 ? "#EEF0EC" : "#17251E" }}>
+          <div className="ax-light flex flex-col gap-2 overflow-hidden rounded-xl border border-line p-3.5" style={{ background: bg, color: luminance(bg) < 0.2 ? "#EEF0EC" : "#17251E" }}>
             <span className="text-xs font-extrabold">{builder.name}</span>
             <span className="text-lg leading-tight font-extrabold">{builder.headline}</span>
             <span className="self-start rounded-lg px-3 py-2 text-xs font-bold" style={{ background: primary, color: readableOn(primary) }}>
@@ -138,9 +138,9 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
           </label>
           {hintEl}
           {f.kind === "input" ? (
-            <input {...common} type={f.type ?? "text"} autoComplete={f.auto ?? "off"} inputMode={f.mode} className="min-h-[50px] w-full rounded-[11px] bg-bg px-3.5 text-base text-ink" />
+            <input {...common} type={f.type ?? "text"} autoComplete={f.auto ?? "off"} inputMode={f.mode} className="min-h-[50px] w-full rounded-[11px] bg-sunken px-3.5 text-base text-ink" />
           ) : (
-            <textarea {...common} rows={3} className="w-full resize-y rounded-[11px] bg-bg px-3.5 py-3 text-base leading-normal text-ink" />
+            <textarea {...common} rows={3} className="w-full resize-y rounded-[11px] bg-sunken px-3.5 py-3 text-base leading-normal text-ink" />
           )}
           {errEl}
         </div>
@@ -181,7 +181,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
                     key={lab}
                     htmlFor={`${fid}-${j}`}
                     className="ax-opt flex min-h-[50px] cursor-pointer items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-[15px] leading-snug font-semibold transition-colors"
-                    style={{ border: on ? "2px solid var(--ax-brand)" : error && !otherErr ? "1px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)", background: on ? "var(--ax-soft)" : "#fff" }}
+                    style={{ border: on ? "2px solid var(--ax-brand)" : error && !otherErr ? "1px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)", background: on ? "var(--ax-soft)" : "var(--ax-surface)" }}
                   >
                     <input
                       id={`${fid}-${j}`}
@@ -211,7 +211,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
                 onChange={(e) => set(f.id + "o", e.target.value)}
                 aria-invalid={otherErr}
                 aria-describedby={otherErr ? errId : undefined}
-                className="min-h-12 rounded-[11px] bg-bg px-3.5 text-base text-ink"
+                className="min-h-12 rounded-[11px] bg-sunken px-3.5 text-base text-ink"
                 style={borderFor(otherErr)}
               />
             </div>
@@ -251,7 +251,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
               onChange={(e) => set(f.id, e.target.value)}
               aria-invalid={!!error}
               aria-describedby={describedBy}
-              className="min-h-[50px] w-40 rounded-[11px] bg-bg px-3.5 font-mono text-base text-ink uppercase disabled:opacity-50"
+              className="min-h-[50px] w-40 rounded-[11px] bg-sunken px-3.5 font-mono text-base text-ink uppercase disabled:opacity-50"
               style={borderFor(!!error)}
             />
             {f.unknown && (
@@ -269,7 +269,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
     case "consent":
       return (
         <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-2.5 rounded-[14px] bg-bg p-4" style={{ border: error ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line)" }}>
+          <div className="flex flex-col gap-2.5 rounded-[14px] bg-sunken p-4" style={{ border: error ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line)" }}>
             <label htmlFor={fid} className="flex cursor-pointer items-start gap-3 text-[15px] leading-normal font-bold">
               <input
                 id={fid}
