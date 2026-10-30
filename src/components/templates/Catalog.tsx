@@ -1,9 +1,11 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Close, Search, SearchEmpty } from "@/components/icons";
-import { TEMPLATE_CATEGORIES, type Template } from "@/lib/templates/types";
+import { formatPrice, TEMPLATE_CATEGORIES, type Template } from "@/lib/templates/types";
+import { useTemplateCollections } from "@/lib/templates/use-template-collections";
 import { TemplateCard } from "./TemplateCard";
 
 type Cat = "all" | (typeof TEMPLATE_CATEGORIES)[number];
@@ -30,6 +32,8 @@ export function Catalog({ templates }: { templates: Template[] }) {
   const pathname = usePathname();
   const sp = useSearchParams();
   const [q, setQ] = useState(sp.get("q") ?? "");
+  const [savedOnly, setSavedOnly] = useState(false);
+  const { favorites, comparison, toggleFavorite, toggleComparison, clearComparison } = useTemplateCollections();
   const cat = pick<Cat>(sp.get("cat"), ["all", ...TEMPLATE_CATEGORIES], "all");
   const price = pick<Price>(sp.get("price"), ["all", "free", "paid"], "all");
   const sort = pick<Sort>(sp.get("sort"), ["rec", "asc", "desc"], "rec");
@@ -60,18 +64,27 @@ export function Catalog({ templates }: { templates: Template[] }) {
       if (price === "free" && !t.isFree) return false;
       if (price === "paid" && t.isFree) return false;
       if (needle && !`${t.title} ${t.shortDescription} ${t.longDescription} ${t.category}`.toLowerCase().includes(needle)) return false;
+      if (savedOnly && !favorites.includes(t.id)) return false;
       return true;
     });
     if (sort === "asc") list = [...list].sort((a, b) => a.price - b.price);
     if (sort === "desc") list = [...list].sort((a, b) => b.price - a.price);
     return list;
-  }, [templates, q, cat, price, sort]);
+  }, [templates, q, cat, price, sort, savedOnly, favorites]);
 
-  const hasFilters = !!q.trim() || cat !== "all" || price !== "all" || sort !== "rec";
+  const hasFilters = !!q.trim() || cat !== "all" || price !== "all" || sort !== "rec" || savedOnly;
   const clearAll = () => {
     setQ("");
+    setSavedOnly(false);
     router.replace(pathname, { scroll: false });
   };
+
+  const comparisonRows: { label: string; value: (template: Template) => React.ReactNode }[] = [
+    { label: "Загвар", value: (template) => <Link className="font-bold text-brand underline-offset-4 hover:underline" href={`/templates/${template.slug}`}>{template.title}</Link> },
+    { label: "Төрөл", value: (template) => template.category },
+    { label: "Үнэ", value: (template) => formatPrice(template) },
+    { label: "Формат", value: (template) => template.format || "Тодорхойгүй" },
+  ];
 
   return (
     <>
@@ -142,6 +155,14 @@ export function Catalog({ templates }: { templates: Template[] }) {
               );
             })}
           </div>
+          <button
+            type="button"
+            aria-pressed={savedOnly}
+            onClick={() => setSavedOnly((value) => !value)}
+            className="ax-btn min-h-11 rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink"
+          >
+            Хадгалсан ({favorites.length})
+          </button>
         </div>
       </div>
 
@@ -164,7 +185,17 @@ export function Catalog({ templates }: { templates: Template[] }) {
       {items.length > 0 ? (
         <div className="mt-5 grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))]">
           {items.map((t, i) => (
-            <TemplateCard key={t.id} t={t} className="ax-in-sm" style={{ animationDelay: `${Math.min(i, 8) * 0.05}s` }} />
+            <TemplateCard
+              key={t.id}
+              t={t}
+              favorite={favorites.includes(t.id)}
+              comparing={comparison.includes(t.id)}
+              comparisonFull={comparison.length >= 3}
+              onFavorite={() => toggleFavorite(t.id)}
+              onCompare={() => toggleComparison(t.id)}
+              className="ax-in-sm"
+              style={{ animationDelay: `${Math.min(i, 8) * 0.05}s` }}
+            />
           ))}
         </div>
       ) : (
@@ -172,14 +203,49 @@ export function Catalog({ templates }: { templates: Template[] }) {
           <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-brand">
             <SearchEmpty size={24} />
           </span>
-          <h2 className="text-[22px] font-extrabold">Тохирох загвар олдсонгүй</h2>
-          <p className="max-w-[26em] text-base leading-relaxed text-muted">Өөр түлхүүр үгээр хайх эсвэл шүүлтүүрээ цэвэрлээд дахин үзээрэй.</p>
+          <h2 className="text-[22px] font-extrabold">{savedOnly && favorites.length === 0 ? "Хадгалсан загвар алга" : "Тохирох загвар олдсонгүй"}</h2>
+          <p className="max-w-[26em] text-base leading-relaxed text-muted">{savedOnly && favorites.length === 0 ? "Таалагдсан загвараа зүрхэн товчоор хадгалж, эндээс дахин үзээрэй." : "Өөр түлхүүр үгээр хайх эсвэл шүүлтүүрээ цэвэрлээд дахин үзээрэй."}</p>
           {hasFilters && (
             <button type="button" onClick={clearAll} className="ax-btn ax-primary min-h-12 rounded-xl border-0 bg-primary px-5 text-[15px] font-bold text-on-primary">
               Шүүлтүүр цэвэрлэх
             </button>
           )}
         </div>
+      )}
+
+      {comparison.length > 0 && (
+        <section aria-labelledby="template-comparison-title" className="mt-8 overflow-hidden rounded-[18px] border border-line bg-surface">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-4 sm:px-5">
+            <div>
+              <h2 id="template-comparison-title" className="text-lg font-extrabold">Загваруудыг харьцуулах</h2>
+              <p className="mt-1 text-sm text-muted">Харьцуулахад {comparison.length}/3 загвар сонгосон.</p>
+            </div>
+            <button type="button" onClick={clearComparison} className="ax-btn min-h-11 rounded-[10px] px-3 text-sm font-bold text-brand">Цэвэрлэх</button>
+          </div>
+          <div className="ax-scroll overflow-x-auto">
+            <table className="w-full min-w-[520px] border-collapse text-left text-sm">
+              <tbody>
+                {comparisonRows.map(({ label, value }) => (
+                  <tr key={label} className="border-b border-line last:border-0">
+                    <th scope="row" className="w-28 px-4 py-3 font-bold text-muted sm:px-5">{label}</th>
+                    {comparison.map((id) => {
+                      const t = templates.find((item) => item.id === id);
+                      return <td key={id} className="min-w-36 px-4 py-3 text-ink sm:px-5">{t ? value(t) : "—"}</td>;
+                    })}
+                  </tr>
+                ))}
+                <tr>
+                  <th scope="row" className="px-4 py-3 font-bold text-muted sm:px-5">Сонголт</th>
+                  {comparison.map((id) => {
+                    const t = templates.find((item) => item.id === id);
+                    return <td key={id} className="px-4 py-2 sm:px-5"><button type="button" onClick={() => toggleComparison(id)} className="ax-btn min-h-11 text-sm font-bold text-brand">{t ? `${t.title} — хасах` : "Хасах"}</button></td>;
+                  })}
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {comparison.length === 3 && <p className="px-5 pb-4 text-xs text-muted">Дээд тал нь 3 загварыг зэрэг харьцуулна.</p>}
+        </section>
       )}
     </>
   );

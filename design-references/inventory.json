@@ -1,0 +1,922 @@
+[
+  {
+    "id": 1,
+    "group": "design-1",
+    "name": "1024px — Admin самбар.png",
+    "path": "design-references/design-1/1024px — Admin самбар.png",
+    "width": 1024,
+    "height": 1900
+  },
+  {
+    "id": 2,
+    "group": "design-1",
+    "name": "1024px — Нүүр.png",
+    "path": "design-references/design-1/1024px — Нүүр.png",
+    "width": 1024,
+    "height": 7000
+  },
+  {
+    "id": 3,
+    "group": "design-1",
+    "name": "360px — Checkout.png",
+    "path": "design-references/design-1/360px — Checkout.png",
+    "width": 360,
+    "height": 1400
+  },
+  {
+    "id": 4,
+    "group": "design-1",
+    "name": "360px — Загварууд.png",
+    "path": "design-references/design-1/360px — Загварууд.png",
+    "width": 360,
+    "height": 1900
+  },
+  {
+    "id": 5,
+    "group": "design-1",
+    "name": "360px — Төлбөр.png",
+    "path": "design-references/design-1/360px — Төлбөр.png",
+    "width": 360,
+    "height": 1300
+  },
+  {
+    "id": 6,
+    "group": "design-1",
+    "name": "430px — Admin төслүүд.png",
+    "path": "design-references/design-1/430px — Admin төслүүд.png",
+    "width": 430,
+    "height": 1900
+  },
+  {
+    "id": 7,
+    "group": "design-1",
+    "name": "430px — Нүүр.png",
+    "path": "design-references/design-1/430px — Нүүр.png",
+    "width": 430,
+    "height": 4400
+  },
+  {
+    "id": 8,
+    "group": "design-1",
+    "name": "AXORA дизайн систем.png",
+    "path": "design-references/design-1/AXORA дизайн систем.png",
+    "width": 1440,
+    "height": 5360
+  },
+  {
+    "id": 9,
+    "group": "design-1",
+    "name": "Admin — Template хүсэлтүүд.png",
+    "path": "design-references/design-1/Admin — Template хүсэлтүүд.png",
+    "width": 1440,
+    "height": 1006
+  },
+  {
+    "id": 10,
+    "group": "design-1",
+    "name": "Admin — Бүтээгдэхүүн удирдлага.png",
+    "path": "design-references/design-1/Admin — Бүтээгдэхүүн удирдлага.png",
+    "width": 1440,
+    "height": 1100
+  },
+  {
+    "id": 11,
+    "group": "design-1",
+    "name": "Admin — Веб захиалгууд.png",
+    "path": "design-references/design-1/Admin — Веб захиалгууд.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "id": 12,
+    "group": "design-1",
+    "name": "Admin — Веб төслүүд (жагсаалт).png",
+    "path": "design-references/design-1/Admin — Веб төслүүд (жагсаалт).png",
+    "width": 1440,
+    "height": 1200
+  },
+  {
+    "id": 13,
+    "group": "design-1",
+    "name": "Admin — Захиалгын дэлгэрэнгүй.png",
+    "path": "design-references/design-1/Admin — Захиалгын дэлгэрэнгүй.png",
+    "width": 1440,
+    "height": 1700
+  },
+  {
+    "id": 14,
+    "group": "design-1",
+    "name": "Admin — Мэдэгдлийн dropdown.png",
+    "path": "design-references/design-1/Admin — Мэдэгдлийн dropdown.png",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "id": 15,
+    "group": "design-1",
+    "name": "Admin — Мэдэгдэл.png",
+    "path": "design-references/design-1/Admin — Мэдэгдэл.png",
+    "width": 1440,
+    "height": 1309
+  },
+  {
+    "id": 16,
+    "group": "design-1",
+    "name": "Admin — Нэвтрэх.png",
+    "path": "design-references/design-1/Admin — Нэвтрэх.png",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "id": 17,
+    "group": "design-1",
+    "name": "Admin — Тусламжийн хүсэлтүүд (дизайн).png",
+    "path": "design-references/design-1/Admin — Тусламжийн хүсэлтүүд (дизайн).png",
+    "width": 1440,
+    "height": 1200
+  },
+  {
+    "id": 18,
+    "group": "design-1",
+    "name": "Admin — Төлбөр холбогдоогүй төлөв.png",
+    "path": "design-references/design-1/Admin — Төлбөр холбогдоогүй төлөв.png",
+    "width": 1440,
+    "height": 900
+  },
+  {
+    "id": 19,
+    "group": "design-1",
+    "name": "Admin — Төлбөрүүд (Phase 4).png",
+    "path": "design-references/design-1/Admin — Төлбөрүүд (Phase 4).png",
+    "width": 1440,
+    "height": 1700
+  },
+  {
+    "id": 20,
+    "group": "design-1",
+    "name": "Admin — Төслийн дэлгэрэнгүй.png",
+    "path": "design-references/design-1/Admin — Төслийн дэлгэрэнгүй.png",
+    "width": 1440,
+    "height": 1100
+  },
+  {
+    "id": 21,
+    "group": "design-1",
+    "name": "Admin — Төслийн самбар.png",
+    "path": "design-references/design-1/Admin — Төслийн самбар.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "id": 22,
+    "group": "design-1",
+    "name": "Admin — Хяналтын самбар.png",
+    "path": "design-references/design-1/Admin — Хяналтын самбар.png",
+    "width": 1440,
+    "height": 2267
+  },
+  {
+    "id": 23,
+    "group": "design-1",
+    "name": "Checkout — Захиалгын мэдээлэл.png",
+    "path": "design-references/design-1/Checkout — Захиалгын мэдээлэл.png",
+    "width": 1440,
+    "height": 1200
+  },
+  {
+    "id": 24,
+    "group": "design-1",
+    "name": "Mobile admin — Template хүсэлт.png",
+    "path": "design-references/design-1/Mobile admin — Template хүсэлт.png",
+    "width": 390,
+    "height": 1500
+  },
+  {
+    "id": 25,
+    "group": "design-1",
+    "name": "Mobile admin — Бусад цэс.png",
+    "path": "design-references/design-1/Mobile admin — Бусад цэс.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": 26,
+    "group": "design-1",
+    "name": "Mobile admin — Бүтээгдэхүүн.png",
+    "path": "design-references/design-1/Mobile admin — Бүтээгдэхүүн.png",
+    "width": 390,
+    "height": 1400
+  },
+  {
+    "id": 27,
+    "group": "design-1",
+    "name": "Mobile admin — Веб төслүүд.png",
+    "path": "design-references/design-1/Mobile admin — Веб төслүүд.png",
+    "width": 390,
+    "height": 1900
+  },
+  {
+    "id": 28,
+    "group": "design-1",
+    "name": "Mobile admin — Захиалгууд.png",
+    "path": "design-references/design-1/Mobile admin — Захиалгууд.png",
+    "width": 390,
+    "height": 1500
+  },
+  {
+    "id": 29,
+    "group": "design-1",
+    "name": "Mobile admin — Захиалгын дэлгэрэнгүй.png",
+    "path": "design-references/design-1/Mobile admin — Захиалгын дэлгэрэнгүй.png",
+    "width": 390,
+    "height": 2000
+  },
+  {
+    "id": 30,
+    "group": "design-1",
+    "name": "Mobile admin — Мэдэгдэл.png",
+    "path": "design-references/design-1/Mobile admin — Мэдэгдэл.png",
+    "width": 390,
+    "height": 1600
+  },
+  {
+    "id": 31,
+    "group": "design-1",
+    "name": "Mobile admin — Нэвтрэх.png",
+    "path": "design-references/design-1/Mobile admin — Нэвтрэх.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": 32,
+    "group": "design-1",
+    "name": "Mobile admin — Самбар.png",
+    "path": "design-references/design-1/Mobile admin — Самбар.png",
+    "width": 390,
+    "height": 1500
+  },
+  {
+    "id": 33,
+    "group": "design-1",
+    "name": "Mobile admin — Тусламжийн хүсэлт.png",
+    "path": "design-references/design-1/Mobile admin — Тусламжийн хүсэлт.png",
+    "width": 390,
+    "height": 1200
+  },
+  {
+    "id": 34,
+    "group": "design-1",
+    "name": "Mobile admin — Төлбөр.png",
+    "path": "design-references/design-1/Mobile admin — Төлбөр.png",
+    "width": 390,
+    "height": 1500
+  },
+  {
+    "id": 35,
+    "group": "design-1",
+    "name": "Mobile admin — Төслийн самбар.png",
+    "path": "design-references/design-1/Mobile admin — Төслийн самбар.png",
+    "width": 390,
+    "height": 1100
+  },
+  {
+    "id": 36,
+    "group": "design-1",
+    "name": "Mobile — Checkout.png",
+    "path": "design-references/design-1/Mobile — Checkout.png",
+    "width": 390,
+    "height": 1400
+  },
+  {
+    "id": 37,
+    "group": "design-1",
+    "name": "Mobile — QPay төлбөр.png",
+    "path": "design-references/design-1/Mobile — QPay төлбөр.png",
+    "width": 390,
+    "height": 1300
+  },
+  {
+    "id": 38,
+    "group": "design-1",
+    "name": "Mobile — Веб захиалга.png",
+    "path": "design-references/design-1/Mobile — Веб захиалга.png",
+    "width": 390,
+    "height": 1500
+  },
+  {
+    "id": 39,
+    "group": "design-1",
+    "name": "Mobile — Веб үйлчилгээ.png",
+    "path": "design-references/design-1/Mobile — Веб үйлчилгээ.png",
+    "width": 390,
+    "height": 5600
+  },
+  {
+    "id": 40,
+    "group": "design-1",
+    "name": "Mobile — Загварууд.png",
+    "path": "design-references/design-1/Mobile — Загварууд.png",
+    "width": 390,
+    "height": 1900
+  },
+  {
+    "id": 41,
+    "group": "design-1",
+    "name": "Mobile — Загварчлагч (preview-first).png",
+    "path": "design-references/design-1/Mobile — Загварчлагч (preview-first).png",
+    "width": 390,
+    "height": 1600
+  },
+  {
+    "id": 42,
+    "group": "design-1",
+    "name": "Mobile — Загварчлагч, тохиргооны sheet.png",
+    "path": "design-references/design-1/Mobile — Загварчлагч, тохиргооны sheet.png",
+    "width": 390,
+    "height": 844
+  },
+  {
+    "id": 43,
+    "group": "design-1",
+    "name": "Mobile — Загварын дэлгэрэнгүй.png",
+    "path": "design-references/design-1/Mobile — Загварын дэлгэрэнгүй.png",
+    "width": 390,
+    "height": 2300
+  },
+  {
+    "id": 44,
+    "group": "design-1",
+    "name": "Mobile — Захиалгын явц.png",
+    "path": "design-references/design-1/Mobile — Захиалгын явц.png",
+    "width": 390,
+    "height": 1500
+  },
+  {
+    "id": 45,
+    "group": "design-1",
+    "name": "Mobile — Мэдэгдэл.png",
+    "path": "design-references/design-1/Mobile — Мэдэгдэл.png",
+    "width": 390,
+    "height": 1500
+  },
+  {
+    "id": 46,
+    "group": "design-1",
+    "name": "Mobile — Нэхэмжлэх.png",
+    "path": "design-references/design-1/Mobile — Нэхэмжлэх.png",
+    "width": 390,
+    "height": 1600
+  },
+  {
+    "id": 47,
+    "group": "design-1",
+    "name": "Mobile — Нүүр.png",
+    "path": "design-references/design-1/Mobile — Нүүр.png",
+    "width": 390,
+    "height": 4400
+  },
+  {
+    "id": 48,
+    "group": "design-1",
+    "name": "Mobile — Тусламжийн төв.png",
+    "path": "design-references/design-1/Mobile — Тусламжийн төв.png",
+    "width": 390,
+    "height": 3800
+  },
+  {
+    "id": 49,
+    "group": "design-1",
+    "name": "Mobile — Холбоо барих.png",
+    "path": "design-references/design-1/Mobile — Холбоо барих.png",
+    "width": 390,
+    "height": 1300
+  },
+  {
+    "id": 50,
+    "group": "design-1",
+    "name": "Mobile — Худалдан авалтууд.png",
+    "path": "design-references/design-1/Mobile — Худалдан авалтууд.png",
+    "width": 390,
+    "height": 1600
+  },
+  {
+    "id": 51,
+    "group": "design-1",
+    "name": "Mobile — Худалдан авах.png",
+    "path": "design-references/design-1/Mobile — Худалдан авах.png",
+    "width": 390,
+    "height": 1500
+  },
+  {
+    "id": 52,
+    "group": "design-1",
+    "name": "Mobile — Хүргэлт.png",
+    "path": "design-references/design-1/Mobile — Хүргэлт.png",
+    "width": 390,
+    "height": 2400
+  },
+  {
+    "id": 53,
+    "group": "design-1",
+    "name": "Mobile — Явц, олдсон.png",
+    "path": "design-references/design-1/Mobile — Явц, олдсон.png",
+    "width": 390,
+    "height": 2700
+  },
+  {
+    "id": 54,
+    "group": "design-1",
+    "name": "Mobile — Үр дүн.png",
+    "path": "design-references/design-1/Mobile — Үр дүн.png",
+    "width": 390,
+    "height": 1100
+  },
+  {
+    "id": 55,
+    "group": "design-1",
+    "name": "QPay төлбөр — 9 төлөв.png",
+    "path": "design-references/design-1/QPay төлбөр — 9 төлөв.png",
+    "width": 1440,
+    "height": 1289
+  },
+  {
+    "id": 56,
+    "group": "design-1",
+    "name": "Tablet 768 — Checkout.png",
+    "path": "design-references/design-1/Tablet 768 — Checkout.png",
+    "width": 768,
+    "height": 1800
+  },
+  {
+    "id": 57,
+    "group": "design-1",
+    "name": "Tablet 768 — Веб захиалга.png",
+    "path": "design-references/design-1/Tablet 768 — Веб захиалга.png",
+    "width": 768,
+    "height": 2000
+  },
+  {
+    "id": 58,
+    "group": "design-1",
+    "name": "Tablet 768 — Дэлгэрэнгүй.png",
+    "path": "design-references/design-1/Tablet 768 — Дэлгэрэнгүй.png",
+    "width": 768,
+    "height": 3800
+  },
+  {
+    "id": 59,
+    "group": "design-1",
+    "name": "Tablet 768 — Загварууд.png",
+    "path": "design-references/design-1/Tablet 768 — Загварууд.png",
+    "width": 768,
+    "height": 2600
+  },
+  {
+    "id": 60,
+    "group": "design-1",
+    "name": "Tablet 768 — Загварчлагч.png",
+    "path": "design-references/design-1/Tablet 768 — Загварчлагч.png",
+    "width": 768,
+    "height": 2000
+  },
+  {
+    "id": 61,
+    "group": "design-1",
+    "name": "Tablet 768 — Төлбөр.png",
+    "path": "design-references/design-1/Tablet 768 — Төлбөр.png",
+    "width": 768,
+    "height": 1900
+  },
+  {
+    "id": 62,
+    "group": "design-1",
+    "name": "Веб сайт захиалах — 7 алхам.png",
+    "path": "design-references/design-1/Веб сайт захиалах — 7 алхам.png",
+    "width": 1440,
+    "height": 1900
+  },
+  {
+    "id": 63,
+    "group": "design-1",
+    "name": "Веб үйлчилгээ.png",
+    "path": "design-references/design-1/Веб үйлчилгээ.png",
+    "width": 1440,
+    "height": 4600
+  },
+  {
+    "id": 64,
+    "group": "design-1",
+    "name": "Вебээ загварчлах — загварчлагч.png",
+    "path": "design-references/design-1/Вебээ загварчлах — загварчлагч.png",
+    "width": 1440,
+    "height": 1694
+  },
+  {
+    "id": 65,
+    "group": "design-1",
+    "name": "Дижитал хүргэлт.png",
+    "path": "design-references/design-1/Дижитал хүргэлт.png",
+    "width": 1440,
+    "height": 1700
+  },
+  {
+    "id": 66,
+    "group": "design-1",
+    "name": "Загварууд.png",
+    "path": "design-references/design-1/Загварууд.png",
+    "width": 1440,
+    "height": 2400
+  },
+  {
+    "id": 67,
+    "group": "design-1",
+    "name": "Загварын дэлгэрэнгүй.png",
+    "path": "design-references/design-1/Загварын дэлгэрэнгүй.png",
+    "width": 1440,
+    "height": 2961
+  },
+  {
+    "id": 68,
+    "group": "design-1",
+    "name": "Захиалгын явц — баталгаажуулалт (8 төлөв).png",
+    "path": "design-references/design-1/Захиалгын явц — баталгаажуулалт (8 төлөв).png",
+    "width": 1440,
+    "height": 1400
+  },
+  {
+    "id": 69,
+    "group": "design-1",
+    "name": "Захиалгын явц — олдсон.png",
+    "path": "design-references/design-1/Захиалгын явц — олдсон.png",
+    "width": 1440,
+    "height": 1500
+  },
+  {
+    "id": 70,
+    "group": "design-1",
+    "name": "Мэдэгдлийн төв.png",
+    "path": "design-references/design-1/Мэдэгдлийн төв.png",
+    "width": 1440,
+    "height": 1270
+  },
+  {
+    "id": 71,
+    "group": "design-1",
+    "name": "Нүүр.png",
+    "path": "design-references/design-1/Нүүр.png",
+    "width": 1440,
+    "height": 6581
+  },
+  {
+    "id": 72,
+    "group": "design-1",
+    "name": "Тусламжийн төв.png",
+    "path": "design-references/design-1/Тусламжийн төв.png",
+    "width": 1440,
+    "height": 2672
+  },
+  {
+    "id": 73,
+    "group": "design-1",
+    "name": "Төлбөр — Template худалдан авах.png",
+    "path": "design-references/design-1/Төлбөр — Template худалдан авах.png",
+    "width": 1440,
+    "height": 1300
+  },
+  {
+    "id": 74,
+    "group": "design-1",
+    "name": "Төлбөр — Веб захиалгын нэхэмжлэх.png",
+    "path": "design-references/design-1/Төлбөр — Веб захиалгын нэхэмжлэх.png",
+    "width": 1440,
+    "height": 1400
+  },
+  {
+    "id": 75,
+    "group": "design-1",
+    "name": "Төлбөрийн үр дүн.png",
+    "path": "design-references/design-1/Төлбөрийн үр дүн.png",
+    "width": 1440,
+    "height": 1000
+  },
+  {
+    "id": 76,
+    "group": "design-1",
+    "name": "Худалдан авалтууд.png",
+    "path": "design-references/design-1/Худалдан авалтууд.png",
+    "width": 1440,
+    "height": 1300
+  },
+  {
+    "id": 77,
+    "group": "design-2",
+    "name": "Phase 5–6 — тойм.png",
+    "path": "design-references/design-2/Phase 5–6 — тойм.png",
+    "width": 2880,
+    "height": 4338
+  },
+  {
+    "id": 78,
+    "group": "design-2",
+    "name": "PreviewDemo — бүрэлдэхүүн.png",
+    "path": "design-references/design-2/PreviewDemo — бүрэлдэхүүн.png",
+    "width": 1920,
+    "height": 1360
+  },
+  {
+    "id": 79,
+    "group": "design-2",
+    "name": "UI UX аудитын тайлан.png",
+    "path": "design-references/design-2/UI UX аудитын тайлан.png",
+    "width": 2880,
+    "height": 6308
+  },
+  {
+    "id": 80,
+    "group": "design-2",
+    "name": "admin marketing.png",
+    "path": "design-references/design-2/admin marketing.png",
+    "width": 2880,
+    "height": 4000
+  },
+  {
+    "id": 81,
+    "group": "design-2",
+    "name": "blog, blog [slug].png",
+    "path": "design-references/design-2/blog, blog [slug].png",
+    "width": 2880,
+    "height": 4800
+  },
+  {
+    "id": 82,
+    "group": "design-2",
+    "name": "bundles, bundles [slug], checkout.png",
+    "path": "design-references/design-2/bundles, bundles [slug], checkout.png",
+    "width": 2880,
+    "height": 5000
+  },
+  {
+    "id": 83,
+    "group": "design-2",
+    "name": "favorites — 360 бараан.png",
+    "path": "design-references/design-2/favorites — 360 бараан.png",
+    "width": 720,
+    "height": 7200
+  },
+  {
+    "id": 84,
+    "group": "design-2",
+    "name": "favorites — 390.png",
+    "path": "design-references/design-2/favorites — 390.png",
+    "width": 780,
+    "height": 6800
+  },
+  {
+    "id": 85,
+    "group": "design-2",
+    "name": "favorites — бараан.png",
+    "path": "design-references/design-2/favorites — бараан.png",
+    "width": 2880,
+    "height": 3800
+  },
+  {
+    "id": 86,
+    "group": "design-2",
+    "name": "favorites.png",
+    "path": "design-references/design-2/favorites.png",
+    "width": 2880,
+    "height": 3800
+  },
+  {
+    "id": 87,
+    "group": "design-2",
+    "name": "learn, learn [slug].png",
+    "path": "design-references/design-2/learn, learn [slug].png",
+    "width": 2880,
+    "height": 4200
+  },
+  {
+    "id": 88,
+    "group": "design-2",
+    "name": "portfolio, portfolio [slug].png",
+    "path": "design-references/design-2/portfolio, portfolio [slug].png",
+    "width": 2880,
+    "height": 4400
+  },
+  {
+    "id": 89,
+    "group": "design-2",
+    "name": "services estimate.png",
+    "path": "design-references/design-2/services estimate.png",
+    "width": 2880,
+    "height": 4200
+  },
+  {
+    "id": 90,
+    "group": "design-2",
+    "name": "templates [slug] updates.png",
+    "path": "design-references/design-2/templates [slug] updates.png",
+    "width": 2880,
+    "height": 4000
+  },
+  {
+    "id": 91,
+    "group": "design-2",
+    "name": "Админ контент — 390.png",
+    "path": "design-references/design-2/Админ контент — 390.png",
+    "width": 780,
+    "height": 6800
+  },
+  {
+    "id": 92,
+    "group": "design-2",
+    "name": "Админ — багц (бэлтгэл).png",
+    "path": "design-references/design-2/Админ — багц (бэлтгэл).png",
+    "width": 2880,
+    "height": 3000
+  },
+  {
+    "id": 93,
+    "group": "design-2",
+    "name": "Админ — контент (портфолио, сургалт, нийтлэл, хувилбар).png",
+    "path": "design-references/design-2/Админ — контент (портфолио, сургалт, нийтлэл, хувилбар).png",
+    "width": 2880,
+    "height": 3600
+  },
+  {
+    "id": 94,
+    "group": "design-2",
+    "name": "Багц — 390.png",
+    "path": "design-references/design-2/Багц — 390.png",
+    "width": 780,
+    "height": 7600
+  },
+  {
+    "id": 95,
+    "group": "design-2",
+    "name": "Багц — бараан.png",
+    "path": "design-references/design-2/Багц — бараан.png",
+    "width": 2880,
+    "height": 5000
+  },
+  {
+    "id": 96,
+    "group": "design-2",
+    "name": "Дэлгэрэнгүй — 390.png",
+    "path": "design-references/design-2/Дэлгэрэнгүй — 390.png",
+    "width": 780,
+    "height": 7200
+  },
+  {
+    "id": 97,
+    "group": "design-2",
+    "name": "Дэлгэрэнгүй — бараан.png",
+    "path": "design-references/design-2/Дэлгэрэнгүй — бараан.png",
+    "width": 2880,
+    "height": 4600
+  },
+  {
+    "id": 98,
+    "group": "design-2",
+    "name": "Загварын дэлгэрэнгүй + үзүүлэн.png",
+    "path": "design-references/design-2/Загварын дэлгэрэнгүй + үзүүлэн.png",
+    "width": 2880,
+    "height": 4600
+  },
+  {
+    "id": 99,
+    "group": "design-2",
+    "name": "Маркетинг — 390.png",
+    "path": "design-references/design-2/Маркетинг — 390.png",
+    "width": 780,
+    "height": 7200
+  },
+  {
+    "id": 100,
+    "group": "design-2",
+    "name": "Маркетинг — бараан.png",
+    "path": "design-references/design-2/Маркетинг — бараан.png",
+    "width": 2880,
+    "height": 4000
+  },
+  {
+    "id": 101,
+    "group": "design-2",
+    "name": "Нийтлэл — 360 бараан.png",
+    "path": "design-references/design-2/Нийтлэл — 360 бараан.png",
+    "width": 720,
+    "height": 7600
+  },
+  {
+    "id": 102,
+    "group": "design-2",
+    "name": "Нийтлэл — 390.png",
+    "path": "design-references/design-2/Нийтлэл — 390.png",
+    "width": 780,
+    "height": 7600
+  },
+  {
+    "id": 103,
+    "group": "design-2",
+    "name": "Нийтлэл — бараан.png",
+    "path": "design-references/design-2/Нийтлэл — бараан.png",
+    "width": 2880,
+    "height": 4800
+  },
+  {
+    "id": 104,
+    "group": "design-2",
+    "name": "Портфолио — 390.png",
+    "path": "design-references/design-2/Портфолио — 390.png",
+    "width": 780,
+    "height": 7600
+  },
+  {
+    "id": 105,
+    "group": "design-2",
+    "name": "Портфолио — бараан.png",
+    "path": "design-references/design-2/Портфолио — бараан.png",
+    "width": 2880,
+    "height": 4400
+  },
+  {
+    "id": 106,
+    "group": "design-2",
+    "name": "Сургалт — 390.png",
+    "path": "design-references/design-2/Сургалт — 390.png",
+    "width": 780,
+    "height": 7600
+  },
+  {
+    "id": 107,
+    "group": "design-2",
+    "name": "Сургалт — 768.png",
+    "path": "design-references/design-2/Сургалт — 768.png",
+    "width": 1536,
+    "height": 5600
+  },
+  {
+    "id": 108,
+    "group": "design-2",
+    "name": "Сургалт — бараан.png",
+    "path": "design-references/design-2/Сургалт — бараан.png",
+    "width": 2880,
+    "height": 4200
+  },
+  {
+    "id": 109,
+    "group": "design-2",
+    "name": "Тооцоолуур — 390.png",
+    "path": "design-references/design-2/Тооцоолуур — 390.png",
+    "width": 780,
+    "height": 7600
+  },
+  {
+    "id": 110,
+    "group": "design-2",
+    "name": "Тооцоолуур — 768.png",
+    "path": "design-references/design-2/Тооцоолуур — 768.png",
+    "width": 1536,
+    "height": 6000
+  },
+  {
+    "id": 111,
+    "group": "design-2",
+    "name": "Тооцоолуур — бараан.png",
+    "path": "design-references/design-2/Тооцоолуур — бараан.png",
+    "width": 2880,
+    "height": 4200
+  },
+  {
+    "id": 112,
+    "group": "design-2",
+    "name": "Харьцуулалт + compare.png",
+    "path": "design-references/design-2/Харьцуулалт + compare.png",
+    "width": 2880,
+    "height": 4000
+  },
+  {
+    "id": 113,
+    "group": "design-2",
+    "name": "Харьцуулалт — 390.png",
+    "path": "design-references/design-2/Харьцуулалт — 390.png",
+    "width": 780,
+    "height": 6800
+  },
+  {
+    "id": 114,
+    "group": "design-2",
+    "name": "Харьцуулалт — бараан.png",
+    "path": "design-references/design-2/Харьцуулалт — бараан.png",
+    "width": 2880,
+    "height": 4000
+  },
+  {
+    "id": 115,
+    "group": "design-2",
+    "name": "Шинэчлэлт — 390.png",
+    "path": "design-references/design-2/Шинэчлэлт — 390.png",
+    "width": 780,
+    "height": 6800
+  }
+]
