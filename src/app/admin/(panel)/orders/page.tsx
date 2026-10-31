@@ -9,6 +9,7 @@ import { ArrowRight, Search } from "@/components/icons";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { ORDER_STATUS, ORDER_STATUSES, fmtDateTime } from "@/lib/admin/labels";
 import { PAGE_SIZE, hrefWith, one, page as pageOf, safeSearch } from "@/lib/admin/query";
+import { dateBounds, isCalendarDate } from "@/lib/admin/dates";
 import { STEPS } from "@/lib/order/questions";
 
 export const metadata = { title: "Веб захиалгууд" };
@@ -23,8 +24,8 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
   const q = safeSearch(one(sp, "q"));
   const status = (ORDER_STATUSES as readonly string[]).includes(one(sp, "status")) ? one(sp, "status") : "";
   const type = TYPES.includes(one(sp, "type")) || one(sp, "type") === "Бусад" ? one(sp, "type") : "";
-  const from = /^\d{4}-\d{2}-\d{2}$/.test(one(sp, "from")) ? one(sp, "from") : "";
-  const to = /^\d{4}-\d{2}-\d{2}$/.test(one(sp, "to")) ? one(sp, "to") : "";
+  const from = isCalendarDate(one(sp, "from")) ? one(sp, "from") : "";
+  const to = isCalendarDate(one(sp, "to")) ? one(sp, "to") : "";
   const sort = one(sp, "sort") === "old" ? "old" : "new";
   const page = pageOf(sp);
 
@@ -36,8 +37,9 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
   if (type === "Бусад") query = query.like("website_type", "Бусад%");
   else if (type) query = query.eq("website_type", type);
   // Dates are Ulaanbaatar days.
-  if (from) query = query.gte("created_at", `${from}T00:00:00+08:00`);
-  if (to) query = query.lte("created_at", `${to}T23:59:59.999+08:00`);
+  const bounds = dateBounds(from, to);
+  if (bounds.from) query = query.gte("created_at", bounds.from);
+  if (bounds.to) query = query.lt("created_at", bounds.to);
   const head = { count: "exact" as const, head: true };
   const [{ data, count, error }, ...tabCounts] = await Promise.all([
     query.order("created_at", { ascending: sort === "old" }).range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1),

@@ -1,5 +1,7 @@
 "use client";
 
+import { runAdminAction } from "@/lib/admin/action-client";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -38,7 +40,7 @@ function useStatusChange(r: RequestInfo, onDone: () => void) {
   const [pending, start] = useTransition();
   const run = (to: RequestStatus, text: string, expected = r.updatedAt) =>
     start(async () => {
-      const res = await updateRequestAction({ id: r.id, expected, status: to });
+      const res = await runAdminAction(() => updateRequestAction({ id: r.id, expected, status: to }));
       if (!res.ok) {
         toast({ kind: "err", text: res.message, action: res.code === "conflict" ? { label: "Шинэчлэх", onClick: () => router.refresh() } : { label: "Дахин", onClick: () => run(to, text, expected) } });
         return;
@@ -178,7 +180,7 @@ export function PaymentSheet({ r, open, onClose }: { r: RequestInfo; open: boole
     if (!checked) return setErr("Төлбөрийг шалгаж, баталгаажуулах товчийг чагтлана уу.");
     if (needsAmount && !(amt > 0)) return setErr("Тохиролцсон дүнг 0-ээс их тоогоор оруулна уу.");
     start(async () => {
-      const res = await confirmPaymentAction({ id: r.id, amount: needsAmount ? amt : r.priceAmount, currency: needsAmount ? currency : r.currency });
+      const res = await runAdminAction(() => confirmPaymentAction({ id: r.id, amount: needsAmount ? amt : r.priceAmount, currency: needsAmount ? currency : r.currency }));
       if (!res.ok) {
         setErr(res.message);
         return;
@@ -315,7 +317,7 @@ export function DeliverySheet({ r, open, onClose }: { r: RequestInfo; open: bool
             onClick={() =>
               start(async () => {
                 setErr("");
-                const out = await createDownloadLinkAction(r.id, hours);
+                const out = await runAdminAction(() => createDownloadLinkAction(r.id, hours));
                 if (out.ok) {
                   setRes({ url: out.url, expiresAt: out.expiresAt, external: out.external });
                   router.refresh();

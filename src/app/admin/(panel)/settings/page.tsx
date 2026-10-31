@@ -5,15 +5,18 @@ import { Body, PageHeader, Panel, btn } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { fmtDateTime } from "@/lib/admin/labels";
 import { isBackendConfigured } from "@/lib/supabase/server";
+import { ThemeToggle } from "@/components/theme/ThemeToggle";
 
 export const metadata = { title: "Тохиргоо" };
 
 async function SettingsPageContent() {
   const c = await requireAdminPage();
   if (c.kind !== "ok") return null;
-  const { user } = c.ctx;
+  const { user, db } = c.ctx;
+  const { error: databaseError } = await db.from("website_orders").select("id", { head: true, count: "exact" });
   const rows: [string, string][] = [
     ["Supabase (нийтийн түлхүүр)", "Холбогдсон"],
+    ["Өгөгдлийн сан (захиалга унших)", databaseError ? "Унших шалгалт амжилтгүй — холболт, migration болон эрхийг шалгана уу" : "Унших шалгалт амжилттай"],
     ["Серверийн түлхүүр (захиалга хүлээн авах)", isBackendConfigured() ? "Тохируулсан" : "Тохируулаагүй — сайтын анкет туршилтын горимд байна"],
     ["Имэйл / SMS илгээх үйлчилгээ", "Холбогдоогүй — систем мессеж илгээдэггүй"],
     ["Төлбөрийн систем", "Холбогдоогүй — төлбөрийн төлөв автоматаар үүсдэггүй"],
@@ -22,6 +25,9 @@ async function SettingsPageContent() {
     <>
       <PageHeader title="Тохиргоо" description="Бүртгэл болон холболтын төлөв. Нууц түлхүүр энд харагдахгүй." />
       <Body>
+        <Panel title="Өнгөний горим">
+          <div className="flex items-center justify-between gap-3 p-[18px]"><p className="text-sm text-muted">Цайвар, бараан эсвэл төхөөрөмжийн горимыг сонгоно. Энэ төхөөрөмжид хадгалагдана.</p><ThemeToggle /></div>
+        </Panel>
         <Panel title="Таны бүртгэл" id="st-acc">
           <dl className="m-0 flex flex-col gap-2 p-[18px] text-[15px]">
             <div>

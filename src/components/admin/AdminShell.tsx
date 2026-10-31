@@ -10,7 +10,7 @@ import { useDialog } from "@/components/ui/use-dialog";
 import { browserAuthClient } from "@/lib/admin/browser-auth";
 import { ADMIN_NAV, isActive, type NavItem } from "./nav";
 
-type Counts = { orders: number; requests: number };
+type Counts = { orders: number | null; requests: number | null; support: number | null; notifications: number | null };
 
 export function LogoBadge() {
   return (
@@ -29,20 +29,34 @@ export function LogoBadge() {
 export function SignOutButton({ className = "" }: { className?: string }) {
   const router = useRouter();
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(false);
   return (
+    <>
     <button
       type="button"
       disabled={busy}
       onClick={async () => {
         setBusy(true);
-        await browserAuthClient()?.auth.signOut();
-        router.replace("/admin/login?reason=signedout");
-        router.refresh();
+        setError(false);
+        try {
+          const client = browserAuthClient();
+          if (!client) throw new Error("unavailable");
+          const result = await client.auth.signOut();
+          if (result.error) throw result.error;
+          router.replace("/admin/login?reason=signedout");
+          router.refresh();
+        } catch {
+          setError(true);
+        } finally {
+          setBusy(false);
+        }
       }}
       className={className}
     >
       {busy ? "Гарч байна…" : "Гарах"}
     </button>
+    {error && <p role="alert" className="px-3 text-sm">Гарч чадсангүй. Холболтоо шалгаад дахин оролдоно уу.</p>}
+    </>
   );
 }
 
@@ -68,7 +82,8 @@ export function AdminMenuButton({ tone = "default" }: { tone?: "default" | "band
   );
 }
 
-function Badge({ n, label, on }: { n: number; label?: string; on?: boolean }) {
+function Badge({ n, label, on }: { n: number | null; label?: string; on?: boolean }) {
+  if (n === null) return <span title="Тоог ачаалж чадсангүй" aria-label={`${label ?? "Мэдэгдлийн"} тоо тодорхойгүй`} className="text-xs text-band-muted">—</span>;
   if (n <= 0) return null;
   return (
     <span
@@ -87,27 +102,32 @@ function SideContent({ counts, email, onNavigate }: { counts: Counts; email: str
   const link = "flex min-h-11 items-center gap-3 rounded-[10px] px-3 text-[14.5px] font-semibold no-underline transition-colors";
   return (
     <>
-      <nav aria-label="Админ цэс" className="flex flex-col gap-0.5">
-        <span className="mx-3 my-1.5 text-[11px] font-extrabold tracking-[0.1em] text-band-faint uppercase">Удирдлага</span>
-        {ADMIN_NAV.map((n) => {
-          const on = isActive(n, path);
-          return (
-            <Link
-              key={n.href}
-              href={n.href}
-              onClick={onNavigate}
-              aria-current={on ? "page" : undefined}
-              className={`${link} ${on ? "bg-lime font-extrabold text-on-lime" : "text-band-muted hover:bg-band-hover hover:text-on-band"}`}
-            >
-              <n.Icon size={18} />
-              <span className="flex-1">{n.label}</span>
-              {n.count && <Badge n={counts[n.count]} label={n.countLabel} on={on} />}
-            </Link>
-          );
-        })}
+      <nav aria-label="Админ цэс" className="flex flex-col gap-4">
+        {(["Үндсэн", "Удирдлага", "Систем"] as const).map((group) => (
+          <div key={group} className="flex flex-col gap-0.5">
+            <span className="mx-3 my-1 text-[11px] font-extrabold tracking-[0.1em] text-band-faint uppercase">{group}</span>
+            {ADMIN_NAV.filter((item) => item.group === group).map((n) => {
+              const on = isActive(n, path);
+              return (
+                <Link
+                  key={n.href}
+                  href={n.href}
+                  onClick={onNavigate}
+                  aria-current={on ? "page" : undefined}
+                  className={`${link} ${on ? "bg-lime font-extrabold text-on-lime" : "text-band-muted hover:bg-band-hover hover:text-on-band"}`}
+                >
+                  <n.Icon size={18} />
+                  <span className="flex-1">{n.label}</span>
+                  {n.count && <Badge n={counts[n.count]} label={n.countLabel} on={on} />}
+                </Link>
+              );
+            })}
+          </div>
+        ))}
       </nav>
       <div className="mt-auto flex flex-col gap-1">
-        <a href="/" target="_blank" rel="noopener" className={`${link} text-band-muted hover:bg-band-hover hover:text-on-band`}>
+        <span className="mx-3 my-1 text-[11px] font-extrabold tracking-[0.1em] text-band-faint uppercase">Бусад</span>
+        <a href="/" target="_blank" rel="noopener noreferrer" className={`${link} text-band-muted hover:bg-band-hover hover:text-on-band`}>
           Сайт харах ↗
         </a>
         <div className="mt-2 flex items-center gap-2.5 rounded-xl bg-band-hover p-2.5">
@@ -158,7 +178,7 @@ function BottomNav({ counts }: { counts: Counts }) {
     >
       {tabs.map((n) => {
         const on = isActive(n, path);
-        const c = n.count ? counts[n.count] : 0;
+        const c = n.count ? counts[n.count] ?? 0 : 0;
         return (
           <Link
             key={n.href}
@@ -220,11 +240,11 @@ export function AdminShell({ counts, email, children }: { counts: Counts; email:
                 aria-label="Админ цэс"
                 className="absolute inset-y-0 left-0 flex w-[min(300px,86vw)] flex-col gap-6 overflow-y-auto bg-band px-3.5 pt-4 pb-[calc(16px+env(safe-area-inset-bottom))] text-on-band [animation:axSlide_.25s_ease_both]"
               >
-                <div className="flex items-center justify-between">
+                <div className="flex flex-wrap items-center justify-between gap-2">
                   <span className="px-2 text-on-band">
                     <LogoBadge />
                   </span>
-                  <span className="flex items-center gap-2">
+                  <span className="ml-auto flex shrink-0 items-center gap-2">
                     <ThemeToggle tone="band" />
                     <button type="button" data-autofocus aria-label="Цэс хаах" onClick={() => setOpen(false)} className="inline-flex h-11 w-11 items-center justify-center rounded-[10px] border-0 bg-band-hover text-on-band">
                       <Close size={20} />

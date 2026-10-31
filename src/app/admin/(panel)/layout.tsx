@@ -58,12 +58,14 @@ async function Guard({ children }: { children: React.ReactNode }) {
     );
   }
   const { db } = c.ctx;
-  const [o, r] = await Promise.all([
+  const [o, r, s, n] = await Promise.all([
     db.from("website_orders").select("id", { count: "exact", head: true }).eq("status", "new"),
     db.from("template_requests").select("id", { count: "exact", head: true }).eq("status", "new"),
+    db.from("contact_messages").select("id", { count: "exact", head: true }).eq("status", "new"),
+    db.from("admin_notifications").select("id", { count: "exact", head: true }).eq("admin_id", c.ctx.user.id).is("read_at", null),
   ]);
   return (
-    <AdminShell counts={{ orders: o.count ?? 0, requests: r.count ?? 0 }} email={c.ctx.user.email ?? "admin"}>
+    <AdminShell counts={{ orders: o.count, requests: r.count, support: s.count, notifications: n.count }} email={c.ctx.user.email ?? "admin"}>
       {children}
     </AdminShell>
   );

@@ -1,11 +1,12 @@
 /** Dashboard date ranges, computed in Ulaanbaatar time (UTC+8, no DST). */
+import { isCalendarDate } from "./dates";
 
 export type PeriodKey = "7d" | "30d" | "month" | "custom";
 export type Period = { key: PeriodKey; from: string; to: string; label: string; fromDate: string; toDate: string };
 
 const OFFSET_MS = 8 * 3600 * 1000;
 const DAY = 24 * 3600 * 1000;
-const isDate = (s: string | undefined): s is string => !!s && /^\d{4}-\d{2}-\d{2}$/.test(s) && !Number.isNaN(Date.parse(s));
+const isDate = (s: string | undefined): s is string => !!s && isCalendarDate(s);
 
 function ubDateString(ms: number): string {
   return new Date(ms + OFFSET_MS).toISOString().slice(0, 10);

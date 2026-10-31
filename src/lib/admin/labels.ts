@@ -1,4 +1,5 @@
 /** Status vocab shared by admin pages. Colour + text, never colour alone. */
+import { CONTACT_STATUS, PROJECT_STATUS, type ContactStatus, type ProjectStatus } from "@/lib/admin/projects";
 
 export const ORDER_STATUSES = ["new", "contacted", "in_progress", "completed", "cancelled"] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
@@ -59,6 +60,13 @@ export const AUDIT_ACTION: Record<string, string> = {
   unpublished: "Нийтлэлээс буулгасан",
   draft_saved: "Ноорог хадгалсан",
   download_link_created: "Татах холбоос үүсгэсэн",
+  project_created: "Төсөл үүсгэсэн",
+  project_updated: "Төслийн мэдээлэл шинэчилсэн",
+  project_status_changed: "Төслийн төлөв өөрчилсөн",
+  milestone_added: "Үе шат нэмсэн",
+  milestone_updated: "Үе шат шинэчилсэн",
+  milestone_removed: "Үе шат хассан",
+  support_status_changed: "Тусламжийн хүсэлтийн төлөв өөрчилсөн",
 };
 
 export const AUDIT_ENTITY: Record<string, string> = {
@@ -66,11 +74,15 @@ export const AUDIT_ENTITY: Record<string, string> = {
   template_request: "Загварын хүсэлт",
   template: "Загвар",
   site_content: "Сайтын агуулга",
+  website_project: "Веб төсөл",
+  contact_message: "Тусламжийн хүсэлт",
 };
 
 export function statusLabel(entity: string, s: string | null | undefined): string {
   if (!s) return "—";
   if (entity === "template_request") return REQUEST_STATUS[s as RequestStatus]?.label ?? s;
+  if (entity === "website_project") return PROJECT_STATUS[s as ProjectStatus]?.label ?? s;
+  if (entity === "contact_message") return CONTACT_STATUS[s as ContactStatus]?.label ?? s;
   return ORDER_STATUS[s as OrderStatus]?.label ?? s;
 }
 

@@ -35,15 +35,20 @@ export function LoginForm({ configured }: { configured: boolean }) {
     const sb = browserAuthClient();
     if (!sb) return;
     setBusy(true);
-    const { error } = await sb.auth.signInWithPassword({ email: email.trim(), password: pass });
-    if (error) {
+    try {
+      const { error } = await sb.auth.signInWithPassword({ email: email.trim(), password: pass });
+      if (error) {
+        // Same message for wrong email or password — no account enumeration.
+        setErr(error.status === 429 ? "Хэт олон оролдлого хийлээ. Хэсэг хүлээгээд дахин оролдоно уу." : error.status === 0 || (error.status ?? 0) >= 500 ? "Нэвтрэх үйлчилгээтэй холбогдож чадсангүй. Дахин оролдоно уу." : "Имэйл эсвэл нууц үг буруу байна.");
+        return;
+      }
+      router.replace("/admin");
+      router.refresh();
+    } catch {
+      setErr("Нэвтрэх үйлчилгээтэй холбогдож чадсангүй. Дахин оролдоно уу.");
+    } finally {
       setBusy(false);
-      // Same message for wrong email or password — no account enumeration.
-      setErr(error.status === 429 ? "Хэт олон оролдлого хийлээ. Хэсэг хүлээгээд дахин оролдоно уу." : "Имэйл эсвэл нууц үг буруу байна.");
-      return;
     }
-    router.replace("/admin");
-    router.refresh();
   }
 
   if (!configured) {

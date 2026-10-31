@@ -1,5 +1,7 @@
 "use client";
 
+import { runAdminAction } from "@/lib/admin/action-client";
+
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { setOrderStatusAction } from "@/app/admin/actions";
@@ -37,7 +39,7 @@ export function OrderStatusControl({ id, updatedAt, status, title, reference, si
   function save(to: OrderStatus, expected: string, undoOf?: string) {
     setErr("");
     start(async () => {
-      const r = await setOrderStatusAction({ id, expected, status: to });
+      const r = await runAdminAction(() => setOrderStatusAction({ id, expected, status: to }));
       if (!r.ok) {
         setErr(r.message);
         toast({ kind: "err", text: r.message, action: r.code === "conflict" ? { label: "Шинэчлэх", onClick: () => router.refresh() } : { label: "Дахин", onClick: () => save(to, expected, undoOf) } });

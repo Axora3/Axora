@@ -14,13 +14,8 @@ export const NAV = [
   { href: "/blog", label: "Нийтлэл" },
   { href: "/services", label: "Веб хөгжүүлэлт" },
   { href: "/builder", label: "Жишээ загварууд" },
-  { href: "/help", label: "Тусламжийн төв" },
   { href: "/favorites", label: "Хадгалсан загварууд" },
   { href: "/compare", label: "Харьцуулалт" },
-  { href: "/services/estimate", label: "Үнийн тооцоолуур" },
-  { href: "/orders", label: "Захиалгын явц" },
-  { href: "/purchases", label: "Худалдан авалтууд" },
-  { href: "/notifications", label: "Мэдэгдэл" },
   { href: "/contact", label: "Холбоо барих" },
 ];
 

@@ -1,6 +1,6 @@
 # AXORA redesign progress
 
-Updated: 2026-10-30
+Updated: 2026-10-31
 
 ## Audit status
 
@@ -9,9 +9,10 @@ Updated: 2026-10-30
 - [x] Identify desktop, tablet, mobile, dark-theme, interaction-state, and design-system references.
 - [x] Audit existing Next.js App Router, routes, reusable UI, Supabase access, migrations, and admin flows.
 - [x] Map all 115 references to an existing screen/component or explicit exception; live visual comparison remains partial.
-- [ ] Complete page-by-page comparison and implement any further confirmed UI corrections; retain documented backend exceptions.
-- [ ] Verify 1440, 1024, 768, 390, and 375px layouts and interactive states.
-- [x] Run TypeScript, lint, diff checks, and a production build attempt; build is blocked by existing remote font fetches (details below).
+- [x] Compare local references against current route/component behavior and implement confirmed corrections for favorites, portfolio, content rendering, and mobile lesson navigation; retain documented backend exceptions.
+- [x] Check the portfolio page shell at 360, 390, 768, 1024, and 1440px; no horizontal overflow was present.
+- [ ] Verify populated content cards, lesson detail, and authenticated admin interaction states; the local content source returned no published rows and no admin session was used.
+- [x] Run TypeScript, lint, diff checks, and a production build; all passed.
 
 ## Reference interpretation
 
@@ -26,7 +27,7 @@ Design 1 is the core AXORA storefront, custom website service/order flow, templa
 | Template detail, live preview and versions | 43, 58, 64, 67, 90, 96–98, 115 | `/templates/[slug]`, `Gallery`, `TemplatePreview`, detail components | Existing; compare themes, mobile layout and supported updates data |
 | Favorites and comparison | 82, 84–86, 112–114 | `/favorites`, `/compare`, collection hooks/components | Implemented with browser storage; verify filters, empty state and responsive comparison |
 | Bundles | 81–82, 94–95 | `/bundles`, `/bundles/[slug]` | Routes exist; check content source and purchase integration |
-| Website services and estimate | 39, 63, 89, 99–100, 109–111 | `/services`, `/services/estimate` | Services exists; estimate screen route absent; pricing rules are not confirmed |
+| Website services and estimate | 39, 63, 89, 99–100, 109–111 | `/services`, `/order` | Services and order routes exist; `/services/estimate` is absent and unapproved pricing rules are not confirmed; stale estimate CTA values normalize to `/order` |
 | Website builder / live demo | 41–42, 46, 60, 64 | `/builder` | Existing interactive builder; map modal, themes and device previews to source |
 | Website order and confirmation | 38, 57, 62, 68–69 | `/order`, order form and API | Seven-step, data-backed order flow exists; preserve 39 questions and actual server results |
 | Checkout, QPay and purchase results | 3, 5, 23, 36–37, 55–56, 61, 73–76 | No customer checkout/payment routes | References prototype/demo payment states; live checkout/QPay backend absent, do not fake success |
@@ -160,8 +161,8 @@ Every reference is assigned to an existing route/component or a documented excep
 | 115 | design-2 | [Шинэчлэлт — 390.png](design-references/design-2/Шинэчлэлт — 390.png) | 780 × 6800 | /templates/[slug] (updates) | Exception: no version model |
 ## Live review findings
 
-- Homepage palette and hero composition visually spot-checked after selecting light theme; preview width was 1280px, not the 1440px reference. No pixel-accurate claim is made.
-- Catalog failed to load due Supabase network fetch failure. Favorites displayed its loading fallback. Product/content states remain unverified with live data.
+- Local production preview of `/portfolio` checked at 360, 390, 768, 1024, and 1440px; the page shell had no horizontal overflow. A 390px mobile screenshot and 1440px desktop screenshot were visually inspected.
+- The local content source returned no published library rows, so populated portfolio/blog/lesson cards and lesson navigation could not be visually verified with real content. The empty state rendered correctly. The template catalog still depends on Supabase availability.
 - No admin login was attempted. Protected admin comparisons require an authorized session and representative records; `/dev/admin-preview` is synthetic and saving is intentionally rejected.
 
 ## Validation
@@ -171,9 +172,9 @@ Every reference is assigned to an existing route/component or a documented excep
 | `npx tsc --noEmit` | Passed |
 | `npm run lint` | Passed |
 | `git diff --check` | Passed; existing LF/CRLF notices only |
-| `npm run build` | Failed: the restricted environment could not fetch Cormorant Garamond, Lora, Manrope, Onest, and Rubik from Google Fonts. |
-| Exact reference viewport/responsive matrix | Incomplete |
-| Dynamic content and admin state validation | Incomplete: Supabase unavailable; no admin session used |
+| `npm run build` | Passed; Next.js generated 42 app routes. |
+| Portfolio page shell at 360, 390, 768, 1024, 1440px | Passed; no horizontal overflow observed. |
+| Populated dynamic content and protected admin state validation | Incomplete: no published library rows were returned; no admin session used. |
 
 ## Unresolved exceptions
 

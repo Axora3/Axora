@@ -3,8 +3,8 @@ import { AUDIT_ACTION, fmtDateTime, statusLabel } from "@/lib/admin/labels";
 import { NoteForm } from "./forms";
 import { LoadFailed } from "./ui";
 
-/** Internal notes + audit-based history for one order or request. */
-export async function NotesHistory({ db, entityType, entityId, meId }: { db: SupabaseClient; entityType: "order" | "template_request"; entityId: string; meId: string }) {
+/** Internal notes + audit-based history for a private admin record. */
+export async function NotesHistory({ db, entityType, entityId, meId }: { db: SupabaseClient; entityType: "order" | "template_request" | "website_project" | "contact_message"; entityId: string; meId: string }) {
   const [notes, hist] = await Promise.all([
     db.from("admin_notes").select("id, body, author_id, created_at").eq("entity_type", entityType).eq("entity_id", entityId).order("created_at", { ascending: false }),
     db.from("admin_audit_log").select("id, actor_id, action, details, created_at").eq("entity_type", entityType).eq("entity_id", entityId).order("created_at", { ascending: false }).limit(50),

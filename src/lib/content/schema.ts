@@ -17,7 +17,7 @@ export const CTA_TARGETS = [
   ["/portfolio", "Портфолио"],
   ["/learn", "Сургалт"],
   ["/blog", "Нийтлэл"],
-  ["/services/estimate", "Үнийн тооцоолуур"],
+
 ] as const;
 const target = z.enum(CTA_TARGETS.map((t) => t[0]) as [string, ...string[]]);
 const text = (max: number) => z.string().trim().max(max);
@@ -51,6 +51,17 @@ export const DEFAULT_CONTENT: SiteContent = {
 
 /** Merges a stored object over defaults; invalid stored data falls back safely. */
 export function parseContent(raw: unknown): SiteContent {
-  const r = siteContentSchema.safeParse({ ...DEFAULT_CONTENT, ...(raw && typeof raw === "object" ? raw : {}) });
+  const merged = { ...DEFAULT_CONTENT, ...(raw && typeof raw === "object" ? raw : {}) };
+  const normalizeCta = (value: unknown) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+    const cta = value as { href?: unknown };
+    return cta.href === "/services/estimate" ? { ...cta, href: "/order" } : value;
+  };
+  const content = {
+    ...merged,
+    heroPrimary: normalizeCta(merged.heroPrimary),
+    heroSecondary: normalizeCta(merged.heroSecondary),
+  };
+  const r = siteContentSchema.safeParse(content);
   return r.success ? r.data : DEFAULT_CONTENT;
 }

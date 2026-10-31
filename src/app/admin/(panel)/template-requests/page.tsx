@@ -13,6 +13,8 @@ import { CHANNEL_LABEL, REQUEST_STATUS, REQUEST_STATUSES, fmtAgo, fmtDateTime, h
 import { serverNow } from "@/lib/admin/period";
 import { PAGE_SIZE, hrefWith, one, page as pageOf, safeSearch } from "@/lib/admin/query";
 import { formatPrice } from "@/lib/templates/types";
+import { dateBounds } from "@/lib/admin/dates";
+import { DELIVERY_STATUS } from "@/lib/admin/labels";
 
 export const metadata = { title: "Template хүсэлтүүд" };
 
@@ -47,11 +49,16 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
   const status = (REQUEST_STATUSES as readonly string[]).includes(one(sp, "status")) ? one(sp, "status") : "";
   const payOpen = one(sp, "pay") === "open";
   const page = pageOf(sp);
+  const delivery = Object.hasOwn(DELIVERY_STATUS, one(sp, "delivery")) ? one(sp, "delivery") : "";
+  const dates = dateBounds(one(sp, "from"), one(sp, "to"));
 
   const run = (cols: string, withPay: boolean) => {
     let query = db.from("template_requests").select(cols, { count: "exact" });
     if (q) query = query.or(`customer_name.ilike."*${q}*",contact_value.ilike."*${q}*"`);
     if (status) query = query.eq("status", status);
+    if (withPay && delivery) query = query.eq("delivery_status", delivery);
+    if (dates.from) query = query.gte("created_at", dates.from);
+    if (dates.to) query = query.lt("created_at", dates.to);
     if (withPay && payOpen) query = query.in("payment_status", ["pending", "needs_review"]).neq("status", "cancelled");
     return query.order("created_at", { ascending: false }).range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1);
   };
@@ -66,7 +73,7 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
   const tabs = [{ id: "", label: "Бүгд", n: tabCounts[0].count }, ...REQUEST_STATUSES.map((s, i) => ({ id: s, label: REQUEST_STATUS[s].label, n: tabCounts[i + 1].count }))];
 
   const total = count ?? 0;
-  const filtered = !!(q || status || payOpen);
+  const filtered = !!(q || status || payOpen || delivery || dates.from || dates.to);
   const nowMs = serverNow();
 
   return (
@@ -77,6 +84,7 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
       <PageHeader title="Хүсэлтүүд" description={<span className="max-md:hidden">“Авах хүсэлт”-ээр ирсэн template хүсэлт. Хүсэлт ирсэн нь төлбөр төлөгдсөн гэсэн үг биш.</span>}>
         <form method="get" role="search" className="relative flex items-center" aria-label="Хүсэлт хайх">
           {status && <input type="hidden" name="status" value={status} />}
+          {["pay", "delivery", "from", "to"].map((key) => one(sp,key) && <input key={key} type="hidden" name={key} value={one(sp,key)} />)}
           <span aria-hidden="true" className="pointer-events-none absolute left-3.5 text-muted">
             <Search size={18} />
           </span>
@@ -112,6 +120,13 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
         </nav>
       </PageHeader>
       <Body>
+        <form method="get" className="flex flex-wrap items-end gap-3" aria-label="Хүргэлт, огноогоор шүүх">
+          {["q", "status", "pay"].map((key) => one(sp,key) && <input key={key} type="hidden" name={key} value={one(sp,key)} />)}
+          <label className="flex min-w-0 flex-col gap-1"><span className={field.label}>Хүргэлт</span><select name="delivery" defaultValue={delivery} disabled={migrationMissing} className={`${field.input} max-w-full`}><option value="">Бүх хүргэлт</option>{Object.entries(DELIVERY_STATUS).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></label>
+          <label className="flex flex-col gap-1"><span className={field.label}>Эхлэх өдөр</span><input name="from" type="date" defaultValue={one(sp,"from")} className={field.input}/></label>
+          <label className="flex flex-col gap-1"><span className={field.label}>Дуусах өдөр</span><input name="to" type="date" defaultValue={one(sp,"to")} className={field.input}/></label>
+          <button className={btn.ghost}>Шүүх</button>
+        </form>
         {migrationMissing && <Notice tone="warn">{MIGRATION_HINT}</Notice>}
         <p aria-live="polite" className="text-[13.5px] font-bold text-muted">
           {error ? "—" : `${total} хүсэлт`}

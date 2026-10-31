@@ -1,6 +1,6 @@
 # AXORA design-to-code map
 
-Updated: 2026-10-30
+Updated: 2026-10-31
 
 ## Source of truth
 
@@ -25,10 +25,10 @@ The complete 115-image inventory, viewport sizes, route mapping, audit notes, an
 
 | Reference screen group | Route(s) | Implementation note |
 |---|---|---|
-| Home, services, template catalog/detail, builder, custom order | `/`, `/services`, `/templates`, `/templates/[slug]`, `/builder`, `/order` | Existing code; compare with the desktop/tablet/mobile references and preserve working submissions. |
-| Favorites, comparison, bundles | `/favorites`, `/compare`, `/bundles`, `/bundles/[slug]` | Routes/components exist in the current tree. Favorites/comparison use local browser storage. Check that bundle content is data-backed. |
-| Blog, learning, portfolio | `/blog`, `/blog/[slug]`, `/learn`, `/learn/[slug]`, `/portfolio`, `/portfolio/[slug]` | Public content routes exist; verify against the archive and the admin content source. |
-| Website estimate | No matching route found | Reference exists; pricing rules and route behavior need to be implemented from approved data, not invented prices. |
+| Home, services, template catalog/detail, builder, custom order | `/`, `/services`, `/templates`, `/templates/[slug]`, `/builder`, `/order` | Existing code; unavailable `/help`, `/checkout`, and estimate targets were removed or mapped to supported request routes. Preserve working submissions. |
+| Favorites, comparison, bundles | `/favorites`, `/compare`, `/bundles`, `/bundles/[slug]` | Favorites/comparison use local browser storage. Favorites now show compact recommendations; bundle questions route to the existing contact form with bundle context. |
+| Blog, learning, portfolio | `/blog`, `/blog/[slug]`, `/learn`, `/learn/[slug]`, `/portfolio`, `/portfolio/[slug]` | Added safe plain-text content formatting, related published blog links, portfolio disclosure/counts, and mobile lesson navigation. Populated content remains unverified because no published library rows were returned. |
+| Website estimate | No matching route found | Reference exists; `/services/estimate` is not implemented. Saved estimate CTA values are normalized to `/order`; pricing rules remain unapproved. |
 | Checkout, QPay, purchases, invoices, notifications, customer tracking | No matching customer routes found | Screens include prototype/demo states. No live QPay provider or customer purchase/account backend was confirmed; no fake payment or delivery success. |
 | Admin dashboard, templates, requests, website orders, content and library | `/admin/*` | Protected workflows exist. Compare layouts and mobile navigation; extend only where supported by real data and actions. |
 | Admin projects, support, marketing, campaigns/coupons, versions | Some screen references have no matching domain route/model | Review each against the actual schema before adding management operations. |
@@ -39,3 +39,4 @@ The complete 115-image inventory, viewport sizes, route mapping, audit notes, an
 2. Reuse the existing routes, components, Supabase schema, server actions, and authorization checks.
 3. Treat screenshot-only prototype labels and demo records as visual references, not as permission to claim live provider behavior.
 4. Compare each applicable page at reference viewports and record limitations where there is no corresponding data or backend integration.
+5. TypeScript, lint, and production build passed on 2026-10-31. The `/portfolio` shell was checked at 360, 390, 768, 1024, and 1440px with no horizontal overflow; dynamic content and protected admin states still need representative data/session validation.

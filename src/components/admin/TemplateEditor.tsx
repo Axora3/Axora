@@ -1,6 +1,9 @@
 "use client";
 
+import { runAdminAction } from "@/lib/admin/action-client";
+
 import Link from "next/link";
+import { useUnsavedChanges } from "./useUnsavedChanges";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import { checkSlugAction, saveTemplateAction, uploadTicketAction } from "@/app/admin/template-actions";
@@ -95,12 +98,7 @@ export function TemplateEditor(p: Props) {
   const dirty = JSON.stringify(form) !== saved;
 
   // Warn before leaving with unsaved edits.
-  useEffect(() => {
-    if (!dirty) return;
-    const h = (e: BeforeUnloadEvent) => e.preventDefault();
-    window.addEventListener("beforeunload", h);
-    return () => window.removeEventListener("beforeunload", h);
-  }, [dirty]);
+  useUnsavedChanges(dirty);
 
   const set = <K extends keyof TemplateForm>(k: K, v: TemplateForm[K]) => setF((x) => ({ ...x, [k]: v }));
 
@@ -114,9 +112,10 @@ export function TemplateEditor(p: Props) {
       return;
     }
     start(async () => {
-      const r = await saveTemplateAction({ id: p.id, expected, mode, form });
+      const r = await runAdminAction(() => saveTemplateAction({ id: p.id, expected, mode, form }));
       if (!r.ok) {
-        setErrors(r.errors ?? {});
+        const errors = "errors" in r ? r.errors ?? {} : {};
+        setErrors(errors);
         setMsg({ kind: "err", text: r.message });
         // Partly saved (e.g. draft stored, publish refused): continue from the stored row.
         if ("saved" in r && r.saved) {
@@ -125,7 +124,7 @@ export function TemplateEditor(p: Props) {
           setStatus(r.saved.status as "draft" | "published");
           if (!p.id) router.replace(`/admin/templates/${r.saved.id}/edit`);
         }
-        const first = Object.keys(r.errors ?? {})[0];
+        const first = Object.keys(errors)[0];
         if (first) document.getElementById(`tf-${first}`)?.focus();
         return;
       }
@@ -153,7 +152,7 @@ export function TemplateEditor(p: Props) {
    */
   async function runUpload(u: Upload) {
     patchUpload(u.key, { pct: 0, error: undefined });
-    const t = await uploadTicketAction({ kind: u.kind, folder: p.folder, name: u.file.name, size: u.file.size });
+    const t = await runAdminAction(() => uploadTicketAction({ kind: u.kind, folder: p.folder, name: u.file.name, size: u.file.size }));
     if (!t.ok) return patchUpload(u.key, { error: t.message });
     try {
       await uploadWithProgress(t.bucket, t.path, t.token, u.file, (pct) => patchUpload(u.key, { pct }));
@@ -193,7 +192,7 @@ export function TemplateEditor(p: Props) {
     let live = true;
     const h = setTimeout(async () => {
       setSlugState("checking");
-      const r = await checkSlugAction(f.slug, p.id);
+      const r = await runAdminAction(() => checkSlugAction(f.slug, p.id));
       if (live) setSlugState(!r.ok ? "error" : r.available ? "ok" : "taken");
     }, 450);
     return () => {

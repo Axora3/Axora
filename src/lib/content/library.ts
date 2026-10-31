@@ -20,4 +20,4 @@ export const librarySchema = z.array(libraryEntrySchema).max(200).superRefine((e
   const seen = new Set<string>();
   entries.forEach((e, i) => { const key = `${e.kind}:${e.slug}`; if (seen.has(key)) ctx.addIssue({ code: "custom", path: [i,"slug"], message: "Давхардсан холбоос" }); seen.add(key); });
 });
-export const libraryHref = (e: LibraryEntry) => e.kind === "bundle" ? `/bundles/${e.slug}` : e.kind === "release" ? `/templates/${e.slug}/updates` : `/${e.kind}/${e.slug}`;
+export const libraryHref = (e: LibraryEntry) => e.kind === "bundle" ? `/bundles/${e.slug}` : e.kind === "release" ? "/templates" : `/${e.kind}/${e.slug}`;
