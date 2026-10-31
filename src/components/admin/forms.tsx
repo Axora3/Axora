@@ -1,5 +1,7 @@
 "use client";
 
+import { runAdminAction } from "@/lib/admin/action-client";
+
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { addNoteAction, signAttachmentAction, updateOrderAction, updateRequestAction } from "@/app/admin/actions";
@@ -34,8 +36,20 @@ export function OrderStatusForm(p: { id: string; updatedAt: string; status: stri
   const [agreed, setAgreed] = useState(p.agreed ?? "");
   const [next, setNext] = useState(p.next ?? "");
   const [expected, setExpected] = useState(p.updatedAt);
+  const [seenVersion, setSeenVersion] = useState(p.updatedAt);
   const [msg, setMsg] = useState<Msg>(null);
   const [pending, start] = useTransition();
+  // Accept a refreshed server version without losing our own save feedback.
+  if (seenVersion !== p.updatedAt) {
+    setSeenVersion(p.updatedAt);
+    if (expected !== p.updatedAt) {
+      setExpected(p.updatedAt);
+      setStatus(p.status);
+      setAgreed(p.agreed ?? "");
+      setNext(p.next ?? "");
+      setMsg(null);
+    }
+  }
   const dirty = status !== p.status || agreed !== (p.agreed ?? "") || next !== (p.next ?? "");
 
   return (
@@ -46,7 +60,7 @@ export function OrderStatusForm(p: { id: string; updatedAt: string; status: stri
         e.preventDefault();
         setMsg(null);
         start(async () => {
-          const r = await updateOrderAction({ id: p.id, expected, status: status as (typeof ORDER_STATUSES)[number], agreed_deadline: agreed, next_contact_on: next });
+          const r = await runAdminAction(() => updateOrderAction({ id: p.id, expected, status: status as (typeof ORDER_STATUSES)[number], agreed_deadline: agreed, next_contact_on: next }));
           if (r.ok) {
             setExpected(r.updatedAt);
             setMsg({ kind: "ok", text: "Хадгалагдлаа." });
@@ -87,8 +101,17 @@ export function RequestStatusForm(p: { id: string; updatedAt: string; status: st
   const router = useRouter();
   const [status, setStatus] = useState(p.status);
   const [expected, setExpected] = useState(p.updatedAt);
+  const [seenVersion, setSeenVersion] = useState(p.updatedAt);
   const [msg, setMsg] = useState<Msg>(null);
   const [pending, start] = useTransition();
+  if (seenVersion !== p.updatedAt) {
+    setSeenVersion(p.updatedAt);
+    if (expected !== p.updatedAt) {
+      setExpected(p.updatedAt);
+      setStatus(p.status);
+      setMsg(null);
+    }
+  }
   return (
     <form
       className="flex flex-col gap-3"
@@ -96,7 +119,7 @@ export function RequestStatusForm(p: { id: string; updatedAt: string; status: st
         e.preventDefault();
         setMsg(null);
         start(async () => {
-          const r = await updateRequestAction({ id: p.id, expected, status: status as (typeof REQUEST_STATUSES)[number] });
+          const r = await runAdminAction(() => updateRequestAction({ id: p.id, expected, status: status as (typeof REQUEST_STATUSES)[number] }));
           if (r.ok) {
             setExpected(r.updatedAt);
             setMsg({ kind: "ok", text: "Хадгалагдлаа." });
@@ -129,7 +152,7 @@ export function RequestStatusForm(p: { id: string; updatedAt: string; status: st
   );
 }
 
-export function NoteForm({ entityType, entityId }: { entityType: "order" | "template_request"; entityId: string }) {
+export function NoteForm({ entityType, entityId }: { entityType: "order" | "template_request" | "website_project" | "contact_message"; entityId: string }) {
   const router = useRouter();
   const [body, setBody] = useState("");
   const [msg, setMsg] = useState<Msg>(null);
@@ -141,7 +164,7 @@ export function NoteForm({ entityType, entityId }: { entityType: "order" | "temp
         e.preventDefault();
         if (!body.trim()) return setMsg({ kind: "err", text: "Тэмдэглэлээ бичнэ үү." });
         start(async () => {
-          const r = await addNoteAction({ entityType, entityId, body });
+          const r = await runAdminAction(() => addNoteAction({ entityType, entityId, body }));
           if (r.ok) {
             setBody("");
             setMsg({ kind: "ok", text: "Тэмдэглэл нэмэгдлээ." });
@@ -166,6 +189,7 @@ export function NoteForm({ entityType, entityId }: { entityType: "order" | "temp
 /** Image preview / file download via a 2-minute signed URL. SVG/PDF are never rendered inline in this page. */
 export function AttachmentActions({ id, name, mime, uploaded }: { id: string; name: string; mime: string; uploaded: boolean }) {
   const [img, setImg] = useState<string | null>(null);
+  const [download, setDownload] = useState<string | null>(null);
   const [err, setErr] = useState("");
   const [pending, start] = useTransition();
   const previewable = mime === "image/jpeg" || mime === "image/png";
@@ -173,10 +197,10 @@ export function AttachmentActions({ id, name, mime, uploaded }: { id: string; na
   const go = (mode: "view" | "download") =>
     start(async () => {
       setErr("");
-      const r = await signAttachmentAction(id, mode);
+      const r = await runAdminAction(() => signAttachmentAction(id, mode));
       if (!r.ok) return setErr(r.message);
       if (mode === "view" && previewable) setImg(r.url);
-      else window.open(r.url, "_blank", "noopener");
+      else setDownload(r.url);
     });
   return (
     <div className="flex flex-col gap-2">
@@ -191,6 +215,10 @@ export function AttachmentActions({ id, name, mime, uploaded }: { id: string; na
         </button>
       </div>
       {err && <p role="alert" className="text-[13px] font-bold text-danger">✕ {err}</p>}
+      {download && <div role="status" className="flex flex-wrap items-center gap-2 text-sm">
+        <a href={download} target="_blank" rel="noopener noreferrer" className={btn.primary}>Файлыг нээж татах ↗</a>
+        <span className="text-muted">Холбоос 2 минут хүчинтэй. Дууссан бол дахин “Татах” дарна уу.</span>
+      </div>}
       {img && (
         // eslint-disable-next-line @next/next/no-img-element -- short-lived signed URL, not an optimisable asset
         <img src={img} alt={name} className="max-h-[360px] w-auto max-w-full rounded-xl border border-line object-contain" />

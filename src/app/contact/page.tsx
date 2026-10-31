@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import Link from "next/link";
 import { ContactForm } from "@/components/contact/ContactForm";
 import { ArrowRight, Chat, Clock, Mail, PhoneCall } from "@/components/icons";
@@ -15,8 +16,20 @@ export const metadata: Metadata = {
 
 
 
-export default async function ContactPage() {
-  const { contact } = await getSiteContent();
+export default function ContactPage(props: PageProps<"/contact">) {
+  return (
+    <Suspense fallback={<main id="main" className="mx-auto max-w-[1240px] px-5 pt-10"><p aria-busy="true">Мэдээлэл ачаалж байна…</p></main>}>
+      <ContactPageContent searchParams={props.searchParams} />
+    </Suspense>
+  );
+}
+
+async function ContactPageContent({ searchParams }: Pick<PageProps<"/contact">, "searchParams">) {
+  const [content, query] = await Promise.all([getSiteContent(), searchParams]);
+  const { contact } = content;
+  const bundleSlug = typeof query.bundle === "string" ? query.bundle : "";
+  const bundle = content.library.find((entry) => entry.kind === "bundle" && entry.slug === bundleSlug && entry.published);
+  const initialMessage = bundle ? `Сайн байна уу. Би “${bundle.title}” багцын талаар асуух гэсэн юм.` : "";
   const CHANNELS = [
     { Icon: PhoneCall, label: "Утас", value: contact.phone, href: phoneHref(contact.phone) },
     { Icon: Mail, label: "Имэйл", value: contact.email, href: emailHref(contact.email) },
@@ -69,7 +82,7 @@ export default async function ContactPage() {
           <h2 id="ct-form-t" className="text-xl font-extrabold">
             Зурвас үлдээх
           </h2>
-          <ContactForm backendEnabled={isBackendConfigured()} />
+          <ContactForm backendEnabled={isBackendConfigured()} initialMessage={initialMessage} />
         </section>
       </main>
       <SiteFooter />

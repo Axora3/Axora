@@ -8,9 +8,14 @@ import { useDialog } from "@/components/ui/use-dialog";
 
 export const NAV = [
   { href: "/templates", label: "Загварууд" },
+  { href: "/bundles", label: "Багцууд" },
+  { href: "/portfolio", label: "Портфолио" },
+  { href: "/learn", label: "Сургалт" },
+  { href: "/blog", label: "Нийтлэл" },
   { href: "/services", label: "Веб хөгжүүлэлт" },
   { href: "/builder", label: "Жишээ загварууд" },
-  { href: "/#faq", label: "Түгээмэл асуулт" },
+  { href: "/favorites", label: "Хадгалсан загварууд" },
+  { href: "/compare", label: "Харьцуулалт" },
   { href: "/contact", label: "Холбоо барих" },
 ];
 
@@ -23,7 +28,7 @@ type Props = {
   mobileBack?: { href: string; label: string; title: string };
   wide?: boolean;
   /** Which main-nav item is the current page (set by the page, so no runtime URL read is needed). */
-  active?: "/templates" | "/services" | "/builder";
+  active?: string;
 };
 
 export function SiteHeader({ variant = "main", label, back, mobileBack, wide, active: current }: Props) {
@@ -57,8 +62,8 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
 
         {variant === "main" ? (
           <>
-            <nav aria-label="Үндсэн цэс" className="hidden items-center gap-7 text-[15px] font-semibold min-[900px]:flex">
-              {NAV.slice(0, 4).map((n) => {
+            <nav aria-label="Үндсэн цэс" className="hidden items-center gap-5 text-sm font-bold min-[1100px]:flex">
+              {NAV.slice(0, 6).map((n) => {
                 const active = n.href === current;
                 return (
                   <Link
@@ -73,10 +78,11 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
               })}
             </nav>
             <div className="flex items-center gap-2">
+              <Link href="/favorites" aria-label="Хадгалсан загварууд" className="ax-btn grid h-11 w-11 place-items-center rounded-[11px] border border-line bg-surface text-brand"><svg width="18" height="18" viewBox="0 0 24 24" fill={current === "/favorites" ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.9-8.6a5.5 5.5 0 0 0-.1-7.8Z" /></svg></Link>
               <ThemeToggle />
               <Link
                 href="/order"
-                className="ax-btn ax-primary hidden min-h-11 items-center rounded-[11px] bg-primary px-[18px] text-[15px] font-bold text-on-primary min-[900px]:inline-flex"
+                className="ax-btn ax-primary hidden min-h-11 items-center rounded-[11px] bg-primary px-[18px] text-[15px] font-bold text-on-primary min-[1100px]:inline-flex"
               >
                 Үнийн санал авах
               </Link>
@@ -86,7 +92,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
                 aria-expanded={open}
                 aria-controls="ax-mobile-menu"
                 onClick={() => setOpen(true)}
-                className="ax-btn inline-flex h-11 w-11 items-center justify-center rounded-[11px] border border-line bg-surface text-ink min-[900px]:hidden"
+                className="ax-btn inline-flex h-11 w-11 items-center justify-center rounded-[11px] border border-line bg-surface text-ink min-[1100px]:hidden"
               >
                 <Menu size={20} />
               </button>

@@ -7,6 +7,7 @@ import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import { DetailInfo } from "@/components/templates/DetailInfo";
 import { Gallery } from "@/components/templates/Gallery";
+import { TemplateCollectionActions } from "@/components/templates/TemplateCollectionActions";
 import { TemplateRequest } from "@/components/templates/TemplateRequest";
 import { LoadError } from "@/components/ui/RetryButton";
 import { isBackendConfigured } from "@/lib/supabase/server";
@@ -40,6 +41,7 @@ async function Detail({ params }: { params: PageProps<"/templates/[slug]">["para
           <span className="text-[28px] font-extrabold max-[899px]:text-2xl">{price}</span>
           {t.isDemo && <span className="rounded-md bg-warn-bg px-2 py-1 text-[13px] font-bold text-warn">Жишээ үнэ</span>}
         </div>
+        <TemplateCollectionActions template={{ id: t.id, title: t.title }} />
         <p className="text-base leading-[1.65] text-muted">{t.longDescription}</p>
         <dl className="m-0 grid grid-cols-2 gap-2.5 min-[900px]:gap-3">
           <div className="rounded-xl border border-line bg-surface px-3.5 py-3">

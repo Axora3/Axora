@@ -4,6 +4,9 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { DENIED, requireAdminAction, type ActionFail, type ActionResult } from "@/lib/admin/auth";
 import { ORDER_STATUS, ORDER_STATUSES, REQUEST_STATUS, REQUEST_STATUSES } from "@/lib/admin/labels";
+import { CONTACT_STATUSES } from "@/lib/admin/projects";
+import { isCalendarDate } from "@/lib/admin/dates";
+import { ADMIN_MODULE_MIGRATION_HINT, isMissingMigration } from "@/lib/admin/db-errors";
 import { canOrderTransition, canRequestTransition, orderTransitionHint, requestTransitionHint } from "@/lib/admin/transitions";
 import { BUCKETS } from "@/lib/supabase/server";
 
@@ -34,7 +37,7 @@ function revalidateAdmin(...paths: string[]) {
   revalidatePath("/admin", "layout");
 }
 
-const date = z.union([z.literal(""), z.string().regex(/^\d{4}-\d{2}-\d{2}$/)]).transform((v) => v || null);
+const date = z.string().refine((v) => v === "" || isCalendarDate(v)).transform((v) => v || null);
 
 const orderUpdate = z.object({
   id: z.uuid(),
@@ -155,7 +158,26 @@ export async function confirmPaymentAction(input: z.input<typeof payment>): Prom
   return { ok: true, already: r.status === "already_confirmed", amount: Number(r.amount ?? 0), currency: r.currency ?? "MNT" };
 }
 
-const note = z.object({ entityType: z.enum(["order", "template_request"]), entityId: z.uuid(), body: z.string().trim().min(1).max(4000) });
+const contactUpdate = z.object({ id: z.uuid(), expected: z.string().min(10), status: z.enum(CONTACT_STATUSES) });
+
+/** Internal support workflow only; this does not send an email or message. */
+export async function updateContactMessageStatusAction(input: z.input<typeof contactUpdate>): Promise<ActionResult<{ updatedAt: string; from: string }>> {
+  const ctx = await requireAdminAction();
+  if (!ctx) return DENIED;
+  const p = contactUpdate.safeParse(input);
+  if (!p.success) return { ok: false, code: "invalid", message: "Төлөвийн утга буруу байна." };
+  const { data: current, error: readError } = await ctx.db.from("contact_messages").select("status, updated_at").eq("id", p.data.id).maybeSingle();
+  if (readError) return isMissingMigration(readError) ? { ok: false, code: "migration", message: ADMIN_MODULE_MIGRATION_HINT } : FAILED;
+  if (!current) return { ok: false, code: "not_found", message: "Хүсэлт олдсонгүй." };
+  if (current.updated_at !== p.data.expected) return CONFLICT;
+  const { data, error } = await ctx.db.from("contact_messages").update({ status: p.data.status }).eq("id", p.data.id).eq("updated_at", p.data.expected).select("updated_at");
+  if (error) return isMissingMigration(error) ? { ok: false, code: "migration", message: ADMIN_MODULE_MIGRATION_HINT } : FAILED;
+  if (!data?.length) return CONFLICT;
+  revalidateAdmin("/admin/support", `/admin/support/${p.data.id}`, "/admin/notifications");
+  return { ok: true, updatedAt: data[0].updated_at, from: current.status };
+}
+
+const note = z.object({ entityType: z.enum(["order", "template_request", "website_project", "contact_message"]), entityId: z.uuid(), body: z.string().trim().min(1).max(4000) });
 
 export async function addNoteAction(input: z.input<typeof note>): Promise<ActionResult> {
   const ctx = await requireAdminAction();
@@ -164,7 +186,14 @@ export async function addNoteAction(input: z.input<typeof note>): Promise<Action
   if (!p.success) return { ok: false, code: "invalid", message: "Тэмдэглэл хоосон эсвэл хэт урт байна." };
   const { error } = await ctx.db.from("admin_notes").insert({ entity_type: p.data.entityType, entity_id: p.data.entityId, body: p.data.body });
   if (error) return FAILED;
-  revalidatePath(p.data.entityType === "order" ? `/admin/orders/${p.data.entityId}` : `/admin/template-requests/${p.data.entityId}`);
+  const detailPath = p.data.entityType === "order"
+    ? `/admin/orders/${p.data.entityId}`
+    : p.data.entityType === "template_request"
+      ? `/admin/template-requests/${p.data.entityId}`
+      : p.data.entityType === "website_project"
+        ? `/admin/projects/${p.data.entityId}`
+        : `/admin/support/${p.data.entityId}`;
+  revalidatePath(detailPath);
   return { ok: true };
 }
 
@@ -224,8 +253,11 @@ export async function createDownloadLinkAction(requestId: string, hours: number)
   if (!url) return { ok: false, code: "no_file", message: refusals.no_file };
 
   // The URL itself is never stored or logged.
-  const { error: recErr } = await ctx.db.rpc("record_delivery_link", { p_request: requestId, p_hours: g.storage_path ? hours : null });
-  if (recErr) console.error("[admin] record delivery link:", recErr.code);
+  const { data: recorded, error: recErr } = await ctx.db.rpc("record_delivery_link", { p_request: requestId, p_hours: g.storage_path ? hours : null });
+  if (recErr || recorded?.status !== "ok") {
+    if (recErr) console.error("[admin] record delivery link:", recErr.code);
+    return { ok: false, code: "record_failed", message: "Холбоосын зөвшөөрөл эсвэл түүхийг баталгаажуулж чадсангүй. Хүсэлтийг шинэчлээд дахин оролдоно уу." };
+  }
   revalidateAdmin(`/admin/template-requests/${requestId}`, "/admin/template-requests");
   return { ok: true, url, expiresAt, external: !g.storage_path };
 }

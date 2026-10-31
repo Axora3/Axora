@@ -16,7 +16,7 @@ export default function AdminPreview() {
   if (process.env.NODE_ENV === "production") notFound();
   const t = "2026-10-29T01:00:00.000Z";
   return (
-    <AdminShell counts={{ orders: 3, requests: 12 }} email="preview@example.test">
+    <AdminShell counts={{ orders: 3, requests: 12, support: 0, notifications: 0 }} email="preview@example.test">
       <PageHeader title="UI preview (туршилт)" description="Зөвхөн development — бодит өгөгдөл биш." />
       <Body>
         <Notice tone="warn">Туршилтын дэлгэц. Энд хадгалах үйлдэл серверт эрхгүй тул алдаа буцаана.</Notice>

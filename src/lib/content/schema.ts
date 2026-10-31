@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { CONTACT, FAQ } from "@/lib/site";
+import { librarySchema } from "./library";
 
 /**
  * Fixed-field site content. Plain text only — the public site renders these
@@ -12,11 +13,17 @@ export const CTA_TARGETS = [
   ["/services", "Веб хөгжүүлэлт"],
   ["/contact", "Холбоо барих"],
   ["/#faq", "Түгээмэл асуулт"],
+  ["/bundles", "Багцууд"],
+  ["/portfolio", "Портфолио"],
+  ["/learn", "Сургалт"],
+  ["/blog", "Нийтлэл"],
+
 ] as const;
 const target = z.enum(CTA_TARGETS.map((t) => t[0]) as [string, ...string[]]);
 const text = (max: number) => z.string().trim().max(max);
 
 export const siteContentSchema = z.object({
+  library: librarySchema.default([]),
   heroTitle: text(80).min(1),
   heroAccent: text(40),
   heroLead: text(240),
@@ -30,11 +37,12 @@ export const siteContentSchema = z.object({
 export type SiteContent = z.infer<typeof siteContentSchema>;
 
 export const DEFAULT_CONTENT: SiteContent = {
-  heroTitle: "Санаагаа дараагийн",
-  heroAccent: "түвшинд.",
+  library: [],
+  heroTitle: "Бэлэн загвар ба",
+  heroAccent: "веб сайт — нэг дор.",
   heroLead: "Ажлыг хөнгөвчлөх бэлэн загварууд, бизнесийг тань илэрхийлэх веб сайт — нэг дор.",
   heroPrimary: { label: "Загварууд үзэх", href: "/templates" },
-  heroSecondary: { label: "Вебээ загварчлах", href: "/builder" },
+  heroSecondary: { label: "Веб сайт захиалах", href: "/services" },
   contact: { phone: CONTACT.phone, email: CONTACT.email, messenger: CONTACT.messenger, hours: CONTACT.hours },
   social: [],
   faq: FAQ,
@@ -43,6 +51,17 @@ export const DEFAULT_CONTENT: SiteContent = {
 
 /** Merges a stored object over defaults; invalid stored data falls back safely. */
 export function parseContent(raw: unknown): SiteContent {
-  const r = siteContentSchema.safeParse({ ...DEFAULT_CONTENT, ...(raw && typeof raw === "object" ? raw : {}) });
+  const merged = { ...DEFAULT_CONTENT, ...(raw && typeof raw === "object" ? raw : {}) };
+  const normalizeCta = (value: unknown) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return value;
+    const cta = value as { href?: unknown };
+    return cta.href === "/services/estimate" ? { ...cta, href: "/order" } : value;
+  };
+  const content = {
+    ...merged,
+    heroPrimary: normalizeCta(merged.heroPrimary),
+    heroSecondary: normalizeCta(merged.heroSecondary),
+  };
+  const r = siteContentSchema.safeParse(content);
   return r.success ? r.data : DEFAULT_CONTENT;
 }

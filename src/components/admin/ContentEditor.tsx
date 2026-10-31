@@ -1,7 +1,10 @@
 "use client";
 
+import { runAdminAction } from "@/lib/admin/action-client";
+
+import { useUnsavedChanges } from "./useUnsavedChanges";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { publishContentAction, saveContentDraftAction } from "@/app/admin/content-actions";
 import { Faq } from "@/components/home/Faq";
 import { Hero } from "@/components/home/Hero";
@@ -22,19 +25,14 @@ export function ContentEditor(p: Props) {
   const [pending, start] = useTransition();
   const dirty = JSON.stringify(c) !== saved;
 
-  useEffect(() => {
-    if (!dirty) return;
-    const h = (e: BeforeUnloadEvent) => e.preventDefault();
-    window.addEventListener("beforeunload", h);
-    return () => window.removeEventListener("beforeunload", h);
-  }, [dirty]);
+  useUnsavedChanges(dirty);
 
   const set = (patch: Partial<SiteContent>) => setC((x) => ({ ...x, ...patch }));
 
   function run(kind: "draft" | "publish") {
     setMsg(null);
     start(async () => {
-      const r = kind === "draft" ? await saveContentDraftAction(expected, c) : await publishContentAction(expected, c);
+      const r = kind === "draft" ? await runAdminAction(() => saveContentDraftAction(expected, c)) : await runAdminAction(() => publishContentAction(expected, c));
       if (!r.ok) return setMsg({ kind: "err", text: r.message, conflict: r.code === "conflict" });
       setSaved(JSON.stringify(c));
       setExpected(r.updatedAt);

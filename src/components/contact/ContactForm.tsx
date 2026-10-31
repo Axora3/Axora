@@ -9,10 +9,10 @@ import { phoneOrEmailError } from "@/lib/requests/validation";
 const box = "w-full rounded-xl bg-sunken px-3.5 text-base text-ink";
 const border = (bad: boolean) => ({ border: bad ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)" });
 
-export function ContactForm({ backendEnabled }: { backendEnabled: boolean }) {
+export function ContactForm({ backendEnabled, initialMessage = "" }: { backendEnabled: boolean; initialMessage?: string }) {
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
-  const [msg, setMsg] = useState("");
+  const [msg, setMsg] = useState(initialMessage);
   const [tried, setTried] = useState(false);
   const [busy, setBusy] = useState(false);
   const [done, setDone] = useState<null | "saved" | "test">(null);

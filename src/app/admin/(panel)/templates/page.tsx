@@ -24,14 +24,16 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
   const cat = (TEMPLATE_CATEGORIES as readonly string[]).includes(one(sp, "category")) ? one(sp, "category") : "";
   const status = ["draft", "published"].includes(one(sp, "status")) ? one(sp, "status") : "";
   const page = pageOf(sp);
+  const sort = ["title", "price", "sort_order"].includes(one(sp, "sort")) ? one(sp, "sort") : "updated_at";
 
   let query = db.from("templates").select("id, title, slug, category, price, currency, is_free, status, updated_at, preview_images, preview_style", { count: "exact" });
   if (q) query = query.ilike("title", `%${q}%`);
   if (cat) query = query.eq("category", cat);
   if (status) query = query.eq("status", status);
+  if (sort === "price") query = query.order("currency");
   const head = { count: "exact" as const, head: true };
   const [{ data, count, error }, all, pub, draft] = await Promise.all([
-    query.order("updated_at", { ascending: false }).range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1),
+    query.order(sort, { ascending: sort !== "updated_at" }).order("id").range((page - 1) * PAGE_SIZE, page * PAGE_SIZE - 1),
     db.from("templates").select("id", head),
     db.from("templates").select("id", head).eq("status", "published"),
     db.from("templates").select("id", head).eq("status", "draft"),
@@ -40,7 +42,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
   const { data: files } = rows.length ? await db.from("template_files").select("template_id, storage_path, external_url").in("template_id", rows.map((r) => r.id)) : { data: [] };
   const hasFile = new Set((files ?? []).filter((f) => f.storage_path || f.external_url).map((f) => f.template_id));
   const total = count ?? 0;
-  const filtered = !!(q || cat || status);
+  const filtered = !!(q || cat || status || sort !== "updated_at");
   const segs = [
     { id: "", label: "Бүгд", n: all.count },
     { id: "published", label: "Нийтэлсэн", n: pub.count },
@@ -61,6 +63,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
         <form method="get" role="search" className="relative flex items-center" aria-label="Бүтээгдэхүүн хайх">
           {status && <input type="hidden" name="status" value={status} />}
           {cat && <input type="hidden" name="category" value={cat} />}
+          <input type="hidden" name="sort" value={sort} />
           <span aria-hidden="true" className="pointer-events-none absolute left-3.5 text-muted">
             <Search size={18} />
           </span>
@@ -98,10 +101,11 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
               </>
             )}
           </p>
-          <FilterSheet active={cat ? 1 : 0} title="Ангилал">
+          <FilterSheet active={(cat ? 1 : 0) + (sort !== "updated_at" ? 1 : 0)} title="Ангилал, эрэмбэ">
             <form method="get" className="flex flex-wrap items-end gap-2" aria-label="Ангиллаар шүүх">
               {q && <input type="hidden" name="q" value={q} />}
               {status && <input type="hidden" name="status" value={status} />}
+              <label className="flex flex-[1_1_180px] flex-col gap-1.5"><span className={field.label}>Эрэмбэ</span><select name="sort" defaultValue={sort} className={field.input}><option value="updated_at">Сүүлд шинэчилсэн</option><option value="sort_order">Сайтын эрэмбэ</option><option value="title">Нэрээр</option><option value="price">Үнэ өсөхөөр (валют тусдаа)</option></select></label>
               <label className="flex flex-[1_1_180px] flex-col gap-1.5">
                 <span className={field.label}>Ангилал</span>
                 <select name="category" defaultValue={cat} className={field.input}>

@@ -1,0 +1,42 @@
+"use client";
+import Link from "next/link";
+import Image from "next/image";
+import { useState } from "react";
+import { EmptyState } from "@/components/site/PageFrame";
+import { libraryHref, type LibraryEntry, type LibraryKind } from "@/lib/content/library";
+import { LibraryBody } from "./LibraryBody";
+
+export function LibraryCover({ entry, large = false }: { entry: LibraryEntry; large?: boolean }) {
+  const tones: Record<string,string>={Excel:"#e7f0e9",Notion:"#eef1e6",Canva:"#f5e9dc"};
+  return <div className={`ax-light relative flex items-center justify-center overflow-hidden ${large?"min-h-[300px]":"h-[190px]"}`} style={{background:tones[entry.category]??"#eef1e6",color:"#245c45"}}>{entry.coverUrl?<Image src={entry.coverUrl} alt={entry.title} fill unoptimized className="object-cover"/>:entry.kind==="bundle"?<div className="flex items-center justify-center p-7">{[0,1,2].slice(0,Math.max(2,Math.min(entry.templateIds.length,3))).map(i=><span key={i} className={`flex h-24 w-20 items-center justify-center rounded-lg border-2 border-white bg-white/60 text-center text-[10px] font-bold shadow-lg ${i===1?"-ml-7 translate-y-4 rotate-6":"-rotate-6"}`}>{entry.tags[i]||"Загвар"}</span>)}</div>:<span className={entry.kind==="learn"?"grid h-12 w-12 place-items-center rounded-xl bg-white font-extrabold shadow-lg":"serif text-2xl"}>{entry.category||entry.title}</span>}</div>;
+}
+export function LibraryBrowser({ entries, kind }: { entries: LibraryEntry[]; kind: LibraryKind }) {
+  const [query,setQuery]=useState("");const [category,setCategory]=useState("Бүгд");
+  const categories=["Бүгд",...new Set(entries.map(e=>e.category).filter(Boolean))];
+  const rows=entries.filter(e=>(category==="Бүгд"||e.category===category)&&`${e.title} ${e.summary}`.toLowerCase().includes(query.toLowerCase()));
+  const countFor = (c: string) => c === "Бүгд" ? entries.length : entries.filter((entry) => entry.category === c).length;
+  return <><div className="mb-6 flex flex-wrap items-center gap-2"><input className="ax-input min-w-0 flex-[1_1_320px]" aria-label="Агуулга хайх" placeholder={kind==="learn"?"Заавар хайх":"Нэрээр хайх"} value={query} onChange={e=>setQuery(e.target.value)}/>{categories.map(c=><button key={c} className="ax-choice" aria-pressed={category===c} onClick={()=>setCategory(c)}>{c}{kind==="portfolio"&&<span className="ml-1.5 text-muted">{countFor(c)}</span>}</button>)}</div>{!rows.length?<EmptyState title={entries.length?"Тохирох агуулга олдсонгүй":"Одоогоор нийтэлсэн агуулга алга"} description={entries.length?"Өөр үгээр хайх эсвэл ангиллаа солино уу.":"Шинэ мэдээлэл нийтлэгдэх үед энд харагдана. Асуух зүйл байвал бидэнтэй холбогдоорой."} href="/contact" label="Холбоо барих"/>:<div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">{rows.map((entry,i)=><article key={entry.id} className={`overflow-hidden rounded-2xl border border-line bg-surface ${kind==="blog"&&i===0?"sm:col-span-2 lg:col-span-3 lg:grid lg:grid-cols-2":""}`}><div className="relative">{kind==="portfolio"&&<span className="absolute left-3 top-3 z-10 rounded-full bg-band px-3 py-1.5 text-xs font-extrabold text-on-band">Танилцуулга</span>}<LibraryCover entry={entry} large={kind==="blog"&&i===0}/></div><div className="flex flex-col gap-2 p-5"><span className="text-xs font-bold text-brand">{entry.category}{kind==="learn"&&entry.tags[0]?` · ${entry.tags[0]}`:""}</span><h2 className="text-xl font-extrabold leading-tight">{entry.title}</h2><p className="text-sm leading-relaxed text-muted">{entry.summary}</p>{kind==="learn"&&<span className="text-xs text-muted">{entry.sections.length} хичээл</span>}<div className="flex flex-wrap gap-1.5">{entry.tags.map(tag=><span className="rounded-md bg-soft px-2 py-1 text-xs font-bold text-brand" key={tag}>{tag}</span>)}</div>{kind==="bundle"&&<p className="mt-2 font-extrabold">{entry.price===null?"Үнэ тохируулаагүй":`${entry.price.toLocaleString("en-US")}₮`}</p>}<Link href={libraryHref(entry)} className={`ax-button mt-auto ${kind==="bundle"||kind==="blog"&&i===0?"ax-button-primary":""}`}>{kind==="learn"?"Заавар үзэх":kind==="bundle"?"Багц үзэх":kind==="blog"?"Нийтлэл унших":"Дэлгэрэнгүй үзэх"}</Link></div></article>)}</div>}</>;
+}
+export function LessonReader({ entry }: { entry: LibraryEntry }) {
+  const [index,setIndex]=useState(0);const [done,setDone]=useState<number[]>([]);
+  const lesson=entry.sections[index];
+  if(!lesson)return <EmptyState title="Хичээл оруулаагүй байна" description="Хичээлийн агуулга нийтлэгдээгүй байна." href="/learn" label="Сургалт руу буцах"/>;
+  const previous=()=>setIndex((value)=>Math.max(0,value-1));
+  const next=()=>setIndex((value)=>Math.min(entry.sections.length-1,value+1));
+  return <>
+    <nav aria-label="Байршил заагч" className="mb-5 flex flex-wrap items-center gap-2 text-sm"><Link className="font-bold text-brand" href="/learn">Сургалт</Link><span aria-hidden="true" className="text-muted">/</span><span aria-current="page" className="text-muted">{entry.title}</span></nav>
+    <div className="grid items-start gap-6 lg:grid-cols-[230px_minmax(0,1fr)_240px]">
+      <aside className="ax-panel hidden space-y-2 p-4 lg:block"><h2 className="mb-3 font-extrabold">{entry.title}</h2><p className="mb-3 text-xs text-muted">Явц {done.length}/{entry.sections.length} · энэ удаагийн үзэлт</p>{entry.sections.map((s,i)=><button key={i} aria-current={index===i?"step":undefined} className={`flex min-h-11 w-full items-center gap-2 rounded-lg px-3 text-left text-sm ${index===i?"bg-soft font-bold text-brand":""}`} onClick={()=>setIndex(i)}><span>{done.includes(i)?"✓":i+1}</span><span>{s.title}</span></button>)}</aside>
+      <article className="min-w-0">
+        <details className="ax-panel mb-5 p-4 lg:hidden"><summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 font-extrabold"><span>Хичээлүүд · {done.length}/{entry.sections.length} дууссан</span><span aria-hidden="true" className="text-brand">⌄</span></summary><div className="mt-3 grid gap-1 border-t border-line pt-3">{entry.sections.map((s,i)=><button key={i} aria-current={index===i?"step":undefined} className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-left text-sm ${index===i?"bg-soft font-bold text-brand":""}`} onClick={()=>setIndex(i)}><span className="w-5 text-xs font-bold">{done.includes(i)?"✓":i+1}</span><span>{s.title}</span></button>)}</div></details>
+        <div className="mb-4 flex flex-wrap gap-2"><span className="rounded-full bg-soft px-3 py-1.5 text-xs font-bold text-brand">{entry.category||"Сургалт"}</span>{entry.tags[0]&&<span className="rounded-full bg-surface px-3 py-1.5 text-xs font-bold text-muted">{entry.tags[0]}</span>}<span className="rounded-full bg-surface px-3 py-1.5 text-xs font-bold text-muted">Хичээл {index+1}/{entry.sections.length}</span></div>
+        <h1 className="mb-5 text-3xl font-extrabold leading-tight">{lesson.title}</h1><div className="overflow-hidden rounded-2xl"><LibraryCover entry={entry} large/></div>
+        <LibraryBody text={lesson.body} className="my-6 space-y-4"/>
+        <label className="ax-panel flex min-h-14 cursor-pointer items-center gap-3 p-4"><input type="checkbox" checked={done.includes(index)} onChange={e=>setDone(d=>e.target.checked?[...new Set([...d,index])]:d.filter(i=>i!==index))}/>Энэ хичээлийг дуусгасан</label>
+        <div className="mt-5 hidden justify-between gap-3 lg:flex"><button className="ax-button" disabled={index===0} onClick={previous}>← Өмнөх хичээл</button><button className="ax-button ax-button-primary" disabled={index===entry.sections.length-1} onClick={next}>Дараах хичээл →</button></div>
+      </article>
+      <aside className="ax-panel hidden lg:block"><h2 className="font-bold">Холбоотой заавар</h2><p className="mt-3 text-sm leading-relaxed text-muted">{entry.summary}</p><Link className="ax-button mt-4 w-full" href="/learn">Бусад сургалт</Link><Link className="mt-4 block text-sm text-brand underline" href="/contact">Холбоо барих</Link></aside>
+    </div>
+    <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-2 border-t border-line bg-surface/95 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] backdrop-blur lg:hidden"><button className="ax-button min-w-0 px-2 text-sm" disabled={index===0} onClick={previous}>← Өмнөх</button><button className="ax-button ax-button-primary min-w-0 px-2 text-sm" disabled={index===entry.sections.length-1} onClick={next}>Дараах →</button></div>
+  </>;
+}

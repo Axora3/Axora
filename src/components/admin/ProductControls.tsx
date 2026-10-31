@@ -1,5 +1,7 @@
 "use client";
 
+import { runAdminAction } from "@/lib/admin/action-client";
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -33,12 +35,13 @@ export function PublishSwitch({ id, title, published, editHref }: { id: string; 
   function commit(next: boolean) {
     setTarget(next);
     start(async () => {
-      const r = await setTemplatePublishedAction({ id, publish: next });
+      const r = await runAdminAction(() => setTemplatePublishedAction({ id, publish: next }));
       setTarget(null);
       if (!r.ok) {
-        setReasons(r.reasons ?? []);
+        const reasons = "reasons" in r ? r.reasons ?? [] : [];
+        setReasons(reasons);
         setMsg(r.message);
-        if (r.reasons?.length || r.code === "validation") setSheet("errors");
+        if (reasons.length || r.code === "validation") setSheet("errors");
         else toast({ kind: "err", text: r.message, action: { label: "Дахин", onClick: () => commit(next) } });
         return;
       }
