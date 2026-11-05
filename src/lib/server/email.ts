@@ -3,8 +3,6 @@ import nodemailer from "nodemailer";
 
 export const isEmailConfigured = () => !!(process.env.SMTP_USER && process.env.SMTP_PASSWORD);
 
-const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
-
 /**
  * Emails a purchased template's download link over SMTP. Gmail by default;
  * any provider works by setting SMTP_HOST. Returns whether the server accepted
@@ -12,7 +10,7 @@ const escapeHtml = (value: string) => value.replace(/[&<>"']/g, (c) => ({ "&": "
  */
 export async function sendDownloadEmail({ to, name, title, url, expiresAt }: { to: string; name: string; title: string; url: string; expiresAt: string | null }): Promise<boolean> {
   const until = expiresAt ? new Date(expiresAt).toLocaleString("mn-MN", { timeZone: "Asia/Ulaanbaatar" }) : null;
-  const expiry = until ? `Холбоос ${until} хүртэл хүчинтэй. Хугацаа дуусвал бидэнтэй холбогдоорой.` : "";
+  const expiry = until ? `Татах эрхийн хүчинтэй хугацаа: ${until} (Улаанбаатарын цагаар).` : "";
   const user = process.env.SMTP_USER!;
   try {
     const transport = nodemailer.createTransport({
@@ -27,18 +25,12 @@ export async function sendDownloadEmail({ to, name, title, url, expiresAt }: { t
       // Gmail only delivers reliably as the signed-in address, so EMAIL_FROM needs a custom SMTP_HOST.
       from: (process.env.SMTP_HOST && process.env.EMAIL_FROM) || `AXORA <${user}>`,
       to,
-      subject: `${title} — татах холбоос`,
-      text: `Сайн байна уу, ${name}.\n\nТөлбөр тань баталгаажлаа. “${title}” загвараа доорх холбоосоор авна уу:\n${url}\n\n${expiry}\n\nAXORA`,
-      html: `<div style="font-family:Arial,sans-serif;font-size:15px;line-height:1.6;color:#17251e">
-  <p>Сайн байна уу, ${escapeHtml(name)}.</p>
-  <p>Төлбөр тань баталгаажлаа. <strong>${escapeHtml(title)}</strong> загвараа доорх товчоор авна уу.</p>
-  <p><a href="${escapeHtml(url)}" style="display:inline-block;padding:12px 20px;border-radius:10px;background:#245c45;color:#ffffff;font-weight:700;text-decoration:none">Загвараа авах</a></p>
-  <p style="color:#56645b;font-size:13px">${escapeHtml(expiry)}</p>
-  <p style="color:#56645b;font-size:13px">AXORA</p>
-</div>`,
+      subject: `AXORA | ${title} — худалдан авалтын баталгаажуулалт`,
+      // Plain text delivery was verified in the recipient's Inbox.
+      text: `Эрхэм ${name} Танд энэ өдрийн мэнд хүргэе.\n\nAXORA-г сонгон үйлчлүүлсэн Танд баярлалаа. Таны “${title}” загварын төлбөр амжилттай баталгаажлаа.\n\nЗАГВАРАА ТАТАХ\nДоорх холбоосыг нээгээд “Файлаа нэг удаа татах” товчийг дарна уу:\n${url}\n\nЭнэхүү холбоосоор файлаа нэг удаа татах боломжтой. Админ шинэ холбоос илгээвэл нэг удаагийн татах эрх шинээр нээгдэж, өмнөх холбоос хүчингүй болно. Холбоосыг нээхэд эрх ашиглагдахгүй; татах товчийг дарж, сервер файлыг олгоход эрх ашиглагдана. Татсан файлаа төхөөрөмждөө хадгалж, холбоосоо бусдад дамжуулахгүй байхыг хүсье.\n\n${expiry}\n\nФайл татахад хүндрэл гарсан эсвэл хугацаа дууссан бол энэ имэйлд хариу бичиж бидэнтэй холбогдоно уу.\n\nХүндэтгэсэн,\nAXORA баг`,
     });
     // No addresses or links here; this is enough to tell "accepted" from "rejected".
-    console.log("[email] server reply:", { accepted: info.accepted.length, rejected: info.rejected.length, response: info.response });
+    console.log("[email] server reply:", { accepted: info.accepted.length, rejected: info.rejected.length });
     return info.accepted.length > 0;
   } catch (e) {
     console.error("[email] send failed:", (e as { code?: string }).code ?? "unknown");

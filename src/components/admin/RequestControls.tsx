@@ -214,8 +214,8 @@ export function PaymentSheet({ r, open, onClose }: { r: RequestInfo; open: boole
       onClose();
       setChecked(false);
       router.refresh();
-      if (res.already) toast({ kind: "ok", text: "Төлбөр өмнө нь баталгаажсан байна." });
-      else if (res.delivery?.sent) toast({ kind: "ok", text: `Төлбөр баталгаажлаа. ${res.delivery.message}` });
+      if (res.delivery?.sent) toast({ kind: "ok", text: `Төлбөр баталгаажсан. ${res.delivery.message}` });
+      else if (res.already && !res.delivery) toast({ kind: "ok", text: "Төлбөр өмнө нь баталгаажсан байна." });
       else toast({ kind: "err", text: `Төлбөр баталгаажлаа, гэхдээ: ${res.delivery?.message ?? "холбоос илгээгдээгүй."}` });
     });
   }
@@ -333,7 +333,7 @@ export function DeliverySheet({ r, open, onClose }: { r: RequestInfo; open: bool
             </div>
           </fieldset>
           <p className="text-[13.5px] leading-normal text-muted">
-            Хамгаалагдсан файлаас хугацаатай signed URL үүсгэнэ. Сервер төлбөр баталгаажсан эсэх, файл байгаа эсэхийг дахин шалгана. Холбоосыг та {r.channelLabel}-аар өөрөө илгээнэ.
+            Нэг удаа файл татах холбоос үүсгэнэ. Админ шинэ холбоос үүсгэх бүрд нэг удаа татах эрх шинээр нээгдэж, өмнөх холбоос хүчингүй болно. Холбоосыг та {r.channelLabel}-аар өөрөө илгээнэ.
           </p>
           {err && (
             <p role="alert" className="rounded-control border border-danger-line bg-danger-bg px-3 py-2.5 text-sm font-bold text-danger-ink">

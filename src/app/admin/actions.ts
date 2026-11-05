@@ -1,6 +1,8 @@
 "use server";
 
+import { createHash, randomBytes } from "node:crypto";
 import { revalidatePath } from "next/cache";
+import { headers } from "next/headers";
 import { z } from "zod";
 import { DENIED, requireAdminAction, type ActionFail, type ActionResult } from "@/lib/admin/auth";
 import { EMAIL_LINK_HOURS, type DeliveryOutcome } from "@/lib/admin/delivery";
@@ -10,6 +12,7 @@ import { isCalendarDate } from "@/lib/admin/dates";
 import { ADMIN_MODULE_MIGRATION_HINT, isMissingMigration } from "@/lib/admin/db-errors";
 import { canOrderTransition, canRequestTransition, orderTransitionHint, requestTransitionHint } from "@/lib/admin/transitions";
 import { isEmailConfigured, sendDownloadEmail } from "@/lib/server/email";
+import { resolveDownloadOrigin } from "@/lib/server/download-origin";
 import { BUCKETS } from "@/lib/supabase/server";
 
 /*
@@ -156,8 +159,16 @@ export async function confirmPaymentAction(input: z.input<typeof payment>): Prom
   if (r.status !== "confirmed" && r.status !== "already_confirmed") {
     return { ok: false, code: r.status, message: messages[r.status] ?? FAILED.message };
   }
-  // Only the confirmation that just happened emails the customer. A failed email never undoes it.
-  const delivery = r.status === "confirmed" ? await emailDownloadLink(ctx.db, p.data.id) : null;
+  // A retry after a failed delivery must send the email without changing payment.
+  // Once sent, only the explicit resend action grants a new download link.
+  let delivery: DeliveryOutcome | null = null;
+  if (r.status === "confirmed") {
+    delivery = await emailDownloadLink(ctx.db, p.data.id);
+  } else {
+    const { data: receipt, error: receiptError } = await ctx.db.from("template_requests").select("delivery_emailed_at").eq("id", p.data.id).maybeSingle();
+    if (receiptError || !receipt) delivery = { sent: false, message: "Төлбөр баталгаажсан. Имэйл илгээсэн түүхийг шалгаж чадсангүй. Имэйл дахин илгээх товчийг ашиглана уу." };
+    else if (!receipt.delivery_emailed_at) delivery = await emailDownloadLink(ctx.db, p.data.id);
+  }
   revalidateAdmin(`/admin/template-requests/${p.data.id}`, "/admin/template-requests", "/admin");
   return { ok: true, already: r.status === "already_confirmed", amount: Number(r.amount ?? 0), currency: r.currency ?? "MNT", delivery };
 }
@@ -253,39 +264,36 @@ async function issueDeliveryLink(db: AdminDb, requestId: string, hours: number):
   };
   if (g.status !== "ok") return { ok: false, code: g.status, message: refusals[g.status] ?? "Холбоос үүсгэх боломжгүй." };
 
-  let url = g.external_url ?? null;
-  let expiresAt: string | null = null;
-  if (g.storage_path) {
-    // Fails if the object is missing — the link is never created for a file that is not there.
-    const { data, error } = await db.storage.from(BUCKETS.templateFiles).createSignedUrl(g.storage_path, hours * 3600, { download: true });
-    if (error || !data) return { ok: false, code: "file_missing", message: "Хамгаалагдсан файл storage-д олдсонгүй. Бүтээгдэхүүний файлыг дахин upload хийнэ үү." };
-    url = data.signedUrl;
-    expiresAt = new Date(Date.now() + hours * 3600 * 1000).toISOString();
-  }
-  if (!url) return { ok: false, code: "no_file", message: refusals.no_file };
-
-  // The URL itself is never stored or logged.
-  const { data: recorded, error: recErr } = await db.rpc("record_delivery_link", { p_request: requestId, p_hours: g.storage_path ? hours : null });
-  if (recErr || recorded?.status !== "ok") {
-    if (recErr) console.error("[admin] record delivery link:", recErr.code);
-    return { ok: false, code: "record_failed", message: "Холбоосын зөвшөөрөл эсвэл түүхийг баталгаажуулж чадсангүй. Хүсэлтийг шинэчлээд дахин оролдоно уу." };
-  }
-  return { ok: true, url, expiresAt, external: !g.storage_path };
+  if (!g.storage_path) return { ok: false, code: "storage_required", message: "Нэг удаагийн таталтад бүтээгдэхүүний файлыг хамгаалагдсан Storage-д байршуулна уу." };
+  const origin = resolveDownloadOrigin(process.env, await headers());
+  if (!origin) return { ok: false, code: "configuration", message: "Төлбөр баталгаажсан боловч сайт localhost дээр байна. Өөр төхөөрөмжөөс татахын тулд сайтыг нийтийн HTTPS хаягт байршуулна уу. Зөвхөн энэ компьютерт турших бол ALLOW_LOCAL_DOWNLOAD_LINKS=true тохируулна уу." };
+  const token = randomBytes(32).toString("hex");
+  const { data: issued, error } = await db.rpc("issue_single_use_download", {
+    p_request: requestId, p_hash: createHash("sha256").update(token).digest("hex"), p_hours: hours,
+  });
+  if (error) return { ok: false, code: "migration", message: "Нэг удаагийн таталтын migration (20261106200000_single_use_downloads.sql)-ыг ажиллуулна уу." };
+  if (issued?.status !== "ok") return { ok: false, code: issued?.status ?? "server", message: "Татах эрх үүсгэж чадсангүй. Хүсэлт болон файлыг шалгана уу." };
+  return { ok: true, url: `${origin}/download/${token}`, expiresAt: issued.expires_at, external: false };
 }
 
 async function emailDownloadLink(db: AdminDb, requestId: string): Promise<DeliveryOutcome> {
   const { data: request, error } = await db.from("template_requests").select("customer_name, contact_channel, contact_value, templates(title)").eq("id", requestId).maybeSingle();
   if (error || !request) return { sent: false, message: "Хүсэлтийг уншиж чадсангүй." };
   if (request.contact_channel !== "email") return { sent: false, message: "Энэ хүсэлтэд имэйл хаяг байхгүй. Холбоосыг өөрөө илгээнэ үү." };
+  const recipient = z.email().safeParse(request.contact_value.trim());
+  if (!recipient.success) return { sent: false, message: "Худалдан авагчийн имэйл хаяг буруу байна. Хаягийг шалгана уу." };
   if (!isEmailConfigured()) return { sent: false, message: "Имэйл үйлчилгээ тохируулагдаагүй. Холбоосыг өөрөө илгээнэ үү." };
   const link = await issueDeliveryLink(db, requestId, EMAIL_LINK_HOURS);
   if (!link.ok) return { sent: false, message: link.message };
   const template = request.templates as unknown as { title: string } | null;
-  const sent = await sendDownloadEmail({ to: request.contact_value, name: request.customer_name, title: template?.title ?? "Загвар", url: link.url, expiresAt: link.expiresAt });
+  const sent = await sendDownloadEmail({ to: recipient.data, name: request.customer_name, title: template?.title ?? "Загвар", url: link.url, expiresAt: link.expiresAt });
   if (!sent) return { sent: false, message: "Имэйл илгээж чадсангүй. Дахин илгээх товчийг ашиглана уу." };
-  const { error: recordError } = await db.rpc("record_delivery_email", { p_request: requestId });
-  if (recordError) console.error("[admin] record delivery email:", recordError.code);
-  return { sent: true, message: `Татах холбоос ${request.contact_value} хаягт илгээгдлээ.` };
+  const { data: recorded, error: recordError } = await db.rpc("record_delivery_email", { p_request: requestId });
+  if (recordError || recorded?.status !== "ok") {
+    console.error("[admin] record delivery email:", recordError?.code ?? recorded?.status ?? "unknown");
+    return { sent: true, message: "Имэйл сервер хүлээн авсан боловч илгээсэн түүхийг хадгалж чадсангүй. Дахин илгээхээс өмнө худалдан авагчийн Inbox болон Spam/Junk хавтсыг шалгуулна уу." };
+  }
+  return { sent: true, message: `Имэйл сервер ${recipient.data} хаяг руу илгээхээр хүлээн авлаа. Inbox-д харагдахгүй бол Spam/Junk хавтсыг шалгуулна уу.` };
 }
 
 /** For a failed or expired email. The database still re-checks payment and file first. */

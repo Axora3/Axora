@@ -169,9 +169,10 @@ async function RequestDetailContent({ params }: PageProps<"/admin/template-reque
                   <div>
                     <dt className="text-sm font-bold text-muted">Татах холбоосын имэйл</dt>
                     <dd className="m-0 flex flex-wrap items-center gap-3">
-                      <span>{extra?.delivery_emailed_at ? `Илгээсэн · ${fmtDateTime(extra.delivery_emailed_at)}` : "Илгээгээгүй"}</span>
+                      <span>{extra?.delivery_emailed_at ? `Имэйл сервер хүлээн авсан · ${fmtDateTime(extra.delivery_emailed_at)}` : "Илгээгээгүй"}</span>
                       <ResendDeliveryEmail id={r.id} emailedAt={extra?.delivery_emailed_at ?? null} />
                     </dd>
+                    {extra?.delivery_emailed_at && <dd className="m-0 mt-2 text-sm text-muted">Inbox-д очсон эсэхийг автоматаар шалгах боломжгүй. Худалдан авагч Spam/Junk хавтсаа мөн шалгана уу. Тэнд ч байхгүй бол имэйл хаяг болон илгээгчийн буцаж ирсэн захидлыг шалгана уу.</dd>}
                   </div>
                 )}
                 {!migrationMissing && (
