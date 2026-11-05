@@ -1,5 +1,7 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
+
 import { runAdminAction } from "@/lib/admin/action-client";
 
 import { useUnsavedChanges } from "./useUnsavedChanges";
@@ -139,7 +141,7 @@ export function ContentEditor(p: Props) {
                 ))}
                 {c.social.length < 4 && (
                   <button type="button" className={`${btn.ghost} self-start`} onClick={() => set({ social: [...c.social, { label: "Facebook", url: "https://" }] })}>
-                    + Холбоос нэмэх
+                    <Icon name="plus" size={16} /> Холбоос нэмэх
                   </button>
                 )}
               </fieldset>
@@ -154,10 +156,10 @@ export function ContentEditor(p: Props) {
                   {T({ label: "Хариулт", value: q.a, max: 1200, rows: 3, onChange: (v) => set({ faq: c.faq.map((x, j) => (j === i ? { ...x, a: v } : x)) }) })}
                   <span className="flex flex-wrap gap-2">
                     <button type="button" className={btn.ghost} disabled={i === 0} onClick={() => moveFaq(i, -1)} aria-label={`${i + 1}-р асуултыг дээш`}>
-                      ↑ Дээш
+                      <Icon name="arrow-up" size={16} /> Дээш
                     </button>
                     <button type="button" className={btn.ghost} disabled={i === c.faq.length - 1} onClick={() => moveFaq(i, 1)} aria-label={`${i + 1}-р асуултыг доош`}>
-                      ↓ Доош
+                      <Icon name="arrow-down" size={16} /> Доош
                     </button>
                     <button type="button" className={btn.danger} disabled={c.faq.length <= 1} onClick={() => set({ faq: c.faq.filter((_, j) => j !== i) })}>
                       Устгах
@@ -167,7 +169,7 @@ export function ContentEditor(p: Props) {
               ))}
               {c.faq.length < 12 && (
                 <button type="button" className={`${btn.ghost} self-start`} onClick={() => set({ faq: [...c.faq, { q: "", a: "" }] })}>
-                  + Асуулт нэмэх
+                  <Icon name="plus" size={16} /> Асуулт нэмэх
                 </button>
               )}
             </section>

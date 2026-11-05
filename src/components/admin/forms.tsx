@@ -1,5 +1,7 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
+
 import { runAdminAction } from "@/lib/admin/action-client";
 
 import { useRouter } from "next/navigation";
@@ -19,7 +21,7 @@ function Feedback({ msg }: { msg: Msg }) {
       role={msg.kind === "err" ? "alert" : "status"}
       className={`rounded-[10px] px-3 py-2.5 text-sm font-bold ${msg.kind === "ok" ? "bg-soft text-brand" : "border border-danger-line bg-danger-bg text-danger-ink"}`}
     >
-      {msg.kind === "ok" ? "✓ " : "✕ "}
+      {msg.kind === "ok" ? <><Icon name="check" size={16} /> </> : <><Icon name="x" size={16} /> </>}
       {msg.text}
       {msg.conflict && (
         <button type="button" onClick={() => router.refresh()} className="mt-1.5 block min-h-11 underline">
@@ -214,9 +216,9 @@ export function AttachmentActions({ id, name, mime, uploaded }: { id: string; na
           {pending ? "Холбоос үүсгэж байна…" : "Татах"}
         </button>
       </div>
-      {err && <p role="alert" className="text-[13px] font-bold text-danger">✕ {err}</p>}
+      {err && <p role="alert" className="text-[13px] font-bold text-danger"><Icon name="x" size={16} /> {err}</p>}
       {download && <div role="status" className="flex flex-wrap items-center gap-2 text-sm">
-        <a href={download} target="_blank" rel="noopener noreferrer" className={btn.primary}>Файлыг нээж татах ↗</a>
+        <a href={download} target="_blank" rel="noopener noreferrer" className={btn.primary}>Файлыг нээж татах <Icon name="external-link" size={16} /></a>
         <span className="text-muted">Холбоос 2 минут хүчинтэй. Дууссан бол дахин “Татах” дарна уу.</span>
       </div>}
       {img && (

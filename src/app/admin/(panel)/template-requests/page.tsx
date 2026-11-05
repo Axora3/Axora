@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import Link from "next/link";
 import { connection } from "next/server";
@@ -5,7 +6,6 @@ import { Suspense } from "react";
 import { RememberListUrl } from "@/components/admin/client";
 import { RequestCardActions, type RequestInfo } from "@/components/admin/RequestControls";
 import { Body, EmptyState, LoadFailed, Notice, PageHeader, Pagination, Panel, PaymentPill, StatusPill, btn, field } from "@/components/admin/ui";
-import { Search } from "@/components/icons";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { REQUEST_OVERDUE_HOURS } from "@/lib/admin/config";
 import { isMissingMigration, MIGRATION_HINT } from "@/lib/admin/db-errors";
@@ -86,7 +86,7 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
           {status && <input type="hidden" name="status" value={status} />}
           {["pay", "delivery", "from", "to"].map((key) => one(sp,key) && <input key={key} type="hidden" name={key} value={one(sp,key)} />)}
           <span aria-hidden="true" className="pointer-events-none absolute left-3.5 text-muted">
-            <Search size={18} />
+            <Icon name="search" size={18} />
           </span>
           <label htmlFor="req-q" className="sr-only">
             Нэр, утас, имэйлээр хайх
@@ -192,7 +192,7 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
                     <div className="flex flex-wrap items-center gap-2">
                       {!migrationMissing && <PaymentPill status={info.paymentStatus} />}
                       <time dateTime={r.created_at} title={fmtDateTime(r.created_at)} className={`text-xs font-bold ${overdue ? "text-danger" : "text-muted"}`}>
-                        {overdue && <span aria-hidden="true">! </span>}
+                        {overdue && <Icon name="circle-alert" size={16} />}
                         {fmtAgo(r.created_at, nowMs)}
                         {overdue && ` · ${REQUEST_OVERDUE_HOURS}+ цаг хариугүй`}
                       </time>

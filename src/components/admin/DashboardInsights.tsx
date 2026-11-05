@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import Link from "next/link";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Period } from "@/lib/admin/period";
@@ -33,7 +34,7 @@ export async function DashboardInsights({ db, period, adminId }: { db: SupabaseC
         </div>)}
       </div>}
     </Panel>
-    <Panel title="Сүүлийн мэдэгдэл" action={<Link href="/admin/notifications" className="inline-flex min-h-11 items-center text-sm font-bold">Бүгд →</Link>}>
+    <Panel title="Сүүлийн мэдэгдэл" action={<Link href="/admin/notifications" className="inline-flex min-h-11 items-center text-sm font-bold">Бүгд <Icon name="arrow-right" size={16} /></Link>}>
       {notifications.error ? <LoadFailed what="сүүлийн мэдэгдлийг" /> : !notifications.data?.length ? <p className="p-[18px] text-sm text-muted">Одоогоор мэдэгдэл алга.</p> : <ul className="divide-y divide-soft">{notifications.data.map((item) => <li key={item.id}><Link href={`/admin/notifications/${item.id}`} className="flex flex-col gap-1 p-[18px] text-sm text-ink no-underline hover:bg-sunken"><strong>{item.title}</strong><span className="text-xs text-muted">{fmtDateTime(item.created_at)} · {item.read_at ? "Уншсан" : "Уншаагүй"}</span></Link></li>)}</ul>}
     </Panel>
   </div>;

@@ -1,3 +1,4 @@
+import { SiteFooter } from "@/components/site/SiteFooter";
 import Link from "next/link";
 import { SiteHeader } from "@/components/site/SiteHeader";
 
@@ -19,7 +20,7 @@ export default function NotFound() {
             Загварууд
           </Link>
         </div>
-      </main>
+      </main><SiteFooter />
     </>
   );
 }

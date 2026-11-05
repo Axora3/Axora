@@ -1,11 +1,12 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
+
 import { runAdminAction } from "@/lib/admin/action-client";
 
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { setOrderStatusAction } from "@/app/admin/actions";
-import { ChevronDown } from "@/components/icons";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { useToast } from "@/components/ui/Toast";
 import { ORDER_STATUS, ORDER_STATUSES, type OrderStatus } from "@/lib/admin/labels";
@@ -73,9 +74,9 @@ export function OrderStatusControl({ id, updatedAt, status, title, reference, si
         className={`ax-btn relative z-[2] inline-flex cursor-pointer items-center gap-1.5 rounded-full border-0 font-extrabold whitespace-nowrap ${size === "md" ? "min-h-11 px-3.5 text-sm" : "min-h-10 px-3 text-[12.5px]"}`}
         style={{ background: s?.bg, color: s?.fg }}
       >
-        <span aria-hidden="true" className="h-[7px] w-[7px] rounded-full bg-current" />
+        <Icon name={s?.icon ?? "circle-alert"} size={16} />
         {pending ? "Хадгалж байна…" : (s?.label ?? saved.status)}
-        <ChevronDown size={14} />
+        <Icon name="chevron-down" size={16} />
       </button>
       <BottomSheet
         open={open}
@@ -105,7 +106,7 @@ export function OrderStatusControl({ id, updatedAt, status, title, reference, si
                 key={o}
                 className={`flex min-h-[56px] items-center gap-3 rounded-[14px] border px-3.5 ${allowed ? "cursor-pointer" : "cursor-not-allowed opacity-60"} ${pick === o ? "border-2 border-brand bg-soft" : "border-line bg-surface"}`}
               >
-                <span aria-hidden="true" className="h-2.5 w-2.5 shrink-0 rounded-full" style={{ background: ORDER_STATUS[o].bar }} />
+                <Icon name={ORDER_STATUS[o].icon} size={16} color={ORDER_STATUS[o].bar} />
                 <span className="flex flex-1 flex-col">
                   <span className="text-[15px] font-bold">
                     {ORDER_STATUS[o].label}
@@ -120,7 +121,7 @@ export function OrderStatusControl({ id, updatedAt, status, title, reference, si
         </fieldset>
         {err && (
           <p role="alert" className="mt-3 rounded-[10px] border border-danger-line bg-danger-bg px-3 py-2.5 text-sm font-bold text-danger-ink">
-            ✕ {err} Өмнөх төлөв хэвээр байна.
+            <Icon name="x" size={16} /> {err} Өмнөх төлөв хэвээр байна.
           </p>
         )}
       </BottomSheet>

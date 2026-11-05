@@ -22,7 +22,7 @@ export function ThemeSync() {
  * The icon is chosen by CSS from <html data-theme>, so server HTML and the
  * first client render are identical (no hydration mismatch, no flash).
  */
-export function ThemeToggle({ tone = "default", className = "" }: { tone?: "default" | "band"; className?: string }) {
+export function ThemeToggle({ tone = "default", className = "", size = 19 }: { tone?: "default" | "band"; className?: string; size?: number }) {
   // null on the server and during hydration; the real value right after.
   const pref = useSyncExternalStore<ThemePref | null>(subscribeTheme, getThemePref, () => null);
   const [open, setOpen] = useState(false);
@@ -79,10 +79,10 @@ export function ThemeToggle({ tone = "default", className = "" }: { tone?: "defa
         className={`ax-theme-btn inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border ${look}`}
       >
         <span className="ax-theme-moon ax-theme-ic">
-          <Moon size={19} />
+          <Moon size={size} />
         </span>
         <span className="ax-theme-sun ax-theme-ic">
-          <Sun size={19} />
+          <Sun size={size} />
         </span>
       </button>
       {open && (

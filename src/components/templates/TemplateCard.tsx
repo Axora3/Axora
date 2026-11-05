@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
@@ -49,7 +50,7 @@ export function TemplateCard({
               title={!comparing && comparisonFull ? "Нэг удаад 3 хүртэл загвар сонгоно" : undefined}
               className="ax-btn inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-surface/95 px-3 text-xs font-bold text-ink shadow-sm backdrop-blur disabled:cursor-not-allowed disabled:opacity-60"
             >
-              <span aria-hidden="true">{comparing ? "✓" : "↔"}</span>
+              <span aria-hidden="true">{comparing ? <><Icon name="check" size={16} /></> : <><Icon name="swap" size={16} /></>}</span>
               {comparing ? "Нэмсэн" : "Харьцуулах"}
             </button>
           )}
@@ -61,9 +62,7 @@ export function TemplateCard({
               onClick={onFavorite}
               className="ax-btn inline-flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface/95 text-brand shadow-sm backdrop-blur"
             >
-              <svg viewBox="0 0 24 24" width="19" height="19" fill={favorite ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
-                <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z" />
-              </svg>
+              <Icon name={favorite ? "heart-filled" : "heart"} size={19} />
             </button>
           )}
         </div>

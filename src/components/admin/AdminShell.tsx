@@ -1,9 +1,10 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
+
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
-import { Close, Menu } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ToastProvider } from "@/components/ui/Toast";
 import { useDialog } from "@/components/ui/use-dialog";
@@ -16,9 +17,7 @@ export function LogoBadge() {
   return (
     <span className="flex items-center gap-2.5">
       <span className="inline-flex h-8 w-8 items-center justify-center rounded-[9px] bg-lime">
-        <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 20L12 4l8 16h-4.2L12 12.2 8.2 20z" fill="currentColor" />
-        </svg>
+        <Icon name="letter-a" size={18} />
       </span>
       <span className="text-[17px] font-extrabold tracking-[0.08em]">AXORA</span>
       <span className="rounded-[5px] border border-band-ring px-1.5 py-[3px] text-[10.5px] font-extrabold text-lime">ADMIN</span>
@@ -77,7 +76,7 @@ export function AdminMenuButton({ tone = "default" }: { tone?: "default" | "band
       onClick={openMenu}
       className={`inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border min-[1024px]:hidden ${tone === "band" ? "border-band-ring bg-transparent text-on-band" : "border-line bg-surface text-ink"}`}
     >
-      <Menu size={20} />
+      <Icon name="menu" size={20} />
     </button>
   );
 }
@@ -116,7 +115,7 @@ function SideContent({ counts, email, onNavigate }: { counts: Counts; email: str
                   aria-current={on ? "page" : undefined}
                   className={`${link} ${on ? "bg-lime font-extrabold text-on-lime" : "text-band-muted hover:bg-band-hover hover:text-on-band"}`}
                 >
-                  <n.Icon size={18} />
+                  <Icon name={n.icon} size={20} />
                   <span className="flex-1">{n.label}</span>
                   {n.count && <Badge n={counts[n.count]} label={n.countLabel} on={on} />}
                 </Link>
@@ -128,7 +127,7 @@ function SideContent({ counts, email, onNavigate }: { counts: Counts; email: str
       <div className="mt-auto flex flex-col gap-1">
         <span className="mx-3 my-1 text-[11px] font-extrabold tracking-[0.1em] text-band-faint uppercase">Бусад</span>
         <a href="/" target="_blank" rel="noopener noreferrer" className={`${link} text-band-muted hover:bg-band-hover hover:text-on-band`}>
-          Сайт харах ↗
+          Сайт харах <Icon name="external-link" size={16} />
         </a>
         <div className="mt-2 flex items-center gap-2.5 rounded-xl bg-band-hover p-2.5">
           <span aria-hidden="true" className="inline-flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[10px] bg-band-line text-[13px] font-extrabold uppercase">
@@ -188,7 +187,7 @@ function BottomNav({ counts }: { counts: Counts }) {
             className={`ax-btn flex min-h-[54px] flex-col items-center justify-center gap-[3px] text-[11px] no-underline ${on ? "font-extrabold text-on-band" : "font-bold text-band-muted"}`}
           >
             <span className={`relative inline-flex h-7 w-[52px] items-center justify-center rounded-[14px] ${on ? "bg-lime" : ""}`}>
-              <n.Icon size={20} />
+              <Icon name={n.icon} size={20} />
               {c > 0 && (
                 <span className="absolute -top-1 right-1 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-[9px] bg-lime px-[5px] text-[10.5px] font-extrabold tabular-nums ring-2 ring-band">
                   {c > 99 ? "99+" : c}
@@ -245,9 +244,9 @@ export function AdminShell({ counts, email, children }: { counts: Counts; email:
                     <LogoBadge />
                   </span>
                   <span className="ml-auto flex shrink-0 items-center gap-2">
-                    <ThemeToggle tone="band" />
+                    <ThemeToggle tone="band" size={20} />
                     <button type="button" data-autofocus aria-label="Цэс хаах" onClick={() => setOpen(false)} className="inline-flex h-11 w-11 items-center justify-center rounded-[10px] border-0 bg-band-hover text-on-band">
-                      <Close size={20} />
+                      <Icon name="x" size={20} />
                     </button>
                   </span>
                 </div>

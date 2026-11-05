@@ -1,4 +1,4 @@
-import { Box, Chat, Clock, Dashboard, File, Form, Gear, Globe, Inbox, Pages } from "@/components/icons";
+import type { IconName } from "@/components/ui/icon";
 
 /**
  * One navigation config for both the desktop sidebar and the mobile bottom
@@ -17,22 +17,22 @@ export type NavItem = {
   /** What the badge counts, for screen readers. */
   countLabel?: string;
   tab?: boolean;
-  Icon: typeof Box;
+  icon: IconName;
 };
 
 export const ADMIN_NAV: NavItem[] = [
-  { href: "/admin", label: "Хяналтын самбар", group: "Үндсэн", tabLabel: "Самбар", exact: true, tab: true, Icon: Dashboard },
-  { href: "/admin/orders", label: "Веб захиалгууд", group: "Үндсэн", tabLabel: "Захиалга", count: "orders", countLabel: "шинэ захиалга", tab: true, Icon: Form },
-  { href: "/admin/template-requests", label: "Template хүсэлтүүд", group: "Үндсэн", tabLabel: "Хүсэлт", count: "requests", countLabel: "хариу өгөөгүй шинэ хүсэлт", tab: true, Icon: Inbox },
-  { href: "/admin/templates", label: "Бүтээгдэхүүн", group: "Удирдлага", tabLabel: "Бүтээгдэхүүн", tab: true, Icon: Box },
-  { href: "/admin/projects", label: "Веб төслүүд", group: "Удирдлага", Icon: Globe },
-  { href: "/admin/payments", label: "Төлбөрүүд", group: "Удирдлага", Icon: File },
-  { href: "/admin/support", label: "Тусламжийн хүсэлтүүд", group: "Удирдлага", count: "support", countLabel: "шинэ тусламжийн хүсэлт", Icon: Chat },
-  { href: "/admin/marketing", label: "Маркетинг", group: "Удирдлага", Icon: Pages },
-  { href: "/admin/notifications", label: "Мэдэгдэл", group: "Систем", count: "notifications", countLabel: "уншаагүй мэдэгдэл", Icon: Inbox },
-  { href: "/admin/content", label: "Сайтын агуулга", group: "Систем", Icon: Pages },
-  { href: "/admin/activity", label: "Үйлдлийн түүх", group: "Систем", Icon: Clock },
-  { href: "/admin/settings", label: "Тохиргоо", group: "Систем", Icon: Gear },
+  { href: "/admin", label: "Хяналтын самбар", group: "Үндсэн", tabLabel: "Самбар", exact: true, tab: true, icon: "layout-grid" },
+  { href: "/admin/orders", label: "Веб захиалгууд", group: "Үндсэн", tabLabel: "Захиалга", count: "orders", countLabel: "шинэ захиалга", tab: true, icon: "file-text" },
+  { href: "/admin/template-requests", label: "Template хүсэлтүүд", group: "Үндсэн", tabLabel: "Хүсэлт", count: "requests", countLabel: "хариу өгөөгүй шинэ хүсэлт", tab: true, icon: "inbox" },
+  { href: "/admin/templates", label: "Бүтээгдэхүүн", group: "Удирдлага", tabLabel: "Бүтээгдэхүүн", tab: true, icon: "cube" },
+  { href: "/admin/projects", label: "Веб төслүүд", group: "Удирдлага", icon: "globe" },
+  { href: "/admin/payments", label: "Төлбөрүүд", group: "Удирдлага", icon: "credit-card" },
+  { href: "/admin/support", label: "Тусламжийн хүсэлтүүд", group: "Удирдлага", count: "support", countLabel: "шинэ тусламжийн хүсэлт", icon: "message" },
+  { href: "/admin/marketing", label: "Маркетинг", group: "Удирдлага", icon: "copy" },
+  { href: "/admin/notifications", label: "Мэдэгдэл", group: "Систем", count: "notifications", countLabel: "уншаагүй мэдэгдэл", icon: "bell" },
+  { href: "/admin/content", label: "Сайтын агуулга", group: "Систем", icon: "copy" },
+  { href: "/admin/activity", label: "Үйлдлийн түүх", group: "Систем", icon: "activity" },
+  { href: "/admin/settings", label: "Тохиргоо", group: "Систем", icon: "settings" },
 ];
 
 export const isActive = (n: NavItem, path: string) => (n.exact ? path === n.href : path === n.href || path.startsWith(n.href + "/"));

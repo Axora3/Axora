@@ -1,15 +1,16 @@
+import type { IconName } from "@/components/ui/icon";
 /** Status vocab shared by admin pages. Colour + text, never colour alone. */
 import { CONTACT_STATUS, PROJECT_STATUS, type ContactStatus, type ProjectStatus } from "@/lib/admin/projects";
 
 export const ORDER_STATUSES = ["new", "contacted", "in_progress", "completed", "cancelled"] as const;
 export type OrderStatus = (typeof ORDER_STATUSES)[number];
 
-export const ORDER_STATUS: Record<OrderStatus, { label: string; bg: string; fg: string; bar: string }> = {
-  new: { label: "Шинэ", bg: "var(--ax-info-bg)", fg: "var(--ax-info)", bar: "var(--ax-info-bar)" },
-  contacted: { label: "Холбогдсон", bg: "var(--ax-warn-bg)", fg: "var(--ax-warn)", bar: "var(--ax-warn-bar)" },
-  in_progress: { label: "Хийгдэж байгаа", bg: "var(--ax-success-bg)", fg: "var(--ax-success)", bar: "var(--ax-success-bar)" },
-  completed: { label: "Дууссан", bg: "var(--ax-done-bg)", fg: "var(--ax-done)", bar: "var(--ax-done-bar)" },
-  cancelled: { label: "Цуцлагдсан", bg: "var(--ax-neutral-bg)", fg: "var(--ax-neutral)", bar: "var(--ax-neutral-bar)" },
+export const ORDER_STATUS: Record<OrderStatus, { label: string; bg: string; fg: string; bar: string; icon: IconName }> = {
+  new: { label: "Шинэ", bg: "var(--ax-info-bg)", fg: "var(--ax-info)", bar: "var(--ax-info-bar)", icon: "inbox" },
+  contacted: { label: "Холбогдсон", bg: "var(--ax-warn-bg)", fg: "var(--ax-warn)", bar: "var(--ax-warn-bar)", icon: "phone" },
+  in_progress: { label: "Хийгдэж байгаа", bg: "var(--ax-success-bg)", fg: "var(--ax-success)", bar: "var(--ax-success-bar)", icon: "clock" },
+  completed: { label: "Дууссан", bg: "var(--ax-done-bg)", fg: "var(--ax-done)", bar: "var(--ax-done-bar)", icon: "circle-check" },
+  cancelled: { label: "Цуцлагдсан", bg: "var(--ax-neutral-bg)", fg: "var(--ax-neutral)", bar: "var(--ax-neutral-bar)", icon: "circle-x" },
 };
 
 /**
@@ -20,11 +21,11 @@ export const ORDER_STATUS: Record<OrderStatus, { label: string; bg: string; fg: 
 export const REQUEST_STATUSES = ["new", "contacted", "fulfilled", "cancelled"] as const;
 export type RequestStatus = (typeof REQUEST_STATUSES)[number];
 
-export const REQUEST_STATUS: Record<RequestStatus, { label: string; hint: string; bg: string; fg: string }> = {
-  new: { label: "Шинэ", hint: "Хүсэлт ирсэн, хараахан холбогдоогүй.", bg: "var(--ax-info-bg)", fg: "var(--ax-info)" },
-  contacted: { label: "Холбогдсон", hint: "Хэрэглэгчтэй холбогдож, нөхцөлөө тохирч байгаа.", bg: "var(--ax-warn-bg)", fg: "var(--ax-warn)" },
-  fulfilled: { label: "Хүргэж дууссан", hint: "Та загварыг гараар хүргэсэн гэдгийг тэмдэглэнэ. Файл автоматаар илгээгддэггүй.", bg: "var(--ax-done-bg)", fg: "var(--ax-done)" },
-  cancelled: { label: "Цуцлагдсан", hint: "Хүсэлтийг цааш үргэлжлүүлэхгүй.", bg: "var(--ax-neutral-bg)", fg: "var(--ax-neutral)" },
+export const REQUEST_STATUS: Record<RequestStatus, { label: string; hint: string; bg: string; fg: string; icon: IconName }> = {
+  new: { label: "Шинэ", hint: "Хүсэлт ирсэн, хараахан холбогдоогүй.", bg: "var(--ax-info-bg)", fg: "var(--ax-info)", icon: "inbox" },
+  contacted: { label: "Холбогдсон", hint: "Хэрэглэгчтэй холбогдож, нөхцөлөө тохирч байгаа.", bg: "var(--ax-warn-bg)", fg: "var(--ax-warn)", icon: "phone" },
+  fulfilled: { label: "Хүргэж дууссан", hint: "Та загварыг гараар хүргэсэн гэдгийг тэмдэглэнэ. Файл автоматаар илгээгддэггүй.", bg: "var(--ax-done-bg)", fg: "var(--ax-done)", icon: "circle-check" },
+  cancelled: { label: "Цуцлагдсан", hint: "Хүсэлтийг цааш үргэлжлүүлэхгүй.", bg: "var(--ax-neutral-bg)", fg: "var(--ax-neutral)", icon: "circle-x" },
 };
 
 /**
@@ -33,11 +34,11 @@ export const REQUEST_STATUS: Record<RequestStatus, { label: string; hint: string
  */
 export const PAYMENT_STATUSES = ["not_required", "pending", "needs_review", "confirmed_manual"] as const;
 export type PaymentStatus = (typeof PAYMENT_STATUSES)[number];
-export const PAYMENT_STATUS: Record<PaymentStatus, { label: string; bg: string; fg: string; icon: string }> = {
-  not_required: { label: "Үнэгүй", bg: "var(--ax-neutral-bg)", fg: "var(--ax-neutral)", icon: "—" },
-  pending: { label: "Төлбөр хүлээгдэж байна", bg: "var(--ax-warn-bg)", fg: "var(--ax-warn)", icon: "…" },
-  needs_review: { label: "Баталгаажуулах шаардлагатай", bg: "var(--ax-danger-bg)", fg: "var(--ax-danger)", icon: "!" },
-  confirmed_manual: { label: "Төлбөр гараар баталгаажсан", bg: "var(--ax-success-bg)", fg: "var(--ax-success)", icon: "✓" },
+export const PAYMENT_STATUS: Record<PaymentStatus, { label: string; bg: string; fg: string; icon: IconName }> = {
+  not_required: { label: "Үнэгүй", bg: "var(--ax-neutral-bg)", fg: "var(--ax-neutral)", icon: "minus" },
+  pending: { label: "Төлбөр хүлээгдэж байна", bg: "var(--ax-warn-bg)", fg: "var(--ax-warn)", icon: "clock" },
+  needs_review: { label: "Баталгаажуулах шаардлагатай", bg: "var(--ax-danger-bg)", fg: "var(--ax-danger)", icon: "circle-alert" },
+  confirmed_manual: { label: "Төлбөр гараар баталгаажсан", bg: "var(--ax-success-bg)", fg: "var(--ax-success)", icon: "check" },
 };
 
 /** Creating or copying a link is not sending it, and not a download. */

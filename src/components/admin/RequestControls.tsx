@@ -1,12 +1,13 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
+
 import { runAdminAction } from "@/lib/admin/action-client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { confirmPaymentAction, createDownloadLinkAction, updateRequestAction } from "@/app/admin/actions";
-import { Copy, Lock, More } from "@/components/icons";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { useToast } from "@/components/ui/Toast";
 import { REQUEST_STATUS, type RequestStatus } from "@/lib/admin/labels";
@@ -87,7 +88,7 @@ export function RequestCardActions({ r, detailHref }: { r: RequestInfo; detailHr
         </button>
       ) : (
         <button type="button" onClick={() => setSheet("delivery")} aria-haspopup="dialog" className={`${primary} flex-1`}>
-          <Lock size={16} />
+          <Icon name="lock" size={16} />
           Хүргэх холбоос
         </button>
       )}
@@ -98,7 +99,7 @@ export function RequestCardActions({ r, detailHref }: { r: RequestInfo; detailHr
         aria-label={`${r.customer} — бусад үйлдэл`}
         className="ax-btn inline-flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-[13px] border border-line-strong bg-surface text-ink"
       >
-        <More size={20} />
+        <Icon name="dots" size={16} />
       </button>
 
       <BottomSheet open={sheet === "more" || sheet === "cancel"} onClose={close} title={sheet === "cancel" ? "Хүсэлт цуцлах уу?" : "Үйлдэл"} description={`${r.product} · ${r.customer}`}>
@@ -125,17 +126,17 @@ export function RequestCardActions({ r, detailHref }: { r: RequestInfo; detailHr
           <div className="flex flex-col gap-2">
             {r.status === "new" && (
               <button type="button" disabled={pending} onClick={() => run("contacted", "“Холбогдсон” гэж тэмдэглэлээ.")} className={sheetBtn}>
-                <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--ax-warn-bar)" }} />
+                <Icon name={REQUEST_STATUS.contacted.icon} size={16} color="var(--ax-warn-bar)" />
                 {pending ? "Хадгалж байна…" : "Холбогдсон гэж тэмдэглэх"}
               </button>
             )}
             <button type="button" onClick={copyContact} className={sheetBtn}>
-              <Copy size={18} />
+              <Icon name="copy" size={18} />
               Холбоо барих мэдээлэл хуулах
             </button>
             {r.status === "contacted" && paymentOk(r) && (
               <button type="button" disabled={pending} onClick={() => run("fulfilled", "“Хүргэж дууссан” гэж тэмдэглэлээ.")} className={sheetBtn}>
-                <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full" style={{ background: "var(--ax-done-bar)" }} />
+                <Icon name={REQUEST_STATUS.fulfilled.icon} size={16} color="var(--ax-done-bar)" />
                 Хүргэсэн гэж тэмдэглэх
               </button>
             )}
@@ -144,7 +145,7 @@ export function RequestCardActions({ r, detailHref }: { r: RequestInfo; detailHr
             </Link>
             {r.status !== "cancelled" && r.status !== "fulfilled" && (
               <button type="button" onClick={() => setSheet("cancel")} className={`${sheetBtn} text-danger`}>
-                <span aria-hidden="true" className="h-2.5 w-2.5 rounded-full bg-danger" />
+                <Icon name={REQUEST_STATUS.cancelled.icon} size={16} className="text-danger" />
                 Хүсэлт цуцлах
               </button>
             )}
@@ -245,7 +246,7 @@ export function PaymentSheet({ r, open, onClose }: { r: RequestInfo; open: boole
         </label>
         {err && (
           <p role="alert" className="rounded-[10px] border border-danger-line bg-danger-bg px-3 py-2.5 text-sm font-bold text-danger-ink">
-            ✕ {err}
+            <Icon name="x" size={16} /> {err}
           </p>
         )}
       </div>
@@ -308,7 +309,7 @@ export function DeliverySheet({ r, open, onClose }: { r: RequestInfo; open: bool
           </p>
           {err && (
             <p role="alert" className="rounded-[10px] border border-danger-line bg-danger-bg px-3 py-2.5 text-sm font-bold text-danger-ink">
-              ✕ {err}
+              <Icon name="x" size={16} /> {err}
             </p>
           )}
           <button
@@ -347,8 +348,8 @@ export function DeliverySheet({ r, open, onClose }: { r: RequestInfo; open: bool
             }}
             className={`${ghost} w-full`}
           >
-            <Copy size={18} />
-            <span aria-live="polite">{copied === "ok" ? "Хуулсан ✓" : copied === "fail" ? "Хуулж чадсангүй — гараар сонгоно уу" : "Холбоос хуулах"}</span>
+            <Icon name="copy" size={18} />
+            <span aria-live="polite">{copied === "ok" ? <>Хуулсан <Icon name="check" size={16} /></> : copied === "fail" ? "Хуулж чадсангүй — гараар сонгоно уу" : "Холбоос хуулах"}</span>
           </button>
           <p className="text-[13px] leading-normal text-muted">Холбоос үүссэн эсвэл хуулсан нь хэрэглэгчид илгээсэн, татаж авсан гэсэн үг биш. Илгээсний дараа доорх товчоор тэмдэглэнэ.</p>
           {r.status === "contacted" ? (
@@ -372,7 +373,7 @@ export function RequestPaymentPanel({ r, confirmedBy, confirmedAt, confirmedAmou
     <div className="flex flex-col gap-3">
       {r.paymentStatus === "confirmed_manual" ? (
         <div className="flex flex-col gap-1 rounded-[12px] border border-line bg-sunken p-3 text-sm">
-          <strong>✓ Гараар баталгаажсан · {confirmedAmount}</strong>
+          <strong><Icon name="check" size={16} /> Гараар баталгаажсан · {confirmedAmount}</strong>
           <span className="text-muted">
             {confirmedBy} · {confirmedAt}
             {source === "admin_entered" ? " · дүнг админ оруулсан" : " · хүсэлтийн үеийн үнэ"}
@@ -393,7 +394,7 @@ export function RequestPaymentPanel({ r, confirmedBy, confirmedAt, confirmedAmou
       )}
       {!closed && paymentOk(r) && (
         <button type="button" onClick={() => setSheet("delivery")} aria-haspopup="dialog" className={paid(r) && r.paymentStatus !== "confirmed_manual" ? primary : ghost}>
-          <Lock size={16} />
+          <Icon name="lock" size={16} />
           Хүргэх холбоос үүсгэх
         </button>
       )}

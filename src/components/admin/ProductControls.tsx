@@ -1,5 +1,7 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
+
 import { runAdminAction } from "@/lib/admin/action-client";
 
 import Link from "next/link";
@@ -109,7 +111,7 @@ export function PublishSwitch({ id, title, published, editHref }: { id: string; 
             <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
               {reasons.map((x) => (
                 <li key={x} className="flex gap-2 rounded-[10px] bg-danger-bg px-3 py-2 text-sm font-semibold text-danger-ink">
-                  <span aria-hidden="true">✕</span>
+                  <span aria-hidden="true"><Icon name="x" size={16} /></span>
                   {x}
                 </li>
               ))}

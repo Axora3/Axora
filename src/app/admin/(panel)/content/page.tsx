@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import Link from "next/link";
 import { Suspense } from "react";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
@@ -16,7 +17,7 @@ async function ContentPageContent() {
     <>
       <PageHeader title="Сайтын агуулга" description="Нүүрний гарчиг, холбоо барих, FAQ, footer. Ноорог нийтлэх хүртэл сайтад нөлөөлөхгүй. Зөвхөн энгийн текст." />
       <Body>
-        <Link href="/admin/library" className="inline-flex min-h-11 items-center font-bold">Портфолио, сургалт, нийтлэл, багц засах →</Link>
+        <Link href="/admin/library" className="inline-flex min-h-11 items-center font-bold">Портфолио, сургалт, нийтлэл, багц засах <Icon name="arrow-right" size={16} /></Link>
         {error || !data ? (
           <LoadFailed what="агуулгыг" />
         ) : (

@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -5,7 +6,6 @@ import { RememberListUrl } from "@/components/admin/client";
 import { FilterSheet } from "@/components/admin/FilterSheet";
 import { OrderStatusControl } from "@/components/admin/OrderStatusControl";
 import { Body, EmptyState, LoadFailed, PageHeader, Pagination, Panel, btn, field } from "@/components/admin/ui";
-import { ArrowRight, Search } from "@/components/icons";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { ORDER_STATUS, ORDER_STATUSES, fmtDateTime } from "@/lib/admin/labels";
 import { PAGE_SIZE, hrefWith, one, page as pageOf, safeSearch } from "@/lib/admin/query";
@@ -62,7 +62,7 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
         <form method="get" role="search" className="relative flex items-center" aria-label="Захиалга хайх">
           {status && <input type="hidden" name="status" value={status} />}
           <span aria-hidden="true" className="pointer-events-none absolute left-3.5 text-muted">
-            <Search size={18} />
+            <Icon name="search" size={18} />
           </span>
           <label htmlFor="ord-q" className="sr-only">
             Нэр, бизнес, ID, утсаар хайх
@@ -143,7 +143,7 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
             {filtered ? (
               <EmptyState title="Тохирох захиалга олдсонгүй" text="Хайлт, шүүлтүүрээ өөрчлөөд дахин үзээрэй." action={<Link href="/admin/orders" className={btn.ghost}>Шүүлтүүр цэвэрлэх</Link>} />
             ) : (
-              <EmptyState title="Одоогоор захиалга алга" text="Сайтын анкетаар захиалга ирмэгц энд харагдана." action={<a href="/order" target="_blank" rel="noopener" className={btn.ghost}>Анкет харах ↗</a>} />
+              <EmptyState title="Одоогоор захиалга алга" text="Сайтын анкетаар захиалга ирмэгц энд харагдана." action={<a href="/order" target="_blank" rel="noopener" className={btn.ghost}>Анкет харах <Icon name="external-link" size={16} /></a>} />
             )}
           </Panel>
         ) : (
@@ -173,7 +173,7 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
                   <div className="flex items-center justify-between gap-2.5">
                     <OrderStatusControl id={o.id} updatedAt={o.updated_at} status={o.status} title={o.business_name} reference={o.reference} />
                     <span aria-hidden="true" className="inline-flex items-center gap-1 text-[13px] font-bold text-brand">
-                      Дэлгэрэнгүй <ArrowRight size={15} />
+                      Дэлгэрэнгүй <Icon name="arrow-right" size={15} />
                     </span>
                   </div>
                 </li>

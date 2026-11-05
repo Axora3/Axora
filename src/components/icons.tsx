@@ -1,278 +1,51 @@
-import type { SVGProps } from "react";
+import { Icon, type IconProps } from "./ui/icon";
 
-/** Stroke icons from the design, all decorative (aria-hidden). */
-type P = SVGProps<SVGSVGElement> & { size?: number };
+// Compatibility names keep existing callers and sizing intact; geometry is exclusively Regen.
+type P = Omit<IconProps, "name">;
 
-function Svg({ size = 18, children, strokeWidth = 2, ...rest }: P & { children: React.ReactNode }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={strokeWidth}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-      focusable="false"
-      {...rest}
-    >
-      {children}
-    </svg>
-  );
-}
-
-export const ArrowRight = (p: P) => (
-  <Svg {...p}>
-    <path d="M5 12h14M13 6l6 6-6 6" />
-  </Svg>
-);
-export const ArrowLeft = (p: P) => (
-  <Svg {...p}>
-    <path d="M19 12H5M11 6l-6 6 6 6" />
-  </Svg>
-);
-export const ChevronLeft = (p: P) => (
-  <Svg {...p}>
-    <path d="M15 6l-6 6 6 6" />
-  </Svg>
-);
-export const ChevronDown = (p: P) => (
-  <Svg {...p}>
-    <path d="M6 9l6 6 6-6" />
-  </Svg>
-);
-export const Close = (p: P) => (
-  <Svg {...p}>
-    <path d="M6 6l12 12M18 6L6 18" />
-  </Svg>
-);
-export const Menu = (p: P) => (
-  <Svg {...p}>
-    <path d="M4 7h16M4 12h16M4 17h16" />
-  </Svg>
-);
-export const MenuShort = (p: P) => (
-  <Svg {...p}>
-    <path d="M4 8h16M4 16h10" />
-  </Svg>
-);
-export const Plus = (p: P) => (
-  <Svg {...p}>
-    <path d="M12 5v14M5 12h14" />
-  </Svg>
-);
-export const Check = (p: P) => (
-  <Svg {...p}>
-    <path d="M5 12.5l4.5 4.5L19 7.5" />
-  </Svg>
-);
-export const Search = (p: P) => (
-  <Svg {...p}>
-    <circle cx="11" cy="11" r="7" />
-    <path d="M20 20l-3.5-3.5" />
-  </Svg>
-);
-export const SearchEmpty = (p: P) => (
-  <Svg {...p}>
-    <circle cx="11" cy="11" r="7" />
-    <path d="M20 20l-3.5-3.5M8.5 11h5" />
-  </Svg>
-);
-export const Info = (p: P) => (
-  <Svg {...p}>
-    <circle cx="12" cy="12" r="9" />
-    <path d="M12 8v5M12 16.5v.01" />
-  </Svg>
-);
-export const Alert = (p: P) => (
-  <Svg {...p}>
-    <circle cx="12" cy="12" r="9" />
-    <path d="M12 7.5v5.5M12 16.5v.01" />
-  </Svg>
-);
-export const Upload = (p: P) => (
-  <Svg {...p}>
-    <path d="M12 16V4M7 9l5-5 5 5M4 16v3a1 1 0 001 1h14a1 1 0 001-1v-3" />
-  </Svg>
-);
-export const Download = (p: P) => (
-  <Svg {...p}>
-    <path d="M12 4v12M7 11l5 5 5-5M4 20h16" />
-  </Svg>
-);
-export const Refresh = (p: P) => (
-  <Svg {...p}>
-    <path d="M20 11a8 8 0 10-2.3 5.7M20 5v6h-6" />
-  </Svg>
-);
-export const Desktop = (p: P) => (
-  <Svg {...p}>
-    <rect x="3" y="4" width="18" height="12" rx="2" />
-    <path d="M8 20h8M12 16v4" />
-  </Svg>
-);
-export const Tablet = (p: P) => (
-  <Svg {...p}>
-    <rect x="5" y="3" width="14" height="18" rx="2" />
-    <path d="M11 18h2" />
-  </Svg>
-);
-export const Phone = (p: P) => (
-  <Svg {...p}>
-    <rect x="7" y="3" width="10" height="18" rx="2" />
-    <path d="M11 18h2" />
-  </Svg>
-);
-export const Home = (p: P) => (
-  <Svg {...p}>
-    <path d="M4 11l8-7 8 7v8a1 1 0 01-1 1h-4v-6H9v6H5a1 1 0 01-1-1z" />
-  </Svg>
-);
-export const Grid = (p: P) => (
-  <Svg {...p}>
-    <rect x="4" y="4" width="7" height="7" rx="1.5" />
-    <rect x="13" y="4" width="7" height="7" rx="1.5" />
-    <rect x="4" y="13" width="7" height="7" rx="1.5" />
-    <rect x="13" y="13" width="7" height="7" rx="1.5" />
-  </Svg>
-);
-export const Sliders = (p: P) => (
-  <Svg {...p}>
-    <path d="M4 7h9M17 7h3M4 17h3M11 17h9" />
-    <circle cx="15" cy="7" r="2" />
-    <circle cx="9" cy="17" r="2" />
-  </Svg>
-);
-export const Form = (p: P) => (
-  <Svg {...p}>
-    <rect x="5" y="4" width="14" height="17" rx="2" />
-    <path d="M9 9h6M9 13h6M9 17h3" />
-  </Svg>
-);
-export const PhoneCall = (p: P) => (
-  <Svg {...p}>
-    <path d="M5 4h4l2 5-2.5 1.5a11 11 0 005 5L15 13l5 2v4a2 2 0 01-2 2A16 16 0 013 6a2 2 0 012-2" />
-  </Svg>
-);
-export const Mail = (p: P) => (
-  <Svg {...p}>
-    <rect x="3" y="5" width="18" height="14" rx="2" />
-    <path d="M3 7l9 6 9-6" />
-  </Svg>
-);
-export const Chat = (p: P) => (
-  <Svg {...p}>
-    <path d="M12 3C7 3 3 6.7 3 11.2c0 2.5 1.2 4.7 3.2 6.2V21l3-1.7c.9.3 1.8.4 2.8.4 5 0 9-3.7 9-8.3S17 3 12 3z" />
-    <path d="M7.5 13l3-3 2.5 2 3.5-3" />
-  </Svg>
-);
-export const Clock = (p: P) => (
-  <Svg {...p}>
-    <circle cx="12" cy="12" r="9" />
-    <path d="M12 7v5l3 2" />
-  </Svg>
-);
-export const Pages = (p: P) => (
-  <Svg {...p}>
-    <rect x="5" y="3" width="11" height="14" rx="2" />
-    <path d="M9 21h9a2 2 0 002-2V8" />
-  </Svg>
-);
-export const Gear = (p: P) => (
-  <Svg {...p}>
-    <path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M6 18l2-2M16 8l2-2" />
-    <circle cx="12" cy="12" r="3" />
-  </Svg>
-);
-export const Image = (p: P) => (
-  <Svg {...p}>
-    <rect x="3" y="5" width="18" height="14" rx="2" />
-    <circle cx="9" cy="10" r="2" />
-    <path d="M21 16l-5-5-8 8" />
-  </Svg>
-);
-export const Globe = (p: P) => (
-  <Svg {...p}>
-    <circle cx="12" cy="12" r="9" />
-    <path d="M3 12h18M12 3c3 3.5 3 14.5 0 18M12 3c-3 3.5-3 14.5 0 18" />
-  </Svg>
-);
-export const File = (p: P) => (
-  <Svg {...p}>
-    <path d="M14 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V8z" />
-    <path d="M14 3v5h5" />
-  </Svg>
-);
-
-export const Sun = (p: P) => (
-  <Svg {...p}>
-    <circle cx="12" cy="12" r="4" />
-    <path d="M12 2.5v2M12 19.5v2M4.6 4.6L6 6M18 18l1.4 1.4M2.5 12h2M19.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4" />
-  </Svg>
-);
-export const Moon = (p: P) => (
-  <Svg {...p}>
-    <path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z" />
-  </Svg>
-);
-export const Dashboard = (p: P) => (
-  <Svg {...p}>
-    <rect x="3.5" y="3.5" width="7" height="8" rx="1.5" />
-    <rect x="13.5" y="3.5" width="7" height="5" rx="1.5" />
-    <rect x="13.5" y="11.5" width="7" height="9" rx="1.5" />
-    <rect x="3.5" y="14.5" width="7" height="6" rx="1.5" />
-  </Svg>
-);
-export const Inbox = (p: P) => (
-  <Svg {...p}>
-    <path d="M3.5 13.5l2.6-8a1.5 1.5 0 0 1 1.4-1h9a1.5 1.5 0 0 1 1.4 1l2.6 8" />
-    <path d="M3.5 13.5V19a1.5 1.5 0 0 0 1.5 1.5h14a1.5 1.5 0 0 0 1.5-1.5v-5.5h-5l-1.5 2.5h-4L8.5 13.5z" />
-  </Svg>
-);
-export const Box = (p: P) => (
-  <Svg {...p}>
-    <path d="M12 3l8 4.5v9L12 21l-8-4.5v-9z" />
-    <path d="M4 7.5l8 4.5 8-4.5M12 12v9" />
-  </Svg>
-);
-export const More = (p: P) => (
-  <Svg {...p}>
-    <circle cx="5.5" cy="12" r="1.2" fill="currentColor" />
-    <circle cx="12" cy="12" r="1.2" fill="currentColor" />
-    <circle cx="18.5" cy="12" r="1.2" fill="currentColor" />
-  </Svg>
-);
-export const Pencil = (p: P) => (
-  <Svg {...p}>
-    <path d="M4 20h4L19 9a2.1 2.1 0 0 0-3-3L5 17z" />
-    <path d="M14.5 7.5l3 3" />
-  </Svg>
-);
-export const Filter = (p: P) => (
-  <Svg {...p}>
-    <path d="M4 5h16l-6 7.5V19l-4 1.5v-8z" />
-  </Svg>
-);
-export const Copy = (p: P) => (
-  <Svg {...p}>
-    <rect x="8.5" y="8.5" width="11" height="11" rx="2" />
-    <path d="M15.5 8.5V6a1.5 1.5 0 0 0-1.5-1.5H6A1.5 1.5 0 0 0 4.5 6v8A1.5 1.5 0 0 0 6 15.5h2.5" />
-  </Svg>
-);
-export const Lock = (p: P) => (
-  <Svg {...p}>
-    <rect x="5" y="10.5" width="14" height="10" rx="2" />
-    <path d="M8 10.5V8a4 4 0 0 1 8 0v2.5" />
-  </Svg>
-);
-export const Monitor = (p: P) => (
-  <Svg {...p}>
-    <rect x="3" y="4" width="18" height="12" rx="2" />
-    <path d="M9 20h6M12 16v4" />
-  </Svg>
-);
+export const ArrowRight = (props: P) => <Icon name="arrow-right" {...props} />;
+export const ArrowLeft = (props: P) => <Icon name="arrow-left" {...props} />;
+export const ChevronLeft = (props: P) => <Icon name="chevron-left" {...props} />;
+export const ChevronDown = (props: P) => <Icon name="chevron-down" {...props} />;
+export const Close = (props: P) => <Icon name="x" {...props} />;
+export const Menu = (props: P) => <Icon name="menu" {...props} />;
+export const MenuShort = (props: P) => <Icon name="menu" {...props} />;
+export const Plus = (props: P) => <Icon name="plus" {...props} />;
+export const Check = (props: P) => <Icon name="check" {...props} />;
+export const Search = (props: P) => <Icon name="search" {...props} />;
+export const SearchEmpty = (props: P) => <Icon name="search" {...props} />;
+export const Info = (props: P) => <Icon name="info-circle" {...props} />;
+export const Alert = (props: P) => <Icon name="circle-alert" {...props} />;
+export const Upload = (props: P) => <Icon name="upload" {...props} />;
+export const Download = (props: P) => <Icon name="download" {...props} />;
+export const Refresh = (props: P) => <Icon name="refresh" {...props} />;
+export const Desktop = (props: P) => <Icon name="monitor" {...props} />;
+export const Tablet = (props: P) => <Icon name="tablet" {...props} />;
+export const Phone = (props: P) => <Icon name="smartphone" {...props} />;
+export const Home = (props: P) => <Icon name="home" {...props} />;
+export const Grid = (props: P) => <Icon name="layout-grid" {...props} />;
+export const Sliders = (props: P) => <Icon name="adjustments" {...props} />;
+export const Form = (props: P) => <Icon name="file-text" {...props} />;
+export const PhoneCall = (props: P) => <Icon name="phone" {...props} />;
+export const Mail = (props: P) => <Icon name="mail" {...props} />;
+export const Chat = (props: P) => <Icon name="message" {...props} />;
+export const Clock = (props: P) => <Icon name="clock" {...props} />;
+export const Pages = (props: P) => <Icon name="copy" {...props} />;
+export const Gear = (props: P) => <Icon name="settings" {...props} />;
+export const Image = (props: P) => <Icon name="photo" {...props} />;
+export const Globe = (props: P) => <Icon name="globe" {...props} />;
+export const File = (props: P) => <Icon name="file-text" {...props} />;
+export const Sun = (props: P) => <Icon name="sun" {...props} />;
+export const Moon = (props: P) => <Icon name="moon" {...props} />;
+export const Dashboard = (props: P) => <Icon name="layout-grid" {...props} />;
+export const Inbox = (props: P) => <Icon name="inbox" {...props} />;
+export const Box = (props: P) => <Icon name="cube" {...props} />;
+export const More = (props: P) => <Icon name="dots" {...props} />;
+export const Pencil = (props: P) => <Icon name="pencil" {...props} />;
+export const Filter = (props: P) => <Icon name="filter" {...props} />;
+export const Copy = (props: P) => <Icon name="copy" {...props} />;
+export const Lock = (props: P) => <Icon name="lock" {...props} />;
+export const Monitor = (props: P) => <Icon name="monitor" {...props} />;
 
 export function LogoMark({ size = 32 }: { size?: number }) {
   return (
@@ -280,9 +53,7 @@ export function LogoMark({ size = 32 }: { size?: number }) {
       className="inline-flex shrink-0 items-center justify-center bg-band"
       style={{ width: size, height: size, borderRadius: Math.round(size * 0.28) }}
     >
-      <svg width={Math.round(size * 0.56)} height={Math.round(size * 0.56)} viewBox="0 0 24 24" aria-hidden="true">
-        <path d="M4 20L12 4l8 16h-4.2L12 12.2 8.2 20z" fill="#D9F279" />
-      </svg>
+      <Icon name="letter-a" size={Math.round(size * 0.56)} color="#D9F279" />
     </span>
   );
 }
