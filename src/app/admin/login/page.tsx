@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -11,9 +12,7 @@ function Logo({ size = 34 }: { size?: number }) {
   return (
     <span className="flex items-center gap-2.5">
       <span className="inline-flex items-center justify-center rounded-[10px] bg-lime" style={{ width: size, height: size }}>
-        <svg width={size * 0.56} height={size * 0.56} viewBox="0 0 24 24" aria-hidden="true">
-          <path d="M4 20L12 4l8 16h-4.2L12 12.2 8.2 20z" fill="currentColor" />
-        </svg>
+        <Icon name="letter-a" size={size * 0.56} />
       </span>
       <span className="text-xl font-extrabold tracking-[0.08em]">AXORA</span>
       <span className="rounded-md border border-band-ring px-2 py-1 text-xs font-extrabold text-lime">ADMIN</span>
@@ -43,7 +42,7 @@ export default function AdminLoginPage() {
         <div aria-hidden="true" className="ax-spin absolute -top-[110px] -right-[150px] h-[360px] w-[360px] rounded-full border border-dashed border-band-ring [animation-duration:36s]" />
         <div className="relative flex items-center justify-between gap-3">
           <Logo size={36} />
-          <ThemeToggle tone="band" />
+          <ThemeToggle tone="band" size={20} />
         </div>
         <p className="relative mt-8 text-[36px] leading-[1.06] font-extrabold tracking-[-0.03em]">
           Захиалгаа <span className="serif text-lime">хаанаас ч</span> удирд.
@@ -55,7 +54,7 @@ export default function AdminLoginPage() {
         className="relative flex flex-1 flex-col rounded-t-[28px] bg-bg-admin px-[22px] pt-7 pb-[calc(28px+env(safe-area-inset-bottom))] min-[861px]:flex-[1_1_480px] min-[861px]:items-center min-[861px]:justify-center min-[861px]:rounded-none min-[861px]:px-5 min-[861px]:py-10"
       >
         <div className="absolute top-4 right-4 hidden min-[861px]:block">
-          <ThemeToggle />
+          <ThemeToggle size={20} />
         </div>
         <div className="flex w-full max-w-[400px] flex-1 flex-col gap-6 self-center min-[861px]:flex-none">
           <div className="ax-in-sm flex flex-col gap-2">
@@ -66,7 +65,7 @@ export default function AdminLoginPage() {
             <LoginForm configured={isCatalogConfigured()} />
           </Suspense>
           <Link href="/" className="mt-auto inline-flex min-h-11 items-center self-center text-sm font-bold min-[861px]:mt-0">
-            ← Сайт руу буцах
+            <Icon name="arrow-left" size={16} /> Сайт руу буцах
           </Link>
         </div>
       </main>

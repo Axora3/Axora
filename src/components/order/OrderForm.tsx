@@ -1,5 +1,7 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
+
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useBuilder } from "@/components/builder/BuilderProvider";
@@ -630,7 +632,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                             </dt>
                             <dd className="m-0 text-[15px] leading-normal [overflow-wrap:anywhere]" style={{ color: bad ? "var(--ax-danger)" : val ? "var(--ax-ink)" : "var(--ax-faint)" }}>
                               {val || "—"}
-                              {bad && " ✕ засвар хэрэгтэй"}
+                              {bad && <> <Icon name="x" size={16} /> засвар хэрэгтэй</>}
                             </dd>
                           </div>
                         );

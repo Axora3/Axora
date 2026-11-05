@@ -1,5 +1,7 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
+
 import { createContext, useCallback, useContext, useEffect, useRef, useState } from "react";
 
 type Toast = { id: number; kind: "ok" | "err"; text: string; action?: { label: string; onClick: () => void } };
@@ -50,7 +52,7 @@ function ToastItem({ t, onDone }: { t: Toast; onDone: () => void }) {
       }`}
     >
       <span aria-hidden="true" className={`font-extrabold ${t.kind === "ok" ? "text-lime" : ""}`}>
-        {t.kind === "ok" ? "✓" : "✕"}
+        {t.kind === "ok" ? <><Icon name="check" size={16} /></> : <><Icon name="x" size={16} /></>}
       </span>
       <span className="flex-1">{t.text}</span>
       {t.action && (
@@ -66,7 +68,7 @@ function ToastItem({ t, onDone }: { t: Toast; onDone: () => void }) {
         </button>
       )}
       <button type="button" onClick={onDone} aria-label="Мэдэгдэл хаах" className="-mr-1 inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-lg border-0 bg-transparent text-current opacity-70">
-        ✕
+        <Icon name="x" size={16} />
       </button>
     </div>
   );

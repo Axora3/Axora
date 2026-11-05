@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import { Alert, Info } from "@/components/icons";
 
 /** Yellow test-mode / demo notice and red error box from the design. */
@@ -23,7 +24,7 @@ export function ErrorBox({ children, className = "" }: { children: React.ReactNo
 export function FieldError({ id, children }: { id: string; children: React.ReactNode }) {
   return (
     <span id={id} className="inline-flex items-start gap-1.5 text-[13px] font-bold text-danger">
-      <span aria-hidden="true">✕</span>
+      <span aria-hidden="true"><Icon name="x" size={16} /></span>
       <span>{children}</span>
     </span>
   );

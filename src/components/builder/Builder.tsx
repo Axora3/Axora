@@ -1,5 +1,7 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
+
 import Link from "next/link";
 import { useState } from "react";
 import { Desktop, Phone, Tablet } from "@/components/icons";
@@ -219,7 +221,7 @@ export function Builder() {
               {theme.warnings.length > 0 && (
                 <div role="status" className="flex flex-col gap-1 rounded-[10px] border border-warn-line bg-warn-bg px-3 py-2.5 text-[13px] leading-normal font-semibold text-warn-ink">
                   {theme.warnings.map((w) => (
-                    <span key={w}>! {w}</span>
+                    <span key={w}><Icon name="circle-alert" size={16} /> {w}</span>
                   ))}
                 </div>
               )}
@@ -268,7 +270,7 @@ export function Builder() {
                 <input id="bx-logo" type="file" accept={LOGO_TYPES.join(",")} onChange={onLogo} aria-describedby="bx-logo-note" className="min-h-11 text-sm" />
                 <span id="bx-logo-note" className="text-[13px] leading-normal" style={{ color: logoErr ? "var(--ax-danger)" : "var(--ax-muted)", fontWeight: logoErr ? 700 : 400 }}>
                   {logoErr
-                    ? `✕ ${logoErr}`
+                    ? <><Icon name="x" size={16} /> {logoErr}</>
                     : b.logo
                       ? `“${b.logo.name}” — зөвхөн таны төхөөрөмж дээр харагдаж байна. Серверт илгээгдээгүй.`
                       : "PNG, JPG, WEBP, SVG · 2MB хүртэл. Зөвхөн энэ төхөөрөмж дээр урьдчилан харагдана."}

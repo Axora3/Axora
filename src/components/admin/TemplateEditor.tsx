@@ -1,5 +1,7 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
+
 import { runAdminAction } from "@/lib/admin/action-client";
 
 import Link from "next/link";
@@ -32,7 +34,7 @@ function Err({ id, text }: { id: string; text?: string }) {
   if (!text) return null;
   return (
     <span id={id} className="text-[13px] font-bold text-danger">
-      ✕ {text}
+      <Icon name="x" size={16} /> {text}
     </span>
   );
 }
@@ -55,7 +57,7 @@ function UploadRow({ u, onRetry, onRemove }: { u: Upload; onRetry: () => void; o
           {u.file.type || ext} · {formatSize(u.file.size)}
         </span>
         {u.error ? (
-          <span className="font-bold text-danger-ink">✕ {u.error}</span>
+          <span className="font-bold text-danger-ink"><Icon name="x" size={16} /> {u.error}</span>
         ) : (
           <span className="flex items-center gap-2">
             <span className="h-2 flex-1 overflow-hidden rounded bg-soft" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={u.pct} aria-label={`${u.file.name} хуулж байна`}>
@@ -286,7 +288,7 @@ export function TemplateEditor(p: Props) {
             </span>
             {f.slug && /^[a-z0-9]+(-[a-z0-9]+)*$/.test(f.slug) && slugState && (
               <span aria-live="polite" className={`text-[13px] font-bold ${slugState === "taken" ? "text-danger" : slugState === "ok" ? "text-brand" : "text-muted"}`}>
-                {slugState === "checking" ? "Шалгаж байна…" : slugState === "ok" ? "✓ Боломжтой" : slugState === "taken" ? "✕ Энэ slug өөр бүтээгдэхүүнд ашиглагдсан" : "Шалгаж чадсангүй — хадгалахад сервер дахин шалгана"}
+                {slugState === "checking" ? "Шалгаж байна…" : slugState === "ok" ? <><Icon name="check" size={16} /> Боломжтой</> : slugState === "taken" ? <><Icon name="x" size={16} /> Энэ slug өөр бүтээгдэхүүнд ашиглагдсан</> : "Шалгаж чадсангүй — хадгалахад сервер дахин шалгана"}
               </span>
             )}
             <Err id="tf-slug-e" text={errors.slug} />
@@ -370,10 +372,10 @@ export function TemplateEditor(p: Props) {
                   </span>
                   <span className="flex gap-1.5">
                     <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className={btn.ghost} aria-label={`${i + 1}-р зургийг дээш`}>
-                      ↑
+                      <Icon name="arrow-up" size={16} />
                     </button>
                     <button type="button" onClick={() => move(i, 1)} disabled={i === f.previewImages.length - 1} className={btn.ghost} aria-label={`${i + 1}-р зургийг доош`}>
-                      ↓
+                      <Icon name="arrow-down" size={16} />
                     </button>
                     {i !== 0 && (
                       <button type="button" onClick={() => setF((x) => ({ ...x, previewImages: [x.previewImages[i], ...x.previewImages.filter((_, j) => j !== i)] }))} className={btn.ghost}>
@@ -498,7 +500,7 @@ export function TemplateEditor(p: Props) {
           {dirty && <p className="rounded-[10px] bg-warn-bg px-3 py-2 text-[13px] font-bold text-warn-ink">Хадгалаагүй өөрчлөлт байна.</p>}
           {msg && (
             <p role={msg.kind === "err" ? "alert" : "status"} className={`rounded-[10px] px-3 py-2.5 text-sm font-bold ${msg.kind === "ok" ? "bg-soft text-brand" : "border border-danger-line bg-danger-bg text-danger-ink"}`}>
-              {msg.kind === "ok" ? "✓ " : "✕ "}
+              {msg.kind === "ok" ? <><Icon name="check" size={16} /> </> : <><Icon name="x" size={16} /> </>}
               {msg.text}
             </p>
           )}
@@ -516,7 +518,7 @@ export function TemplateEditor(p: Props) {
           )}
           {status === "published" && p.id && (
             <Link href={`/templates/${form.slug}`} target="_blank" className="text-sm font-bold">
-              Сайт дээр харах ↗
+              Сайт дээр харах <Icon name="external-link" size={16} />
             </Link>
           )}
         </section>

@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import { Suspense } from "react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -26,7 +27,7 @@ async function ProjectDetail({ params }: { params: Promise<{ id: string }> }) {
   const order = project.website_orders as unknown as { id: string; reference: string; business_name: string; full_name: string; email: string; phone: string; status: string } | null;
   const status = PROJECT_STATUS[project.status as ProjectStatus];
   return <>
-    <PageHeader crumbs={[{href:"/admin/projects",label:"Веб төслүүд"}]} title={order?.business_name ?? "Веб төсөл"} description={<span>{order?.reference ?? "—"} · үүсгэсэн {fmtDateTime(project.created_at)} · <span style={{color:status?.tone}}>{status?.label ?? project.status}</span></span>} actions={order ? <Link href={`/admin/orders/${order.id}`} className={btn.ghost}>Захиалгыг нээх →</Link> : undefined}/>
+    <PageHeader crumbs={[{href:"/admin/projects",label:"Веб төслүүд"}]} title={order?.business_name ?? "Веб төсөл"} description={<span>{order?.reference ?? "—"} · үүсгэсэн {fmtDateTime(project.created_at)} · <span style={{color:status?.tone}}>{status?.label ?? project.status}</span></span>} actions={order ? <Link href={`/admin/orders/${order.id}`} className={btn.ghost}>Захиалгыг нээх <Icon name="arrow-right" size={16} /></Link> : undefined}/>
     <Body>
       <div className="grid items-start gap-5 min-[1100px]:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex min-w-0 flex-col gap-5">

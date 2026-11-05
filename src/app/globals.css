@@ -699,13 +699,24 @@ option {
   min-width: 0;
 }
 
-/* Hero composition collapses into a stack on small screens. */
-@media (max-width: 900px) {
+/* Match the hero's column breakpoint so its floating cards never stretch
+   across a tablet-width single column. */
+@media (max-width: 1023px) {
   .ax-comp {
     height: auto !important;
-    display: flex !important;
-    flex-direction: column;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: 16px;
+    width: 100%;
+    max-width: 640px;
+    margin-inline: auto;
+  }
+  .ax-comp > div:first-child,
+  .ax-comp > div:last-child {
+    grid-column: 1 / -1;
+  }
+  .ax-comp > div:last-child {
+    justify-content: center;
   }
   .ax-comp > div {
     position: relative !important;
@@ -721,6 +732,9 @@ option {
   .ax-steps-line {
     display: none !important;
   }
+}
+@media (max-width: 539px) {
+  .ax-comp { grid-template-columns: minmax(0, 1fr); }
 }
 
 /* Theme icon: a short, quiet swap (disabled by reduced motion below). */

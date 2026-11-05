@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import { Suspense } from "react";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import { DashboardInsights } from "@/components/admin/DashboardInsights";
@@ -121,7 +122,7 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
                 <span className="text-[12.5px] leading-snug font-bold opacity-85 min-[900px]:text-[13.5px]">{k.label}</span>
                 <span className="text-[34px] leading-none font-extrabold tracking-[-0.03em] tabular-nums">{k.value}</span>
                 <span className={`text-xs font-semibold ${k.warn ? "text-danger" : "opacity-75"}`}>
-                  {k.warn && <span aria-hidden="true">! </span>}
+                  {k.warn && <Icon name="circle-alert" size={16} />}
                   {k.note}
                 </span>
               </Link>
@@ -139,7 +140,7 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
                 <li key={a.title + a.href} className={`flex flex-[0_0_270px] flex-col gap-2 rounded-2xl border p-3.5 ${toneCls[a.tone]}`}>
                   <strong className="flex items-start gap-2 text-sm leading-snug">
                     <span aria-hidden="true" className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-surface font-extrabold">
-                      !
+                      <Icon name={a.tone === "info" ? "info-circle" : "circle-alert"} size={24} />
                     </span>
                     {a.title}
                   </strong>
@@ -194,7 +195,7 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
                 {statusCounts.map((x) => (
                   <li key={x.s}>
                     <Link href={`/admin/orders?status=${x.s}`} className="flex min-h-11 items-center gap-2 text-sm text-ink no-underline">
-                      <span aria-hidden="true" className="h-3 w-3 shrink-0 rounded" style={{ background: ORDER_STATUS[x.s].bar }} />
+                      <Icon name={ORDER_STATUS[x.s].icon} size={16} color={ORDER_STATUS[x.s].bar} />
                       <span className="flex-1">{ORDER_STATUS[x.s].label}</span>
                       <strong className="tabular-nums">{x.n}</strong>
                     </Link>

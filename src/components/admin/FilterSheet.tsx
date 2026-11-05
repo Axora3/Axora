@@ -1,7 +1,7 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
 import { useState } from "react";
-import { Filter } from "@/components/icons";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 
 /**
@@ -19,7 +19,7 @@ export function FilterSheet({ children, active = 0, title = "Шүүлтүүр" }
         aria-haspopup="dialog"
         className="ax-btn inline-flex min-h-11 cursor-pointer items-center gap-2 self-start rounded-xl border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink md:hidden"
       >
-        <Filter size={17} />
+        <Icon name="filter" size={17} />
         {title}
         {active > 0 && <span className="inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-lime px-1.5 text-[11px] font-extrabold">{active}</span>}
       </button>

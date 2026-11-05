@@ -1,5 +1,7 @@
 "use client";
 
+import { Icon } from "@/components/ui/icon";
+
 import { runAdminAction } from "@/lib/admin/action-client";
 
 import Link from "next/link";
@@ -16,7 +18,7 @@ export function CreateProjectButton({ orderId, projectId }: { orderId: string; p
   const router = useRouter();
   const toast = useToast();
   const [pending, start] = useTransition();
-  if (projectId) return <Link href={`/admin/projects/${projectId}`} className={btn.ghost}>Төслийг нээх →</Link>;
+  if (projectId) return <Link href={`/admin/projects/${projectId}`} className={btn.ghost}>Төслийг нээх <Icon name="arrow-right" size={16} /></Link>;
   return <button type="button" className={btn.primary} disabled={pending} onClick={() => start(async () => {
     const result = await runAdminAction(() => createProjectForOrderAction(orderId));
     if (!result.ok) return toast({ kind: "err", text: result.message });

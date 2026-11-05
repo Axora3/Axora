@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -33,7 +34,7 @@ async function Guard({ children }: { children: React.ReactNode }) {
           Админ самбар бодит өгөгдөл, нэвтрэлт шаарддаг тул туршилтын өгөгдлөөр ажиллахгүй. README-ийн “Админ тохируулах” хэсгийн дагуу орчны хувьсагч, migration-оо тохируулна уу.
         </p>
         <Link href="/" className="font-bold">
-          ← Сайт руу буцах
+          <Icon name="arrow-left" size={16} /> Сайт руу буцах
         </Link>
       </Centered>
     );

@@ -1,10 +1,10 @@
+import { Icon } from "@/components/ui/icon";
 import { Suspense } from "react";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import Link from "next/link";
 import { FilterSheet } from "@/components/admin/FilterSheet";
 import { PublishSwitch } from "@/components/admin/ProductControls";
 import { Body, EmptyState, LoadFailed, PageHeader, Pagination, Panel, btn, field } from "@/components/admin/ui";
-import { Lock, Pencil, Plus, Search } from "@/components/icons";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { fmtDate } from "@/lib/admin/labels";
 import { PAGE_SIZE, hrefWith, one, page as pageOf, safeSearch } from "@/lib/admin/query";
@@ -56,7 +56,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
         description={<span className="max-md:hidden">Notion, Canva, Excel бүтээгдэхүүн. Ноорог сайтад харагдахгүй.</span>}
         actions={
           <Link href="/admin/templates/new" className={`${btn.primary} max-[1023px]:hidden`}>
-            <Plus size={16} /> Бүтээгдэхүүн нэмэх
+            <Icon name="plus" size={16} /> Бүтээгдэхүүн нэмэх
           </Link>
         }
       >
@@ -65,7 +65,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
           {cat && <input type="hidden" name="category" value={cat} />}
           <input type="hidden" name="sort" value={sort} />
           <span aria-hidden="true" className="pointer-events-none absolute left-3.5 text-muted">
-            <Search size={18} />
+            <Icon name="search" size={18} />
           </span>
           <label htmlFor="tpl-q" className="sr-only">
             Бүтээгдэхүүн хайх
@@ -129,7 +129,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
             {filtered ? (
               <EmptyState title="Тохирох бүтээгдэхүүн олдсонгүй" action={<Link href="/admin/templates" className={btn.ghost}>Шүүлтүүр цэвэрлэх</Link>} />
             ) : (
-              <EmptyState title="Одоогоор бүтээгдэхүүн алга" text="Эхний бүтээгдэхүүнээ нэмээрэй." action={<Link href="/admin/templates/new" className={btn.primary}>+ Бүтээгдэхүүн нэмэх</Link>} />
+              <EmptyState title="Одоогоор бүтээгдэхүүн алга" text="Эхний бүтээгдэхүүнээ нэмээрэй." action={<Link href="/admin/templates/new" className={btn.primary}><Icon name="plus" size={16} /> Бүтээгдэхүүн нэмэх</Link>} />
             )}
           </Panel>
         ) : (
@@ -148,7 +148,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
                         <img src={previewPublicUrl(img)} alt="" className="ax-light h-14 w-14 shrink-0 rounded-xl border border-line object-cover" />
                       ) : (
                         <span aria-hidden="true" className="ax-light inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-xl" style={{ background: t.preview_style?.tint ?? "#EEF1E6" }}>
-                          <span className="h-6 w-5 rounded" style={{ background: t.preview_style?.accent ?? "#245C45" }} />
+                          <Icon name={t.category === "Excel" ? "table" : t.category === "Canva" ? "photo" : "file-text"} width={20} height={24} color={t.preview_style?.accent ?? "#245C45"} />
                         </span>
                       )}
                       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
@@ -158,7 +158,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
                         </span>
                       </span>
                       <Link href={edit} aria-label={`${t.title} — засах`} className="ax-btn inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-surface text-ink">
-                        <Pencil size={18} />
+                        <Icon name="pencil" size={18} />
                       </Link>
                     </div>
                     <div className="flex items-center justify-between gap-2.5 border-t border-soft pt-2">
@@ -167,10 +167,10 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
                           "Үнэгүй — файл заавал биш"
                         ) : fileOk ? (
                           <>
-                            <Lock size={14} /> Хамгаалагдсан файлтай
+                            <Icon name="lock" size={16} /> Хамгаалагдсан файлтай
                           </>
                         ) : (
-                          <>! Хамгаалагдсан файлгүй</>
+                          <><Icon name="circle-alert" size={16} /> Хамгаалагдсан файлгүй</>
                         )}
                       </span>
                       <PublishSwitch id={t.id} title={t.title} published={t.status === "published"} editHref={edit} />
@@ -191,7 +191,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
         href="/admin/templates/new"
         className="ax-btn ax-primary fixed right-4 bottom-[calc(88px+env(safe-area-inset-bottom))] z-[35] inline-flex h-14 items-center gap-2 rounded-[18px] bg-primary pr-5 pl-4 text-base font-extrabold text-on-primary no-underline shadow-[0_18px_36px_-14px_rgba(0,0,0,.45)] min-[1024px]:hidden"
       >
-        <Plus size={20} /> Шинэ
+        <Icon name="plus" size={20} /> Шинэ
       </Link>
     </>
   );

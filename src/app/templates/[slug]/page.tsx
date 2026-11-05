@@ -95,9 +95,7 @@ export default function TemplateDetailPage({ params }: PageProps<"/templates/[sl
           <Detail params={params} />
         </Suspense>
       </main>
-      <div className="max-[899px]:hidden">
-        <SiteFooter />
-      </div>
+      <SiteFooter />
     </>
   );
 }

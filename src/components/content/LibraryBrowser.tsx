@@ -1,8 +1,10 @@
 "use client";
+
+import { Icon } from "@/components/ui/icon";
 import Link from "next/link";
 import Image from "next/image";
 import { useState } from "react";
-import { EmptyState } from "@/components/site/PageFrame";
+import { EmptyState } from "@/components/site/EmptyState";
 import { libraryHref, type LibraryEntry, type LibraryKind } from "@/lib/content/library";
 import { LibraryBody } from "./LibraryBody";
 
@@ -26,17 +28,17 @@ export function LessonReader({ entry }: { entry: LibraryEntry }) {
   return <>
     <nav aria-label="Байршил заагч" className="mb-5 flex flex-wrap items-center gap-2 text-sm"><Link className="font-bold text-brand" href="/learn">Сургалт</Link><span aria-hidden="true" className="text-muted">/</span><span aria-current="page" className="text-muted">{entry.title}</span></nav>
     <div className="grid items-start gap-6 lg:grid-cols-[230px_minmax(0,1fr)_240px]">
-      <aside className="ax-panel hidden space-y-2 p-4 lg:block"><h2 className="mb-3 font-extrabold">{entry.title}</h2><p className="mb-3 text-xs text-muted">Явц {done.length}/{entry.sections.length} · энэ удаагийн үзэлт</p>{entry.sections.map((s,i)=><button key={i} aria-current={index===i?"step":undefined} className={`flex min-h-11 w-full items-center gap-2 rounded-lg px-3 text-left text-sm ${index===i?"bg-soft font-bold text-brand":""}`} onClick={()=>setIndex(i)}><span>{done.includes(i)?"✓":i+1}</span><span>{s.title}</span></button>)}</aside>
+      <aside className="ax-panel hidden space-y-2 p-4 lg:block"><h2 className="mb-3 font-extrabold">{entry.title}</h2><p className="mb-3 text-xs text-muted">Явц {done.length}/{entry.sections.length} · энэ удаагийн үзэлт</p>{entry.sections.map((s,i)=><button key={i} aria-current={index===i?"step":undefined} className={`flex min-h-11 w-full items-center gap-2 rounded-lg px-3 text-left text-sm ${index===i?"bg-soft font-bold text-brand":""}`} onClick={()=>setIndex(i)}><span>{done.includes(i)?<><Icon name="check" size={16} /></>:i+1}</span><span>{s.title}</span></button>)}</aside>
       <article className="min-w-0">
-        <details className="ax-panel mb-5 p-4 lg:hidden"><summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 font-extrabold"><span>Хичээлүүд · {done.length}/{entry.sections.length} дууссан</span><span aria-hidden="true" className="text-brand">⌄</span></summary><div className="mt-3 grid gap-1 border-t border-line pt-3">{entry.sections.map((s,i)=><button key={i} aria-current={index===i?"step":undefined} className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-left text-sm ${index===i?"bg-soft font-bold text-brand":""}`} onClick={()=>setIndex(i)}><span className="w-5 text-xs font-bold">{done.includes(i)?"✓":i+1}</span><span>{s.title}</span></button>)}</div></details>
+        <details className="ax-panel mb-5 p-4 lg:hidden"><summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 font-extrabold"><span>Хичээлүүд · {done.length}/{entry.sections.length} дууссан</span><span aria-hidden="true" className="text-brand"><Icon name="chevron-down" size={16} /></span></summary><div className="mt-3 grid gap-1 border-t border-line pt-3">{entry.sections.map((s,i)=><button key={i} aria-current={index===i?"step":undefined} className={`flex min-h-11 items-center gap-3 rounded-lg px-3 text-left text-sm ${index===i?"bg-soft font-bold text-brand":""}`} onClick={()=>setIndex(i)}><span className="w-5 text-xs font-bold">{done.includes(i)?<><Icon name="check" size={16} /></>:i+1}</span><span>{s.title}</span></button>)}</div></details>
         <div className="mb-4 flex flex-wrap gap-2"><span className="rounded-full bg-soft px-3 py-1.5 text-xs font-bold text-brand">{entry.category||"Сургалт"}</span>{entry.tags[0]&&<span className="rounded-full bg-surface px-3 py-1.5 text-xs font-bold text-muted">{entry.tags[0]}</span>}<span className="rounded-full bg-surface px-3 py-1.5 text-xs font-bold text-muted">Хичээл {index+1}/{entry.sections.length}</span></div>
         <h1 className="mb-5 text-3xl font-extrabold leading-tight">{lesson.title}</h1><div className="overflow-hidden rounded-2xl"><LibraryCover entry={entry} large/></div>
         <LibraryBody text={lesson.body} className="my-6 space-y-4"/>
         <label className="ax-panel flex min-h-14 cursor-pointer items-center gap-3 p-4"><input type="checkbox" checked={done.includes(index)} onChange={e=>setDone(d=>e.target.checked?[...new Set([...d,index])]:d.filter(i=>i!==index))}/>Энэ хичээлийг дуусгасан</label>
-        <div className="mt-5 hidden justify-between gap-3 lg:flex"><button className="ax-button" disabled={index===0} onClick={previous}>← Өмнөх хичээл</button><button className="ax-button ax-button-primary" disabled={index===entry.sections.length-1} onClick={next}>Дараах хичээл →</button></div>
+        <div className="mt-5 hidden justify-between gap-3 lg:flex"><button className="ax-button" disabled={index===0} onClick={previous}><Icon name="arrow-left" size={16} /> Өмнөх хичээл</button><button className="ax-button ax-button-primary" disabled={index===entry.sections.length-1} onClick={next}>Дараах хичээл <Icon name="arrow-right" size={16} /></button></div>
       </article>
       <aside className="ax-panel hidden lg:block"><h2 className="font-bold">Холбоотой заавар</h2><p className="mt-3 text-sm leading-relaxed text-muted">{entry.summary}</p><Link className="ax-button mt-4 w-full" href="/learn">Бусад сургалт</Link><Link className="mt-4 block text-sm text-brand underline" href="/contact">Холбоо барих</Link></aside>
     </div>
-    <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-2 border-t border-line bg-surface/95 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] backdrop-blur lg:hidden"><button className="ax-button min-w-0 px-2 text-sm" disabled={index===0} onClick={previous}>← Өмнөх</button><button className="ax-button ax-button-primary min-w-0 px-2 text-sm" disabled={index===entry.sections.length-1} onClick={next}>Дараах →</button></div>
+    <div className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-2 gap-2 border-t border-line bg-surface/95 px-4 pt-3 pb-[calc(12px+env(safe-area-inset-bottom))] backdrop-blur lg:hidden"><button className="ax-button min-w-0 px-2 text-sm" disabled={index===0} onClick={previous}><Icon name="arrow-left" size={16} /> Өмнөх</button><button className="ax-button ax-button-primary min-w-0 px-2 text-sm" disabled={index===entry.sections.length-1} onClick={next}>Дараах <Icon name="arrow-right" size={16} /></button></div>
   </>;
 }

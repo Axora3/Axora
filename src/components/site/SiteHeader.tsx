@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { ArrowLeft, ChevronLeft, Close, LogoMark, Menu } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { useDialog } from "@/components/ui/use-dialog";
@@ -9,14 +10,10 @@ import { useDialog } from "@/components/ui/use-dialog";
 export const NAV = [
   { href: "/templates", label: "Загварууд" },
   { href: "/bundles", label: "Багцууд" },
+  { href: "/services", label: "Веб хөгжүүлэлт" },
   { href: "/portfolio", label: "Портфолио" },
   { href: "/learn", label: "Сургалт" },
-  { href: "/blog", label: "Нийтлэл" },
-  { href: "/services", label: "Веб хөгжүүлэлт" },
-  { href: "/builder", label: "Жишээ загварууд" },
-  { href: "/favorites", label: "Хадгалсан загварууд" },
-  { href: "/compare", label: "Харьцуулалт" },
-  { href: "/contact", label: "Холбоо барих" },
+  { href: "/contact", label: "Тусламж" },
 ];
 
 type Props = {
@@ -62,8 +59,8 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
 
         {variant === "main" ? (
           <>
-            <nav aria-label="Үндсэн цэс" className="hidden items-center gap-5 text-sm font-bold min-[1100px]:flex">
-              {NAV.slice(0, 6).map((n) => {
+            <nav aria-label="Үндсэн цэс" className="hidden items-center gap-[22px] text-[15px] font-semibold min-[1100px]:flex">
+              {NAV.map((n) => {
                 const active = n.href === current;
                 return (
                   <Link
@@ -78,7 +75,6 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
               })}
             </nav>
             <div className="flex items-center gap-2">
-              <Link href="/favorites" aria-label="Хадгалсан загварууд" className="ax-btn grid h-11 w-11 place-items-center rounded-[11px] border border-line bg-surface text-brand"><svg width="18" height="18" viewBox="0 0 24 24" fill={current === "/favorites" ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8" aria-hidden="true"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8L12 21l8.9-8.6a5.5 5.5 0 0 0-.1-7.8Z" /></svg></Link>
               <ThemeToggle />
               <Link
                 href="/order"
@@ -114,14 +110,14 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
         )}
       </div>
 
-      {open && (
+      {open && createPortal(
         <div
           ref={dialogRef}
           id="ax-mobile-menu"
           role="dialog"
           aria-modal="true"
           aria-label="Цэс"
-          className="fixed inset-0 z-50 flex flex-col overflow-y-auto bg-sunken p-4 pb-[calc(16px+env(safe-area-inset-bottom))] [animation:axFade_.2s_ease_both]"
+          className="fixed inset-0 z-50 flex h-dvh flex-col overflow-y-auto overscroll-contain bg-sunken p-4 pb-[calc(16px+env(safe-area-inset-bottom))] [animation:axFade_.2s_ease_both]"
         >
           <div className="flex h-14 items-center justify-between">
             <span className="text-[19px] font-extrabold tracking-[0.08em]">AXORA</span>
@@ -150,11 +146,11 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
           <Link
             href="/order"
             onClick={() => setOpen(false)}
-            className="ax-btn ax-primary mt-auto flex min-h-[52px] items-center justify-center rounded-xl bg-primary pt-0 text-[17px] font-bold text-on-primary no-underline"
+            className="ax-btn ax-primary mt-6 flex min-h-[52px] shrink-0 items-center justify-center rounded-xl bg-primary text-[17px] font-bold text-on-primary no-underline"
           >
             Үнийн санал авах
           </Link>
-        </div>
+        </div>, document.body
       )}
     </header>
   );

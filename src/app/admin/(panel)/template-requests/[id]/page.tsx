@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import { Suspense } from "react";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import Link from "next/link";
@@ -90,7 +91,7 @@ async function RequestDetailContent({ params }: PageProps<"/admin/template-reque
         {migrationMissing && <Notice tone="warn">{MIGRATION_HINT}</Notice>}
         {overdue && (
           <p role="status" className="rounded-xl border border-danger-line bg-danger-bg p-3.5 text-sm font-bold text-danger-ink">
-            ! {REQUEST_OVERDUE_HOURS}+ цаг анхны холбоо тогтоогоогүй байна. (Дотоод сануулга — хэрэглэгчид амласан хугацаа биш.)
+            <Icon name="circle-alert" size={16} /> {REQUEST_OVERDUE_HOURS}+ цаг анхны холбоо тогтоогоогүй байна. (Дотоод сануулга — хэрэглэгчид амласан хугацаа биш.)
           </p>
         )}
         <div className="grid items-start gap-5 min-[1100px]:grid-cols-[minmax(0,1fr)_360px]">
@@ -108,7 +109,7 @@ async function RequestDetailContent({ params }: PageProps<"/admin/template-reque
                         <PubPill published={t.status === "published"} />
                         {t.status === "published" && (
                           <a href={`/templates/${t.slug}`} target="_blank" rel="noopener" className="text-sm font-bold">
-                            Сайт дээр ↗
+                            Сайт дээр <Icon name="external-link" size={16} />
                           </a>
                         )}
                       </>

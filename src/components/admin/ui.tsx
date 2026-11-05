@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ORDER_STATUS, PAYMENT_STATUS, REQUEST_STATUS, type OrderStatus, type PaymentStatus, type RequestStatus } from "@/lib/admin/labels";
@@ -45,7 +46,7 @@ export function PageHeader({
                   <Link href={c.href} className={`ax-link inline-flex min-h-8 items-center no-underline ${band ? "text-band-faint" : "text-muted"}`}>
                     {c.label}
                   </Link>
-                  <span aria-hidden="true">/</span>
+                  <Icon name="chevron-right" size={16} />
                 </span>
               ))}
             </nav>
@@ -55,7 +56,7 @@ export function PageHeader({
         </div>
         {actions && <div className="order-3 flex w-full flex-wrap items-center gap-2 min-[1024px]:order-2 min-[1024px]:w-auto">{actions}</div>}
         <div className="order-2 flex shrink-0 items-center gap-2 self-start min-[1024px]:order-3 min-[1024px]:self-center">
-          <ThemeToggle tone={band ? "band" : "default"} />
+          <ThemeToggle tone={band ? "band" : "default"} size={20} />
           <AdminMenuButton tone={band ? "band" : "default"} />
         </div>
       </div>
@@ -69,7 +70,7 @@ export function PaymentPill({ status }: { status: string }) {
   if (!s) return null;
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-extrabold whitespace-nowrap" style={{ background: s.bg, color: s.fg }}>
-      <span aria-hidden="true">{s.icon}</span>
+      <Icon name={s.icon} size={16} />
       {s.label}
     </span>
   );
@@ -100,7 +101,7 @@ export function StatusPill({ kind, status }: { kind: "order" | "request"; status
   if (!s) return <span>{status}</span>;
   return (
     <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12.5px] font-extrabold whitespace-nowrap" style={{ background: s.bg, color: s.fg }}>
-      <span aria-hidden="true" className="h-[7px] w-[7px] rounded-full bg-current" />
+      <Icon name={s.icon} size={16} />
       {s.label}
     </span>
   );
@@ -112,7 +113,7 @@ export function PubPill({ published }: { published: boolean }) {
       className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12.5px] font-extrabold whitespace-nowrap"
       style={published ? { background: "var(--ax-success-bg)", color: "var(--ax-success)" } : { background: "var(--ax-warn-bg)", color: "var(--ax-warn)" }}
     >
-      <span aria-hidden="true" className="h-[7px] w-[7px] rounded-full bg-current" />
+      <Icon name={published ? "eye" : "eye-off"} size={16} />
       {published ? "Нийтлэгдсэн" : "Ноорог"}
     </span>
   );
@@ -140,7 +141,7 @@ export function LoadFailed({ what = "өгөгдөл" }: { what?: string }) {
 export function Notice({ tone = "info", children }: { tone?: "info" | "warn"; children: React.ReactNode }) {
   return (
     <div role="status" className={`rounded-xl border p-3.5 text-sm leading-normal font-semibold ${tone === "warn" ? "border-warn-line bg-warn-bg text-warn-ink" : "border-line bg-info-bg text-info"}`}>
-      <span aria-hidden="true">{tone === "warn" ? "! " : "i "}</span>
+      <Icon name={tone === "warn" ? "circle-alert" : "info-circle"} size={16} />{" "}
       {children}
     </div>
   );
@@ -169,20 +170,20 @@ export function Pagination({ page, pages, total, makeHref }: { page: number; pag
       <span className="flex gap-2">
         {page > 1 ? (
           <Link href={makeHref(page - 1)} className={btn.ghost}>
-            ← Өмнөх
+            <Icon name="arrow-left" size={16} /> Өмнөх
           </Link>
         ) : (
           <span className={`${btn.ghost} opacity-50`} aria-disabled="true">
-            ← Өмнөх
+            <Icon name="arrow-left" size={16} /> Өмнөх
           </span>
         )}
         {page < pages ? (
           <Link href={makeHref(page + 1)} className={btn.ghost}>
-            Дараах →
+            Дараах <Icon name="arrow-right" size={16} />
           </Link>
         ) : (
           <span className={`${btn.ghost} opacity-50`} aria-disabled="true">
-            Дараах →
+            Дараах <Icon name="arrow-right" size={16} />
           </span>
         )}
       </span>

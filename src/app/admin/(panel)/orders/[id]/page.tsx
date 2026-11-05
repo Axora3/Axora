@@ -1,3 +1,4 @@
+import { Icon } from "@/components/ui/icon";
 import { Suspense } from "react";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import { notFound } from "next/navigation";
@@ -17,12 +18,12 @@ import { ALL_FIELDS, STEPS, contactExtraLabel, formatAnswer, isVisible, type Ans
 
 export const metadata = { title: "Захиалгын дэлгэрэнгүй" };
 
-const UPLOAD: Record<string, { text: string; tone: string }> = {
-  uploaded: { text: "✓ Серверт хадгалагдсан", tone: "text-brand" },
+const UPLOAD: Record<string, { text: React.ReactNode; tone: string }> = {
+  uploaded: { text: <><Icon name="check" size={16} /> Серверт хадгалагдсан</>, tone: "text-brand" },
   pending: { text: "… Илгээгдээгүй (хэрэглэгч дуусгаагүй)", tone: "text-warn" },
-  failed: { text: "✕ Илгээхэд алдаа гарсан", tone: "text-danger" },
-  rejected: { text: "✕ Шалгалтад тэнцээгүй (устгагдсан)", tone: "text-danger" },
-  expired: { text: "✕ Хугацаа дууссан (цэвэрлэгдсэн)", tone: "text-muted" },
+  failed: { text: <><Icon name="x" size={16} /> Илгээхэд алдаа гарсан</>, tone: "text-danger" },
+  rejected: { text: <><Icon name="x" size={16} /> Шалгалтад тэнцээгүй (устгагдсан)</>, tone: "text-danger" },
+  expired: { text: <><Icon name="x" size={16} /> Хугацаа дууссан (цэвэрлэгдсэн)</>, tone: "text-muted" },
 };
 
 function Row({ label, children }: { label: string; children: React.ReactNode }) {
