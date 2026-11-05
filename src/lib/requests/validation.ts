@@ -22,6 +22,9 @@ export function contactError(channel: Channel, value: string): string {
   return "";
 }
 
+/** Optional fields are only checked once something was typed. */
+export const optionalContactError = (channel: Channel, value: string) => (value.trim() ? contactError(channel, value) : "");
+
 /** For the contact form where one field holds either phone or email. */
 export function phoneOrEmailError(value: string): string {
   const c = value.trim();
@@ -34,8 +37,9 @@ export const templateRequestSchema = z.object({
   idempotencyKey: z.uuid(),
   slug: z.string().regex(/^[a-z0-9-]{1,120}$/),
   name: z.string().trim().min(1).max(120),
-  channel: z.enum(["phone", "email", "messenger"]),
-  contact: z.string().trim().min(1).max(200),
+  email: z.string().trim().min(1).max(200),
+  phone: z.string().trim().max(40).optional().default(""),
+  messenger: z.string().trim().max(200).optional().default(""),
   note: z.string().trim().max(2000).optional().default(""),
   meta: metaSchema,
 });

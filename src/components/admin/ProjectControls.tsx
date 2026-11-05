@@ -7,7 +7,7 @@ import { runAdminAction } from "@/lib/admin/action-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { addProjectMilestoneAction, createProjectForOrderAction, deleteProjectMilestoneAction, saveProjectAction, updateProjectMilestoneAction } from "@/app/admin/project-actions";
+import { addProjectMilestoneAction, addStandardChecklistAction, createProjectForOrderAction, deleteProjectMilestoneAction, saveProjectAction, updateProjectMilestoneAction } from "@/app/admin/project-actions";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { useToast } from "@/components/ui/Toast";
 import { PROJECT_STATUSES, PROJECT_STATUS, type ProjectStatus } from "@/lib/admin/projects";
@@ -61,6 +61,92 @@ export function ProjectForm({ project }: { project: ProjectFormValues }) {
 }
 
 export type Milestone = { id: string; project_id: string; title: string; description: string; due_on: string | null; completed_at: string | null; updated_at: string };
+
+/**
+ * One-click work checklist on the order page. Items are the project's milestones,
+ * so they are shared between admins and recorded in the audit log. A tick shows at
+ * once and returns to the saved state if the server refuses it.
+ */
+export function WorkChecklist({ projectId, milestones }: { projectId: string; milestones: Milestone[] }) {
+  const router = useRouter();
+  const toast = useToast();
+  const [pending, start] = useTransition();
+  const [ticks, setTicks] = useState<Record<string, boolean>>({});
+  const [versions, setVersions] = useState<Record<string, string>>({});
+  const [title, setTitle] = useState("");
+  const isDone = (m: Milestone) => ticks[m.id] ?? !!m.completed_at;
+  const doneCount = milestones.filter(isDone).length;
+
+  function toggle(m: Milestone, completed: boolean) {
+    setTicks((current) => ({ ...current, [m.id]: completed }));
+    start(async () => {
+      const result = await runAdminAction(() => updateProjectMilestoneAction({ id: m.id, projectId, expected: versions[m.id] ?? m.updated_at, title: m.title, description: m.description, dueOn: m.due_on ?? "", completed }));
+      if (!result.ok) {
+        setTicks((current) => Object.fromEntries(Object.entries(current).filter(([key]) => key !== m.id)));
+        setVersions((current) => Object.fromEntries(Object.entries(current).filter(([key]) => key !== m.id)));
+        toast({ kind: "err", text: result.message });
+        if (result.code === "conflict") router.refresh();
+        return;
+      }
+      setVersions((current) => ({ ...current, [m.id]: result.updatedAt }));
+      router.refresh();
+    });
+  }
+
+  return (
+    <div className="flex flex-col gap-3">
+      {milestones.length === 0 ? (
+        <>
+          <p className="m-0 text-sm leading-relaxed text-muted">Ажлын алхмууд нэмээгүй байна. Бэлэн жагсаалтаас эхэлж эсвэл өөрөө нэмж болно.</p>
+          <button type="button" className={btn.ghost} disabled={pending} onClick={() => start(async () => {
+            const result = await runAdminAction(() => addStandardChecklistAction(projectId));
+            if (!result.ok) return toast({ kind: "err", text: result.message });
+            router.refresh();
+          })}>
+            {pending ? "Нэмж байна…" : "Бэлэн жагсаалт нэмэх"}
+          </button>
+        </>
+      ) : (
+        <>
+          <div className="flex items-center gap-2.5">
+            <div role="progressbar" aria-label="Ажлын явц" aria-valuemin={0} aria-valuemax={milestones.length} aria-valuenow={doneCount} className="h-2 flex-1 overflow-hidden rounded-full bg-soft">
+              <div className="h-full rounded-full bg-primary transition-[width] duration-300" style={{ width: `${(doneCount / milestones.length) * 100}%` }} />
+            </div>
+            <span className="text-[13px] font-bold text-muted tabular-nums">{doneCount}/{milestones.length}</span>
+          </div>
+          <ul className="m-0 flex list-none flex-col p-0">
+            {milestones.map((m) => {
+              const done = isDone(m);
+              return (
+                <li key={m.id}>
+                  <label className="flex min-h-11 cursor-pointer items-start gap-2.5 py-2 text-sm font-semibold">
+                    <input type="checkbox" className="ax-check" checked={done} onChange={(event) => toggle(m, event.target.checked)} />
+                    <span className={`[overflow-wrap:anywhere] ${done ? "text-muted line-through" : ""}`}>{m.title}</span>
+                  </label>
+                </li>
+              );
+            })}
+          </ul>
+        </>
+      )}
+      <form className="flex gap-2" onSubmit={(event) => {
+        event.preventDefault();
+        const value = title.trim();
+        if (!value) return;
+        start(async () => {
+          const result = await runAdminAction(() => addProjectMilestoneAction({ projectId, title: value, description: "", dueOn: "" }));
+          if (!result.ok) return toast({ kind: "err", text: result.message });
+          setTitle("");
+          router.refresh();
+        });
+      }}>
+        <label htmlFor="checklist-new" className="sr-only">Шинэ алхам</label>
+        <input id="checklist-new" className={field.input} maxLength={160} placeholder="Шинэ алхам…" value={title} onChange={(event) => setTitle(event.target.value)} />
+        <button aria-label="Алхам нэмэх" title="Алхам нэмэх" className={`${btn.ghost} shrink-0 px-3`} disabled={pending || !title.trim()}><Icon name="plus" size={18} /></button>
+      </form>
+    </div>
+  );
+}
 
 export function ProjectMilestones({ projectId, milestones }: { projectId: string; milestones: Milestone[] }) {
   const router = useRouter();

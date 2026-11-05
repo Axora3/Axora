@@ -55,6 +55,16 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+## shadcn/ui — DropdownMenu behaviour
+
+src/components/ui/menu.tsx follows the shadcn/ui DropdownMenu interaction pattern under the same MIT License as above, on native elements without Radix.
+Source: https://github.com/shadcn-ui/ui/blob/main/apps/v4/registry/new-york-v4/ui/dropdown-menu.tsx
+
+## Motion Primitives — TextEffect
+
+The word-by-word entrance in src/components/ui/text-reveal.tsx follows the idea of Motion Primitives TextEffect under the same MIT License as above. It is CSS only; no source was copied.
+Source: https://github.com/ibelick/motion-primitives/blob/main/components/core/text-effect.tsx
+
 ## Motion Primitives — Spotlight
 
 The pointer-following idea in src/components/ui/spotlight.tsx follows Motion Primitives Spotlight under the same MIT License as above. It was rebuilt with one delegated listener and CSS variables; no source was copied.

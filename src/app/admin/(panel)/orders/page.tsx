@@ -1,4 +1,5 @@
 import { Icon } from "@/components/ui/icon";
+import { Menu } from "@/components/ui/menu";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -185,11 +186,17 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
                 <table className="ax-table min-w-[900px]">
                   <thead>
                     <tr>
-                      {["ID", "Бизнес", "Захиалагч", "Төрөл", "Төсөв", "Төлөв", "Ирсэн"].map((h) => (
+                      {["ID", "Бизнес", "Захиалагч", "Төрөл", "Төсөв", "Төлөв"].map((h) => (
                         <th key={h} scope="col">
                           {h}
                         </th>
                       ))}
+                      <th scope="col" aria-sort={sort === "old" ? "ascending" : "descending"}>
+                        <Link href={hrefWith("/admin/orders", sp, { sort: sort === "old" ? null : "old", page: null })} className="inline-flex items-center gap-1 text-muted no-underline hover:text-ink">
+                          Ирсэн
+                          <Icon name={sort === "old" ? "arrow-up" : "arrow-down"} size={14} />
+                        </Link>
+                      </th>
                       <th scope="col">
                         <span className="sr-only">Үйлдэл</span>
                       </th>
@@ -199,7 +206,7 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
                     {data.map((o) => (
                       <tr key={o.id}>
                         <td className="font-mono text-[13px] whitespace-nowrap">{o.reference}</td>
-                        <td className="font-bold">{o.business_name}</td>
+                        <td className="font-bold"><Link href={`/admin/orders/${o.id}`} className="text-ink no-underline hover:text-brand">{o.business_name}</Link></td>
                         <td>{o.full_name}</td>
                         <td>{o.website_type ?? "—"}</td>
                         <td className="text-muted">{o.budget ?? "—"}</td>
@@ -208,9 +215,10 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
                         </td>
                         <td className="whitespace-nowrap text-muted">{fmtDateTime(o.created_at)}</td>
                         <td className="text-right">
-                          <Link href={`/admin/orders/${o.id}`} className="inline-flex min-h-11 items-center font-bold" aria-label={`${o.business_name} — дэлгэрэнгүй`}>
-                            Дэлгэрэнгүй
-                          </Link>
+                          <Menu label={`${o.business_name} — үйлдэл`} trigger={<Icon name="dots" size={18} />} triggerClassName="ax-btn inline-flex h-10 w-10 cursor-pointer items-center justify-center rounded-control border border-line bg-surface text-ink">
+                            <Link href={`/admin/orders/${o.id}`} role="menuitem" className="ax-menu-item"><Icon name="file-text" size={18} />Дэлгэрэнгүй</Link>
+                            <Link href={`/admin/orders/${o.id}?tab=files`} role="menuitem" className="ax-menu-item"><Icon name="copy" size={18} />Хавсралт файлууд</Link>
+                          </Menu>
                         </td>
                       </tr>
                     ))}

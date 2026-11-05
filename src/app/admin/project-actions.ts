@@ -89,6 +89,26 @@ export async function addProjectMilestoneAction(input: z.input<typeof milestoneI
   return { ok: true };
 }
 
+/** A starting point for an empty checklist; every item can be edited or removed on the project page. */
+const STANDARD_CHECKLIST = ["Анкетыг шалгах", "Захиалагчтай холбогдох", "Үнийн санал илгээх", "Дизайн батлуулах", "Веб сайт хөгжүүлэх", "Домэйн холбох", "Шалгаж хүлээлгэн өгөх"];
+
+export async function addStandardChecklistAction(projectId: string): Promise<ActionResult> {
+  const ctx = await requireAdminAction();
+  if (!ctx) return DENIED;
+  if (!uuid.safeParse(projectId).success) return { ok: false, code: "invalid", message: "Төсөл олдсонгүй." };
+  const { data: project, error: projectError } = await ctx.db.from("website_projects").select("order_id").eq("id", projectId).maybeSingle();
+  if (projectError) return missing(projectError);
+  if (!project) return { ok: false, code: "not_found", message: "Төсөл олдсонгүй." };
+  // Only an empty list is filled, so a double click cannot duplicate the steps.
+  const { count, error: countError } = await ctx.db.from("project_milestones").select("id", { count: "exact", head: true }).eq("project_id", projectId);
+  if (countError) return missing(countError);
+  if (count) return { ok: false, code: "conflict", message: "Жагсаалт аль хэдийн нэмэгдсэн байна." };
+  const { error } = await ctx.db.from("project_milestones").insert(STANDARD_CHECKLIST.map((title, index) => ({ project_id: projectId, title, sort_order: (index + 1) * 10 })));
+  if (error) return missing(error);
+  refreshProject(projectId, project.order_id);
+  return { ok: true };
+}
+
 const milestoneUpdate = milestoneInput.extend({ id: uuid, expected: z.string().min(10), completed: z.boolean() });
 
 export async function updateProjectMilestoneAction(input: z.input<typeof milestoneUpdate>): Promise<ActionResult<{ updatedAt: string }>> {

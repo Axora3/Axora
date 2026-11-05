@@ -192,3 +192,9 @@ Every reference is assigned to an existing route/component or a documented excep
 - Dependencies are unchanged. shadcn registry components import `lucide-react`, which the icon rule forbids, so their recipes are adapted natively (see `THIRD_PARTY_NOTICES.md`).
 - `.claude/launch.json` adds `axora-demo`, which blanks the Supabase variables. The site then uses demo templates and test-mode forms, so populated states can be checked with no chance of writing to the real database.
 - Not verified: data-backed admin pages with a real session. `/dev/admin-preview` covers the shared admin parts with synthetic values only.
+
+## Full redesign pass (2026-11-06)
+
+- Home, marketplace, builder, order and admin layouts were recomposed. Project cards show no domain or deployment fields because `website_projects` has none; the schema was left unchanged.
+- Dashboard revenue sums manually confirmed `template_requests` payments only. It is not a bank figure.
+- Not verified: data-backed admin pages with a real session.

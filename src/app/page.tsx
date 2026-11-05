@@ -1,11 +1,10 @@
 import Link from "next/link";
 import { Suspense } from "react";
-import { Categories } from "@/components/home/Categories";
-import { Compare } from "@/components/home/Compare";
 import { Faq } from "@/components/home/Faq";
-import { Hero } from "@/components/home/Hero";
-import { HowItWorks } from "@/components/home/HowItWorks";
-import { PaletteDemo } from "@/components/home/PaletteDemo";
+import { FeatureBento } from "@/components/home/FeatureBento";
+import { HomeHero } from "@/components/home/HomeHero";
+import { Process } from "@/components/home/Process";
+import { Services } from "@/components/home/Services";
 import { Trust } from "@/components/home/Trust";
 import { ArrowRight } from "@/components/icons";
 import { SiteFooter } from "@/components/site/SiteFooter";
@@ -15,14 +14,12 @@ import { getSiteContent } from "@/lib/content/service";
 import { getPublishedTemplates } from "@/lib/templates/service";
 import type { TemplateCategory } from "@/lib/templates/types";
 
-const H2 = "ax-h2";
-
-async function CategoryCounts() {
+async function Bento() {
   const res = await getPublishedTemplates();
-  if (!res.ok) return <Categories />;
+  if (!res.ok) return <FeatureBento />;
   const counts: Record<TemplateCategory, number> = { Notion: 0, Canva: 0, Excel: 0 };
-  if (res.ok) for (const t of res.templates) counts[t.category] += 1;
-  return <Categories counts={counts} />;
+  for (const t of res.templates) counts[t.category] += 1;
+  return <FeatureBento counts={counts} />;
 }
 
 function FeaturedShell({ children }: { children: React.ReactNode }) {
@@ -61,14 +58,15 @@ async function FeaturedTemplates() {
       </FeaturedShell>
     );
   }
-  const list = res.templates.slice(0, 6);
+  // Five cards fill the grid exactly once the first spans two columns.
+  const list = res.templates.slice(0, 5);
   if (list.length === 0) return null;
   return (
     <FeaturedShell>
       {list.some((t) => t.isDemo) && <DemoNotice className="mt-5" />}
-      <div className="mt-7 grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))]">
-        {list.map((t) => (
-          <TemplateCard key={t.id} t={t} headingLevel="h3" className="ax-reveal" />
+      <div className="mt-8 grid gap-5 min-[640px]:grid-cols-2 min-[1024px]:grid-cols-3">
+        {list.map((t, index) => (
+          <TemplateCard key={t.id} t={t} headingLevel="h3" feature={index === 0} className={`ax-reveal ${index === 0 ? "min-[640px]:col-span-2" : ""}`} />
         ))}
       </div>
     </FeaturedShell>
@@ -79,33 +77,29 @@ export default async function HomePage() {
   const content = await getSiteContent();
   return (
     <>
-      <SiteHeader />
+      <SiteHeader tone="band" />
       <main id="main">
-        <Hero c={content} />
+        <HomeHero c={content} />
 
-        <Suspense fallback={<Categories />}>
-          <CategoryCounts />
-        </Suspense>
+        <Services />
 
-        <Suspense fallback={<FeaturedShell><div className="mt-7"><CardSkeletons count={3} /></div></FeaturedShell>}>
+        <Suspense fallback={<FeaturedShell><div className="mt-8"><CardSkeletons count={3} /></div></FeaturedShell>}>
           <FeaturedTemplates />
         </Suspense>
 
-        <HowItWorks />
+        <Suspense fallback={<FeatureBento />}>
+          <Bento />
+        </Suspense>
 
-        <Compare />
+        <Process />
 
-        <PaletteDemo />
+        <div className="pt-[var(--ax-space-section)]">
+          <Trust />
+        </div>
 
-        <Trust />
-
-        <section
-          id="faq"
-          aria-labelledby="faq-title"
-          className="ax-container ax-section grid items-start gap-[clamp(28px,5vw,72px)] [grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr))]"
-        >
+        <section id="faq" aria-labelledby="faq-title" className="ax-container pb-[var(--ax-space-section)] grid items-start gap-[clamp(28px,5vw,72px)] [grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr))]">
           <div className="ax-reveal flex flex-col gap-4">
-            <h2 id="faq-title" className={H2}>
+            <h2 id="faq-title" className="ax-h2">
               Түгээмэл <span className="serif">асуулт</span>
             </h2>
             <p className="ax-lead">
@@ -115,22 +109,19 @@ export default async function HomePage() {
           <Faq items={content.faq} />
         </section>
 
-        <section aria-labelledby="cta-title" className="px-[clamp(16px,4vw,40px)] pb-[clamp(56px,7vw,96px)]">
-          <div className="ax-reveal relative mx-auto grid max-w-[1160px] items-end gap-8 overflow-hidden rounded-panel bg-band bg-[radial-gradient(ellipse_at_90%_0%,color-mix(in_srgb,var(--ax-lime)_18%,transparent),transparent_55%)] p-[clamp(28px,6vw,72px)] text-on-band [grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr))]">
-            <div aria-hidden="true" className="absolute -top-[120px] -right-[120px] h-[340px] w-[340px] rounded-full border border-band-ring opacity-60" />
-            <h2 id="cta-title" className="ax-h1 relative">
-              Санаагаа бидэнтэй <span className="serif text-lime">хуваалц.</span>
+        <section aria-labelledby="cta-title" className="px-[clamp(16px,4vw,40px)] pb-[var(--ax-space-section)]">
+          <div className="ax-reveal mx-auto grid max-w-[1160px] items-end gap-8 rounded-panel bg-lime p-[clamp(28px,6vw,72px)] text-on-lime [grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr))]">
+            <h2 id="cta-title" className="ax-h1">
+              Санаагаа бидэнтэй <span className="serif">хуваалц.</span>
             </h2>
-            <div className="relative flex flex-col gap-5">
-              <p className="text-[17px] leading-relaxed text-dark-muted">Анкет бөглөхөд 10 орчим минут. Хариултаа шалгаад илгээх хүртэл алхам хооронд хадгална.</p>
+            <div className="flex flex-col gap-5">
+              <p className="text-[17px] leading-relaxed">Анкет бөглөхөд 10 орчим минут. Хариултаа шалгаад илгээх хүртэл алхам хооронд хадгална.</p>
               <div className="flex flex-wrap gap-3">
-                <Link href="/order" className="ax-btn ax-lime inline-flex min-h-13 items-center gap-2.5 rounded-xl bg-lime px-6 text-base font-extrabold text-on-lime no-underline">
+                <Link href="/order" className="ax-button ax-button-lg ax-btn border-[#17251E] bg-[#17251E] text-[#F7F8F2] hover:bg-[#22352B]">
                   Үнийн санал авах
-                  <span className="ax-arrow">
-                    <ArrowRight />
-                  </span>
+                  <span className="ax-arrow"><ArrowRight /></span>
                 </Link>
-                <Link href="/templates" className="ax-btn inline-flex min-h-13 items-center rounded-xl border border-dark-line-2 px-[22px] text-base font-bold text-on-band no-underline">
+                <Link href="/templates" className="ax-button ax-button-lg ax-btn border-[#17251E] bg-transparent text-[#17251E]">
                   Загварууд үзэх
                 </Link>
               </div>

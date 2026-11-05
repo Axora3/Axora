@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { ArrowRight, Desktop, Phone, Tablet } from "@/components/icons";
+import { ArrowLeft, ArrowRight, Desktop, Phone, Tablet } from "@/components/icons";
 import { buttonStyles } from "@/components/ui/button";
-import { Icon } from "@/components/ui/icon";
+import { Icon, type IconName } from "@/components/ui/icon";
 import { FieldError } from "@/components/ui/Notice";
 import { Segmented } from "@/components/ui/segmented";
 import { BUSINESS_TYPES, PALETTES, STYLES, STYLE_IDS, TYPES, buildDemoTheme, normalizeHex, type BuilderConfig } from "@/lib/builder/config";
@@ -22,13 +22,16 @@ const DEVICES = {
 type Device = keyof typeof DEVICES;
 const DEVICE_OPTIONS = (Object.keys(DEVICES) as Device[]).map((value) => {
   const { label, DeviceIcon } = DEVICES[value];
-  return { value, label: <><DeviceIcon size={18} /><span className="max-[480px]:sr-only">{label}</span></> };
+  return { value, ariaLabel: label, label: <><DeviceIcon size={18} /><span className="max-[640px]:hidden">{label}</span></> };
 });
 
-const VIEW_OPTIONS = [
-  { value: "cfg", label: "Тохируулах" },
-  { value: "prev", label: "Урьдчилан харах" },
-] as const;
+const SECTIONS: { id: "type" | "style" | "color" | "content"; label: string; title: string; hint: string; icon: IconName }[] = [
+  { id: "type", label: "Төрөл", title: "Вебийн төрөл", hint: "Бизнест тань ойр жишээг сонгоно уу.", icon: "layout-grid" },
+  { id: "style", label: "Хэв маяг", title: "Дизайны хэв маяг", hint: "Үсгийн хэв, булан, зайг хамтад нь солино.", icon: "layers" },
+  { id: "color", label: "Өнгө", title: "Өнгө", hint: "Бэлэн palette сонгох эсвэл HEX кодоо оруулна уу.", icon: "adjustments" },
+  { id: "content", label: "Агуулга", title: "Агуулгаа турших", hint: "Нэр, гарчиг, товчны текстээ бичээрэй.", icon: "pencil" },
+];
+type SectionId = (typeof SECTIONS)[number]["id"];
 
 const COLOR_FIELDS: [keyof BuilderConfig["colors"], string][] = [
   ["primary", "Үндсэн"],
@@ -36,19 +39,7 @@ const COLOR_FIELDS: [keyof BuilderConfig["colors"], string][] = [
   ["bg", "Суурь"],
 ];
 
-const fs = "ax-fs ax-surface p-5";
 const textInput = "ax-control min-h-11 px-3 text-base";
-
-function Legend({ n, children }: { n: number; children: React.ReactNode }) {
-  return (
-    <legend className="float-left mb-3.5 flex w-full items-center gap-2.5 p-0 text-[15px] font-extrabold">
-      <span aria-hidden="true" className="inline-flex h-6 w-6 items-center justify-center rounded-inner bg-soft text-xs font-extrabold text-brand">
-        {n}
-      </span>
-      {children}
-    </legend>
-  );
-}
 
 function FieldLabel({ htmlFor, children, count, max }: { htmlFor: string; children: React.ReactNode; count?: number; max?: number }) {
   return (
@@ -106,15 +97,23 @@ function DeviceFrame({ device, slug, children }: { device: Device; slug: string;
   );
 }
 
+/**
+ * Studio layout: section rail, one settings panel at a time, and the canvas.
+ * On phones the rail becomes the bottom bar, with Preview as its last item.
+ * All state still lives in BuilderProvider, so /order receives the same config.
+ */
 export function Builder() {
   const b = useBuilder();
   const { config } = b;
   const [device, setDevice] = useState<Device>("desktop");
-  const [tab, setTab] = useState<"cfg" | "prev">("cfg");
+  const [section, setSection] = useState<SectionId>("type");
+  const [previewing, setPreviewing] = useState(false);
   const [anim, setAnim] = useState(0);
   const [drafts, setDrafts] = useState<Record<string, string>>({});
   const [logoErr, setLogoErr] = useState("");
   const theme = buildDemoTheme(config);
+  const index = SECTIONS.findIndex((s) => s.id === section);
+  const current = SECTIONS[index];
 
   // A 1280px layout scaled onto a phone is unreadable, so phones start on Mobile.
   useEffect(() => {
@@ -124,6 +123,10 @@ export function Builder() {
 
   const bump = () => setAnim((a) => a + 1);
   const draftOf = (k: string) => drafts[k] ?? config.colors[k as keyof BuilderConfig["colors"]];
+  const open = (id: SectionId) => {
+    setSection(id);
+    setPreviewing(false);
+  };
 
   function onLogo(e: React.ChangeEvent<HTMLInputElement>) {
     const f = e.target.files?.[0];
@@ -150,21 +153,30 @@ export function Builder() {
   );
 
   return (
-    <>
-      <Segmented
-        label="Харагдац"
-        options={VIEW_OPTIONS}
-        value={tab}
-        onChange={setTab}
-        className="sticky top-[68px] z-20 mt-4 flex w-full min-[960px]:hidden"
-        itemClassName="flex-1"
-      />
+    <div className="ax-studio max-[959px]:pb-[calc(76px+env(safe-area-inset-bottom))]">
+      <nav aria-label="Тохиргооны хэсгүүд" className="fixed inset-x-0 bottom-0 z-30 flex gap-1 border-t border-line bg-tabbar px-2 pt-1.5 pb-[calc(8px+env(safe-area-inset-bottom))] backdrop-blur-[12px] min-[960px]:static min-[960px]:flex-col min-[960px]:gap-1.5 min-[960px]:border-t-0 min-[960px]:border-r min-[960px]:bg-surface min-[960px]:p-2.5">
+        {SECTIONS.map((s) => (
+          <button key={s.id} type="button" aria-pressed={!previewing && section === s.id} onClick={() => open(s.id)} className="ax-rail-item">
+            <Icon name={s.icon} size={20} />
+            {s.label}
+          </button>
+        ))}
+        <button type="button" aria-pressed={previewing} onClick={() => setPreviewing(true)} className="ax-rail-item min-[960px]:hidden">
+          <Icon name="eye" size={20} />
+          Харах
+        </button>
+      </nav>
 
-      <div className="mt-5 grid items-start gap-6 min-[960px]:grid-cols-[minmax(320px,380px)_minmax(0,1fr)]">
-        <aside aria-label="Тохиргоо" className={`flex min-w-0 flex-col gap-3.5 ${tab === "prev" ? "max-[959px]:hidden" : ""}`}>
-          <fieldset className={fs}>
-            <Legend n={1}>Вебийн төрөл</Legend>
-            <div className="clear-both grid grid-cols-2 gap-2">
+      <aside aria-label="Тохиргоо" className={`flex min-h-0 min-w-0 flex-col bg-surface min-[960px]:border-r min-[960px]:border-line ${previewing ? "max-[959px]:hidden" : ""}`}>
+        <div key={section} className="ax-in-sm flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto overscroll-contain p-5">
+          <div className="flex flex-col gap-1">
+            <p className="text-xs font-extrabold text-muted tabular-nums">Алхам {index + 1} / {SECTIONS.length}</p>
+            <h2 className="text-[22px] leading-tight font-extrabold tracking-[-0.018em]">{current.title}</h2>
+            <p className="text-sm leading-relaxed text-muted">{current.hint}</p>
+          </div>
+
+          {section === "type" && (
+            <div className="grid gap-2">
               {BUSINESS_TYPES.map((k) => (
                 <button
                   key={k}
@@ -174,18 +186,17 @@ export function Builder() {
                     b.setType(k);
                     bump();
                   }}
-                  className="ax-btn ax-option min-h-16 flex-col items-start justify-center gap-0.5 px-3 py-2.5 text-left"
+                  className="ax-btn ax-option min-h-16 flex-col items-start justify-center gap-0.5 px-3.5 py-2.5 text-left"
                 >
-                  <span className="text-sm leading-snug font-extrabold">{TYPES[k].label}</span>
-                  <span className="text-xs font-semibold text-muted">{TYPES[k].sub}</span>
+                  <span className="text-[15px] leading-snug font-extrabold">{TYPES[k].label}</span>
+                  <span className="text-[13px] font-semibold text-muted">{TYPES[k].sub}</span>
                 </button>
               ))}
             </div>
-          </fieldset>
+          )}
 
-          <fieldset className={fs}>
-            <Legend n={2}>Дизайны хэв маяг</Legend>
-            <div className="clear-both grid grid-cols-3 gap-2">
+          {section === "style" && (
+            <div className="grid grid-cols-2 gap-2">
               {STYLE_IDS.map((k) => {
                 const s = STYLES[k];
                 return (
@@ -197,109 +208,107 @@ export function Builder() {
                       b.setStyle(k);
                       bump();
                     }}
-                    className="ax-btn ax-option min-h-[72px] flex-col items-start justify-between gap-1 p-2.5 text-left"
+                    className="ax-btn ax-option min-h-[96px] flex-col items-start justify-between gap-1 p-3 text-left"
                     style={k === "dark" ? { background: "var(--ax-band)", color: "var(--ax-on-band)" } : undefined}
                   >
-                    <span aria-hidden="true" className="text-[22px] leading-none" style={{ fontFamily: s.fh, fontStyle: s.hst, fontWeight: s.hw }}>
+                    <span aria-hidden="true" className="text-[30px] leading-none" style={{ fontFamily: s.fh, fontStyle: s.hst, fontWeight: s.hw }}>
                       Аа
                     </span>
-                    <span className="text-xs leading-tight font-bold">{s.label}</span>
+                    <span className="text-[13px] leading-tight font-bold">{s.label}</span>
                   </button>
                 );
               })}
             </div>
-          </fieldset>
+          )}
 
-          <fieldset className={fs}>
-            <Legend n={3}>Өнгө</Legend>
-            <div className="clear-both grid grid-cols-2 gap-2">
-              {PALETTES.map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  aria-pressed={config.palette === p.id}
-                  onClick={() => {
-                    b.setPalette(p.id);
-                    setDrafts({});
-                  }}
-                  className="ax-btn ax-option min-h-[52px] items-center gap-2.5 px-2.5 py-2 text-left text-[13px] font-bold"
-                >
-                  <span aria-hidden="true" className="flex shrink-0">
-                    {[p.primary, p.secondary, p.bg].map((color, index) => (
-                      <span key={index} className={`h-[18px] w-[18px] rounded-full border border-line-strong ${index ? "-ml-1.5" : ""}`} style={{ background: color }} />
-                    ))}
-                  </span>
-                  <span className="truncate">{p.label}</span>
-                </button>
-              ))}
-            </div>
-            <div className="mt-4 flex flex-col gap-2.5 border-t border-line-soft pt-4">
-              {COLOR_FIELDS.map(([k, label]) => {
-                const draft = draftOf(k);
-                const valid = !!normalizeHex(draft);
-                return (
-                  <div key={k} className="flex flex-col gap-1">
-                    <div className="flex items-center gap-2.5">
-                      <label htmlFor={`hex-${k}`} className="w-[64px] shrink-0 text-sm font-bold">
-                        {label}
-                      </label>
-                      <div className="relative min-w-0 flex-1">
-                        <input
-                          className="ax-color absolute top-1.5 left-1.5 z-[1] h-8 w-8 cursor-pointer rounded-inner border border-line-strong bg-surface p-0"
-                          type="color"
-                          aria-label={`${label} өнгө сонгох`}
-                          value={config.colors[k].toLowerCase()}
-                          onChange={(e) => {
-                            const v = e.target.value.toUpperCase();
-                            b.setColor(k, v);
-                            setDrafts((d) => ({ ...d, [k]: v }));
-                          }}
-                        />
-                        <input
-                          id={`hex-${k}`}
-                          type="text"
-                          inputMode="text"
-                          spellCheck={false}
-                          autoCapitalize="characters"
-                          maxLength={7}
-                          value={draft}
-                          onChange={(e) => {
-                            const raw = e.target.value;
-                            setDrafts((d) => ({ ...d, [k]: raw }));
-                            const n = normalizeHex(raw);
-                            if (n) b.setColor(k, n);
-                          }}
-                          onBlur={() => {
-                            const normalized = normalizeHex(draft);
-                            if (normalized) setDrafts((current) => ({ ...current, [k]: normalized }));
-                          }}
-                          aria-invalid={!valid}
-                          aria-describedby={valid ? undefined : `hex-err-${k}`}
-                          className="ax-control pr-3 pl-12 font-mono text-base uppercase"
-                        />
+          {section === "color" && (
+            <>
+              <div className="grid grid-cols-2 gap-2">
+                {PALETTES.map((p) => (
+                  <button
+                    key={p.id}
+                    type="button"
+                    aria-pressed={config.palette === p.id}
+                    onClick={() => {
+                      b.setPalette(p.id);
+                      setDrafts({});
+                    }}
+                    className="ax-btn ax-option min-h-[52px] items-center gap-2.5 px-2.5 py-2 text-left text-[13px] font-bold"
+                  >
+                    <span aria-hidden="true" className="flex shrink-0">
+                      {[p.primary, p.secondary, p.bg].map((color, i) => (
+                        <span key={i} className={`h-[18px] w-[18px] rounded-full border border-line-strong ${i ? "-ml-1.5" : ""}`} style={{ background: color }} />
+                      ))}
+                    </span>
+                    <span className="truncate">{p.label}</span>
+                  </button>
+                ))}
+              </div>
+              <div className="flex flex-col gap-2.5 border-t border-line-soft pt-4">
+                {COLOR_FIELDS.map(([k, label]) => {
+                  const draft = draftOf(k);
+                  const valid = !!normalizeHex(draft);
+                  return (
+                    <div key={k} className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2.5">
+                        <label htmlFor={`hex-${k}`} className="w-[64px] shrink-0 text-sm font-bold">{label}</label>
+                        <div className="relative min-w-0 flex-1">
+                          <input
+                            className="ax-color absolute top-1.5 left-1.5 z-[1] h-8 w-8 cursor-pointer rounded-inner border border-line-strong bg-surface p-0"
+                            type="color"
+                            aria-label={`${label} өнгө сонгох`}
+                            value={config.colors[k].toLowerCase()}
+                            onChange={(e) => {
+                              const v = e.target.value.toUpperCase();
+                              b.setColor(k, v);
+                              setDrafts((d) => ({ ...d, [k]: v }));
+                            }}
+                          />
+                          <input
+                            id={`hex-${k}`}
+                            type="text"
+                            inputMode="text"
+                            spellCheck={false}
+                            autoCapitalize="characters"
+                            maxLength={7}
+                            value={draft}
+                            onChange={(e) => {
+                              const raw = e.target.value;
+                              setDrafts((d) => ({ ...d, [k]: raw }));
+                              const n = normalizeHex(raw);
+                              if (n) b.setColor(k, n);
+                            }}
+                            onBlur={() => {
+                              const normalized = normalizeHex(draft);
+                              if (normalized) setDrafts((c) => ({ ...c, [k]: normalized }));
+                            }}
+                            aria-invalid={!valid}
+                            aria-describedby={valid ? undefined : `hex-err-${k}`}
+                            className="ax-control pr-3 pl-12 font-mono text-base uppercase"
+                          />
+                        </div>
                       </div>
+                      {!valid && (
+                        <span className="pl-[74px]">
+                          <FieldError id={`hex-err-${k}`}>HEX буруу байна. Жишээ: #245C45</FieldError>
+                        </span>
+                      )}
                     </div>
-                    {!valid && (
-                      <span className="pl-[74px]">
-                        <FieldError id={`hex-err-${k}`}>HEX буруу байна. Жишээ: #245C45</FieldError>
-                      </span>
-                    )}
+                  );
+                })}
+                {theme.warnings.length > 0 && (
+                  <div role="status" className="flex flex-col gap-1 rounded-control border border-warn-line bg-warn-bg px-3 py-2.5 text-[13px] leading-normal font-semibold text-warn-ink">
+                    {theme.warnings.map((w) => (
+                      <span key={w}><Icon name="circle-alert" size={16} /> {w}</span>
+                    ))}
                   </div>
-                );
-              })}
-              {theme.warnings.length > 0 && (
-                <div role="status" className="flex flex-col gap-1 rounded-control border border-warn-line bg-warn-bg px-3 py-2.5 text-[13px] leading-normal font-semibold text-warn-ink">
-                  {theme.warnings.map((w) => (
-                    <span key={w}><Icon name="circle-alert" size={16} /> {w}</span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </fieldset>
+                )}
+              </div>
+            </>
+          )}
 
-          <fieldset className={fs}>
-            <Legend n={4}>Агуулгаа турших</Legend>
-            <div className="clear-both flex flex-col gap-3.5">
+          {section === "content" && (
+            <div className="flex flex-col gap-3.5">
               {(
                 [
                   ["name", "Бизнесийн нэр", 40],
@@ -313,7 +322,7 @@ export function Builder() {
               ))}
               <div className="flex flex-col gap-1.5">
                 <FieldLabel htmlFor="bx-desc" count={config.desc.length} max={160}>Богино тайлбар</FieldLabel>
-                <textarea id="bx-desc" rows={2} maxLength={160} value={config.desc} onChange={(e) => b.setText("desc", e.target.value)} className="ax-control resize-y px-3 py-2.5 text-base" />
+                <textarea id="bx-desc" rows={3} maxLength={160} value={config.desc} onChange={(e) => b.setText("desc", e.target.value)} className="ax-control resize-y px-3 py-2.5 text-base" />
               </div>
               <div className="flex flex-col gap-1.5">
                 <FieldLabel htmlFor="bx-cta" count={config.cta.length} max={24}>CTA текст</FieldLabel>
@@ -351,47 +360,59 @@ export function Builder() {
                 )}
               </div>
             </div>
-          </fieldset>
+          )}
+        </div>
 
-          <div className="flex flex-col gap-2.5">
-            <div className="flex [&>a]:flex-1 min-[960px]:hidden">{cta}</div>
-            <button
-              type="button"
-              onClick={() => {
-                b.reset();
-                setDrafts({});
-                setLogoErr("");
-                bump();
-              }}
-              className={buttonStyles("secondary")}
-            >
-              <Icon name="refresh" size={16} />
-              Анхны төлөвт буцаах
-            </button>
-          </div>
-        </aside>
-
-        <section aria-label="Урьдчилан харах" className={`flex min-w-0 flex-col gap-3 min-[960px]:sticky min-[960px]:top-[88px] ${tab === "cfg" ? "max-[959px]:hidden" : ""}`}>
-          <div className="flex flex-wrap items-center justify-between gap-2.5">
-            <div className="flex items-center gap-2.5">
-              <Segmented label="Төхөөрөмж" options={DEVICE_OPTIONS} value={device} onChange={setDevice} />
-              <span className="ax-badge ax-badge-solid tabular-nums">{DEVICES[device].width}px</span>
-            </div>
-            <div className="max-[959px]:w-full max-[959px]:[&>a]:w-full">{cta}</div>
-          </div>
-
-          <div
-            tabIndex={0}
-            aria-label="Загварын preview"
-            className="overflow-x-hidden overflow-y-auto overscroll-contain rounded-card border border-line bg-soft p-[clamp(10px,2vw,24px)] min-[960px]:max-h-[calc(100dvh-168px)]"
+        <div className="flex shrink-0 items-center gap-2 border-t border-line p-3">
+          <button
+            type="button"
+            aria-label="Анхны төлөвт буцаах"
+            title="Анхны төлөвт буцаах"
+            onClick={() => {
+              b.reset();
+              setDrafts({});
+              setLogoErr("");
+              bump();
+            }}
+            className={buttonStyles("quiet", "px-3")}
           >
-            <DeviceFrame device={device} slug={TYPES[config.type].slug}>
-              <DemoPreview config={config} logo={b.logo} animKey={anim} />
-            </DeviceFrame>
+            <Icon name="refresh" size={18} />
+          </button>
+          <span className="flex-1" />
+          {index > 0 && (
+            <button type="button" aria-label="Өмнөх" onClick={() => open(SECTIONS[index - 1].id)} className={buttonStyles("secondary", "px-3")}>
+              <ArrowLeft size={18} />
+            </button>
+          )}
+          {index < SECTIONS.length - 1 ? (
+            <button type="button" onClick={() => open(SECTIONS[index + 1].id)} className={buttonStyles("primary")}>
+              {SECTIONS[index + 1].label}
+              <ArrowRight size={16} />
+            </button>
+          ) : (
+            <button type="button" onClick={() => setPreviewing(true)} className={buttonStyles("primary", "min-[960px]:hidden")}>
+              Харах
+              <ArrowRight size={16} />
+            </button>
+          )}
+        </div>
+      </aside>
+
+      <section aria-label="Урьдчилан харах" className={`ax-canvas flex min-h-0 min-w-0 flex-col ${previewing ? "" : "max-[959px]:hidden"}`}>
+        <div className="flex shrink-0 flex-wrap items-center justify-between gap-2.5 border-b border-line bg-surface px-[clamp(12px,2vw,20px)] py-2.5">
+          <div className="flex items-center gap-2.5">
+            <Segmented label="Төхөөрөмж" options={DEVICE_OPTIONS} value={device} onChange={setDevice} />
+            <span className="ax-badge ax-badge-solid tabular-nums">{DEVICES[device].width}px</span>
           </div>
-          <p className="text-[13px] leading-normal text-muted">Жишээ агуулга, үнэ нь зөвхөн харагдах байдлыг үзүүлэх зорилготой.</p>
-        </section>
-      </div>
-    </>
+          <div className="max-[959px]:w-full max-[959px]:[&>a]:w-full">{cta}</div>
+        </div>
+        <div tabIndex={0} aria-label="Загварын preview" className="flex-1 overflow-x-hidden overflow-y-auto overscroll-contain p-[clamp(12px,2.4vw,32px)]">
+          <DeviceFrame device={device} slug={TYPES[config.type].slug}>
+            <DemoPreview config={config} logo={b.logo} animKey={anim} />
+          </DeviceFrame>
+          <p className="mt-3 text-center text-[13px] leading-normal text-muted">Жишээ агуулга, үнэ нь зөвхөн харагдах байдлыг үзүүлэх зорилготой.</p>
+        </div>
+      </section>
+    </div>
   );
 }

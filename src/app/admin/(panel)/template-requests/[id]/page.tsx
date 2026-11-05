@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { BackToList, CopyButton } from "@/components/admin/client";
 import { RequestStatusForm } from "@/components/admin/forms";
 import { NotesHistory } from "@/components/admin/NotesHistory";
-import { RequestPaymentPanel, type RequestInfo } from "@/components/admin/RequestControls";
+import { ResendDeliveryEmail, RequestPaymentPanel, type RequestInfo } from "@/components/admin/RequestControls";
 import { Body, LoadFailed, Notice, PageHeader, Panel, PaymentPill, PubPill, StatusPill } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { REQUEST_OVERDUE_HOURS } from "@/lib/admin/config";
@@ -55,6 +55,8 @@ async function RequestDetailContent({ params }: PageProps<"/admin/template-reque
   if (res.error) return <Body><LoadFailed what="хүсэлтийг" /></Body>;
   const r = res.data as unknown as Req | null;
   if (!r) notFound();
+  // Newer columns are read apart so an unapplied migration cannot hide the whole request.
+  const { data: extra } = await db.from("template_requests").select("customer_phone, customer_messenger, delivery_emailed_at").eq("id", id).maybeSingle();
   const t = r.templates;
   const contactHref = r.contact_channel === "email" ? `mailto:${r.contact_value}` : r.contact_channel === "phone" ? `tel:${r.contact_value.replace(/\s/g, "")}` : null;
   const snapshotLabel = r.price_snapshot != null && r.currency_snapshot ? formatPrice({ isFree: !!r.is_free_snapshot, price: Number(r.price_snapshot), currency: r.currency_snapshot }) : null;
@@ -145,6 +147,33 @@ async function RequestDetailContent({ params }: PageProps<"/admin/template-reque
                     )}
                   </dd>
                 </div>
+                {extra?.customer_phone && (
+                  <div>
+                    <dt className="text-sm font-bold text-muted">Утас</dt>
+                    <dd className="m-0 flex flex-wrap items-center gap-2">
+                      <span className="font-bold">{extra.customer_phone}</span>
+                      <CopyButton value={extra.customer_phone} label="Утас" />
+                    </dd>
+                  </div>
+                )}
+                {extra?.customer_messenger && (
+                  <div>
+                    <dt className="text-sm font-bold text-muted">Messenger</dt>
+                    <dd className="m-0 flex flex-wrap items-center gap-2">
+                      <span className="font-bold [overflow-wrap:anywhere]">{extra.customer_messenger}</span>
+                      <CopyButton value={extra.customer_messenger} label="Messenger" />
+                    </dd>
+                  </div>
+                )}
+                {r.payment_status === "confirmed_manual" && r.contact_channel === "email" && (
+                  <div>
+                    <dt className="text-sm font-bold text-muted">Татах холбоосын имэйл</dt>
+                    <dd className="m-0 flex flex-wrap items-center gap-3">
+                      <span>{extra?.delivery_emailed_at ? `Илгээсэн · ${fmtDateTime(extra.delivery_emailed_at)}` : "Илгээгээгүй"}</span>
+                      <ResendDeliveryEmail id={r.id} emailedAt={extra?.delivery_emailed_at ?? null} />
+                    </dd>
+                  </div>
+                )}
                 {!migrationMissing && (
                   <div>
                     <dt className="text-sm font-bold text-muted">Анхны холбоо</dt>

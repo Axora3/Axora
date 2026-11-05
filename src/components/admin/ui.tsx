@@ -5,6 +5,7 @@ import { buttonStyles } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ORDER_STATUS, PAYMENT_STATUS, REQUEST_STATUS, type OrderStatus, type PaymentStatus, type RequestStatus } from "@/lib/admin/labels";
 import { AdminBell, AdminMenuButton } from "./AdminShell";
+import { CopyButton } from "./client";
 
 /** Shared admin building blocks (server-safe). */
 
@@ -33,10 +34,10 @@ export function PageHeader({
   const band = tone === "band";
   return (
     <header
-      className={`z-30 flex flex-col gap-3 px-[clamp(16px,3vw,32px)] py-3.5 min-[1024px]:min-h-[72px] min-[1024px]:justify-center ${
+      className={`z-30 flex flex-col gap-3 px-[clamp(16px,3vw,32px)] py-3.5 min-[1024px]:justify-center min-[1024px]:py-5 ${
         band
-          ? "rounded-b-panel bg-band pb-6 text-on-band min-[1024px]:rounded-none min-[1024px]:pb-3.5"
-          : "sticky top-0 border-b border-line bg-header-admin backdrop-blur-[10px] min-[1024px]:static min-[1024px]:bg-surface"
+          ? "rounded-b-panel bg-band pb-6 text-on-band min-[1024px]:rounded-none min-[1024px]:pb-6"
+          : "sticky top-0 border-b border-line bg-header-admin backdrop-blur-[10px] min-[1024px]:static min-[1024px]:border-b-0 min-[1024px]:bg-transparent min-[1024px]:pb-0 min-[1024px]:backdrop-blur-none"
       }`}
     >
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -53,13 +54,15 @@ export function PageHeader({
               ))}
             </nav>
           )}
-          <h1 className="text-[24px] leading-tight font-extrabold tracking-[-0.025em] [overflow-wrap:anywhere] min-[1024px]:text-2xl">{title}</h1>
+          <h1 className="text-[24px] leading-tight font-extrabold tracking-[-0.025em] [overflow-wrap:anywhere] min-[1024px]:text-[30px]">{title}</h1>
           {description && <div className={`text-[13.5px] leading-normal ${band ? "text-band-muted" : "text-muted"}`}>{description}</div>}
         </div>
         {actions && <div className="order-3 flex w-full flex-wrap items-center gap-2 min-[1024px]:order-2 min-[1024px]:w-auto">{actions}</div>}
         <div className="order-2 flex shrink-0 items-center gap-2 self-start min-[1024px]:order-3 min-[1024px]:self-center">
-          <AdminBell tone={band ? "band" : "default"} />
-          <ThemeToggle tone={band ? "band" : "default"} size={20} />
+          <span className="flex items-center gap-2 min-[1024px]:hidden">
+            <AdminBell tone={band ? "band" : "default"} />
+            <ThemeToggle tone={band ? "band" : "default"} size={20} />
+          </span>
           <AdminMenuButton tone={band ? "band" : "default"} />
         </div>
       </div>
@@ -143,6 +146,18 @@ export function StatCard({ label, value, note, icon, href, band, warn }: { label
   );
   const className = `ax-stat ${band ? "ax-stat-band" : ""}`;
   return href ? <Link href={href} className={className}>{body}</Link> : <div className={className}>{body}</div>;
+}
+
+/** The order as one copyable text. Holds the customer's contact details, so it stays admin-only. */
+export function OrderPrompt({ text }: { text: string }) {
+  return (
+    <Panel title="Prompt" id="order-prompt" action={<CopyButton value={text} label="Prompt" />}>
+      <div className="flex flex-col gap-3 p-[18px]">
+        <p className="text-[13px] leading-normal text-muted">Хэрэглэгчийн баталгаажуулж илгээсэн бүх хариултаас үүссэн. Утас, имэйл зэрэг хувийн мэдээлэл багтсан тул зөвхөн итгэлтэй хэрэгсэлд хуулна уу.</p>
+        <pre tabIndex={0} aria-label="Захиалгын prompt" className="m-0 max-h-[640px] overflow-auto rounded-control border border-line bg-sunken p-4 font-mono text-[13px] leading-relaxed [overflow-wrap:anywhere] whitespace-pre-wrap text-ink">{text}</pre>
+      </div>
+    </Panel>
+  );
 }
 
 export function EmptyState({ title, text, action, icon = "inbox" }: { title: string; text?: string; action?: React.ReactNode; icon?: IconName }) {

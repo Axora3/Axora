@@ -1,6 +1,5 @@
 "use client";
 
-import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
 import { Check, ChevronDown } from "@/components/icons";
 import type { Template } from "@/lib/templates/types";
@@ -47,14 +46,14 @@ export function DetailInfo({ t }: { t: Template }) {
 
   return (
     <>
-      <div className="hidden flex-col gap-[18px] min-[900px]:flex">
+      <div className="hidden flex-col min-[900px]:flex">
         {sections.slice(0, 3).map((s) => (
-          <Card key={s.title}><CardContent className="flex flex-col gap-3">
-            <h2 className="text-base font-extrabold">{s.title}</h2>
+          <div key={s.title} className="grid gap-3 border-t border-line py-6 min-[1200px]:grid-cols-[160px_minmax(0,1fr)]">
+            <h2 className="text-[15px] font-extrabold">{s.title}</h2>
             {s.body}
-          </CardContent></Card>
+          </div>
         ))}
-        <p className="border-t border-line pt-3.5 text-sm leading-normal text-muted">Лиценз: {LICENSE}</p>
+        <p className="border-t border-line pt-4 text-sm leading-normal text-muted">Лиценз: {LICENSE}</p>
       </div>
 
       <section aria-label="Дэлгэрэнгүй мэдээлэл" className="rounded-card border border-line bg-surface px-4 min-[900px]:hidden">

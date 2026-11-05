@@ -75,7 +75,7 @@ async function Guard({ children }: { children: React.ReactNode }) {
 function ShellLoading() {
   return (
     <div className="flex min-h-dvh bg-bg-admin" aria-busy="true" aria-label="Ачаалж байна">
-      <div className="hidden w-[280px] shrink-0 bg-band min-[1024px]:block" />
+      <div className="hidden w-[264px] shrink-0 bg-band min-[1024px]:block" />
       <div className="flex-1 p-8">
         <div className="ax-sk h-8 w-60 rounded-lg" />
         <div className="ax-sk mt-6 h-40 rounded-2xl" />

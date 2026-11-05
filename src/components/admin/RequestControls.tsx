@@ -7,7 +7,7 @@ import { runAdminAction } from "@/lib/admin/action-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { confirmPaymentAction, createDownloadLinkAction, updateRequestAction } from "@/app/admin/actions";
+import { confirmPaymentAction, createDownloadLinkAction, resendDeliveryEmailAction, updateRequestAction } from "@/app/admin/actions";
 import { BottomSheet } from "@/components/ui/BottomSheet";
 import { useToast } from "@/components/ui/Toast";
 import { REQUEST_STATUS, type RequestStatus } from "@/lib/admin/labels";
@@ -59,6 +59,31 @@ function useStatusChange(r: RequestInfo, onDone: () => void) {
 }
 
 /** Primary card action + the “…” sheet for one request card. */
+/** Sends the download link again after a failed or expired email. */
+export function ResendDeliveryEmail({ id, emailedAt }: { id: string; emailedAt: string | null }) {
+  const router = useRouter();
+  const toast = useToast();
+  const [pending, start] = useTransition();
+  return (
+    <button
+      type="button"
+      disabled={pending}
+      className={ghost}
+      onClick={() =>
+        start(async () => {
+          const res = await runAdminAction(() => resendDeliveryEmailAction(id));
+          if (!res.ok) return toast({ kind: "err", text: res.message });
+          toast({ kind: res.delivery.sent ? "ok" : "err", text: res.delivery.message });
+          router.refresh();
+        })
+      }
+    >
+      <Icon name="mail" size={16} />
+      {pending ? "Илгээж байна…" : emailedAt ? "Имэйлийг дахин илгээх" : "Татах холбоос имэйлээр илгээх"}
+    </button>
+  );
+}
+
 export function RequestCardActions({ r, detailHref }: { r: RequestInfo; detailHref: string }) {
   const [sheet, setSheet] = useState<null | "more" | "cancel" | "payment" | "delivery">(null);
   const close = () => setSheet(null);
@@ -189,7 +214,9 @@ export function PaymentSheet({ r, open, onClose }: { r: RequestInfo; open: boole
       onClose();
       setChecked(false);
       router.refresh();
-      toast({ kind: "ok", text: res.already ? "Төлбөр өмнө нь баталгаажсан байна." : "Төлбөр гараар баталгаажлаа. Одоо хүргэх холбоос үүсгэж болно." });
+      if (res.already) toast({ kind: "ok", text: "Төлбөр өмнө нь баталгаажсан байна." });
+      else if (res.delivery?.sent) toast({ kind: "ok", text: `Төлбөр баталгаажлаа. ${res.delivery.message}` });
+      else toast({ kind: "err", text: `Төлбөр баталгаажлаа, гэхдээ: ${res.delivery?.message ?? "холбоос илгээгдээгүй."}` });
     });
   }
 
@@ -235,6 +262,7 @@ export function PaymentSheet({ r, open, onClose }: { r: RequestInfo; open: boole
             </div>
           </div>
         )}
+        <p className="m-0 text-[13.5px] leading-normal text-muted">Баталгаажуулмагц татах холбоос хэрэглэгчийн имэйл рүү автоматаар очно.</p>
         <label className="flex cursor-pointer items-start gap-3 rounded-control border border-line p-3.5">
           <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} className="mt-0.5 h-6 w-6 shrink-0" />
           <span className="text-[15px] font-bold">

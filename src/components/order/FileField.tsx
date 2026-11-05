@@ -38,7 +38,7 @@ export function FileField(p: Props) {
   return (
     <div className="flex flex-col gap-2">
       <span id={`lbl-${p.id}`} className="text-[15px] leading-snug font-bold">
-        {p.num}. {p.label} <span className="font-semibold text-muted">(заавал биш)</span>
+        <span className="font-semibold text-muted tabular-nums">{p.num}.</span> {p.label} <span className="font-semibold text-muted">(заавал биш)</span>
       </span>
       {!p.locked && (
         <label
@@ -135,8 +135,7 @@ export function FileField(p: Props) {
               onChange={(e) => p.onDrive(e.target.value)}
               aria-invalid={!!p.driveErr}
               aria-describedby={p.driveErr ? `e-${p.id}` : undefined}
-              className="min-h-12 rounded-control bg-sunken px-3.5 text-base text-ink"
-              style={{ border: p.driveErr ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)" }}
+              className="ax-control min-h-12 px-3.5 text-base"
             />
           </div>
           <label className="inline-flex min-h-12 cursor-pointer items-center gap-2 text-sm font-semibold">

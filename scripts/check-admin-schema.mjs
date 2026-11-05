@@ -9,8 +9,8 @@ if (!url || !key) {
 } else {
   const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   const checks = [
-    ['website_orders', 'id,answers'],
-    ['template_requests', 'id,payment_status,delivery_status'],
+    ['website_orders', 'id,answers,quote_amount,payment_status,paid_at,payment_token'],
+    ['template_requests', 'id,payment_status,delivery_status,customer_phone,customer_messenger,delivery_emailed_at'],
     ['templates', 'id'],
     ['website_projects', 'id'],
     ['project_milestones', 'id'],

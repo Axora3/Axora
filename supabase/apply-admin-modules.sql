@@ -398,4 +398,103 @@ revoke all on function public.record_delivery_link(uuid, integer) from public, a
 grant execute on function public.record_delivery_link(uuid, integer) to authenticated;
 commit;
 
+-- ===== 20261106000000_order_payment.sql =====
+
+-- Website order quote and manual payment status.
+-- Additive: existing orders stay unpaid with no amount until an admin sets one.
+-- `paid` is an admin's own record; no bank or gateway confirms it.
+
+begin;
+
+alter table public.website_orders
+  add column if not exists quote_amount bigint check (quote_amount is null or quote_amount > 0),
+  add column if not exists payment_status text not null default 'unpaid' check (payment_status in ('unpaid', 'paid')),
+  add column if not exists paid_at timestamptz,
+  -- Random secret for the customer's payment link. Never derived from the reference.
+  add column if not exists payment_token text unique;
+
+alter table public.website_orders drop constraint if exists website_orders_paid_consistent;
+alter table public.website_orders add constraint website_orders_paid_consistent
+  check (payment_status = 'unpaid' or (quote_amount is not null and paid_at is not null));
+
+-- Admins may change only these new columns; answers and customer fields stay read-only.
+grant update (quote_amount, payment_status, paid_at, payment_token) on public.website_orders to authenticated;
+
+create or replace function public.audit_order_payment()
+returns trigger
+language plpgsql
+security definer
+set search_path = ''
+as $$
+declare
+  v_action text;
+begin
+  if auth.uid() is null then
+    return new;
+  end if;
+  if new.payment_status is distinct from old.payment_status then
+    v_action := case when new.payment_status = 'paid' then 'order_marked_paid' else 'order_marked_unpaid' end;
+  elsif new.quote_amount is distinct from old.quote_amount then
+    v_action := 'order_quote_set';
+  else
+    return new;
+  end if;
+  insert into public.admin_audit_log (actor_id, action, entity_type, entity_id, details)
+  values (auth.uid(), v_action, 'order', new.id::text, jsonb_build_object('reference', new.reference, 'amount', new.quote_amount));
+  return new;
+end;
+$$;
+revoke all on function public.audit_order_payment() from public, anon, authenticated;
+
+drop trigger if exists website_orders_payment_audit on public.website_orders;
+create trigger website_orders_payment_audit after update of quote_amount, payment_status on public.website_orders
+  for each row execute function public.audit_order_payment();
+
+commit;
+
+
+-- ===== 20261106100000_template_delivery_email.sql =====
+
+-- Template purchases: optional phone and Messenger, plus a record of the
+-- download email. Additive: existing requests keep their values.
+
+begin;
+
+alter table public.template_requests
+  add column if not exists customer_phone text check (customer_phone is null or char_length(customer_phone) between 8 and 40),
+  add column if not exists customer_messenger text check (customer_messenger is null or char_length(customer_messenger) between 3 and 200),
+  add column if not exists delivery_emailed_at timestamptz;
+
+-- Called after the email provider accepted the message. The status moves through
+-- `contacted` because the existing guard only allows fulfilled from there, and that
+-- guard is also what sets delivery_status to delivered.
+create or replace function public.record_delivery_email(p_request uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = ''
+as $$
+begin
+  if auth.uid() is null or not public.is_admin() then
+    return jsonb_build_object('status', 'forbidden');
+  end if;
+  perform 1 from public.template_requests where id = p_request for update;
+  if not found then
+    return jsonb_build_object('status', 'not_found');
+  end if;
+  update public.template_requests set status = 'contacted' where id = p_request and status = 'new';
+  update public.template_requests set status = 'fulfilled' where id = p_request and status = 'contacted';
+  update public.template_requests set delivery_emailed_at = now() where id = p_request;
+  insert into public.admin_audit_log (actor_id, action, entity_type, entity_id, details)
+  values (auth.uid(), 'delivery_emailed', 'template_request', p_request::text, '{}'::jsonb);
+  return jsonb_build_object('status', 'ok');
+end;
+$$;
+
+revoke all on function public.record_delivery_email(uuid) from public, anon;
+grant execute on function public.record_delivery_email(uuid) to authenticated;
+
+commit;
+
+
 notify pgrst, 'reload schema';

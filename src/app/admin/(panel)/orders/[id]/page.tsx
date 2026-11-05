@@ -6,14 +6,17 @@ import { BackToList, CopyButton, Tabs } from "@/components/admin/client";
 import { AttachmentActions, OrderStatusForm } from "@/components/admin/forms";
 import { NotesHistory } from "@/components/admin/NotesHistory";
 import { OrderDesignPreview } from "@/components/admin/OrderDesignPreview";
+import { OrderPaymentPanel } from "@/components/admin/OrderPaymentPanel";
 import { OrderStatusControl } from "@/components/admin/OrderStatusControl";
-import { CreateProjectButton } from "@/components/admin/ProjectControls";
-import { Body, LoadFailed, Notice, PageHeader, Panel } from "@/components/admin/ui";
+import { CreateProjectButton, WorkChecklist, type Milestone } from "@/components/admin/ProjectControls";
+import { Body, LoadFailed, Notice, OrderPrompt, PageHeader, Panel } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { ADMIN_MODULE_MIGRATION_HINT, isMissingMigration } from "@/lib/admin/db-errors";
 import { CHANNEL_LABEL, fmtDate, fmtDateTime } from "@/lib/admin/labels";
 import { STYLES, TYPES, type BuilderConfig, type BusinessType, type StyleId } from "@/lib/builder/config";
 import { formatSize } from "@/lib/order/attachments";
+import { ORDER_PAYMENT_MIGRATION_HINT } from "@/lib/order/payment";
+import { buildOrderPrompt } from "@/lib/order/prompt";
 import { ALL_FIELDS, STEPS, contactExtraLabel, formatAnswer, isVisible, type Answers, type Field } from "@/lib/order/questions";
 
 export const metadata = { title: "Захиалгын дэлгэрэнгүй" };
@@ -79,6 +82,9 @@ async function OrderDetailContent({ params, searchParams }: PageProps<"/admin/or
   if (!o) notFound();
   const { data: atts, error: attErr } = await db.from("order_attachments").select("id, field, original_name, mime_type, size_bytes, upload_status, created_at").eq("order_id", id).order("created_at");
   const { data: project, error: projectError } = await db.from("website_projects").select("id").eq("order_id", id).maybeSingle();
+  const { data: milestones, error: milestoneError } = project
+    ? await db.from("project_milestones").select("id, project_id, title, description, due_on, completed_at, updated_at").eq("project_id", project.id).order("sort_order").order("created_at")
+    : { data: null, error: null };
 
   const a = (o.answers ?? {}) as Answers;
   const get = (fid: string) => ALL_FIELDS.find((f) => f.id === fid)!;
@@ -208,6 +214,23 @@ async function OrderDetailContent({ params, searchParams }: PageProps<"/admin/or
   );
 
   const channel = CHANNEL_LABEL[o.preferred_channel] ?? o.preferred_channel;
+  const prompt = buildOrderPrompt({
+    reference: o.reference,
+    answers: a,
+    attachments: (atts ?? []).map((x) => ({ field: x.field, name: x.original_name })),
+    design: cfg && {
+      type: TYPES[cfg.type]?.label ?? cfg.type,
+      style: STYLES[cfg.style]?.label ?? cfg.style,
+      palette: cfg.palette === "custom" ? "Өөрийн өнгө" : cfg.palette,
+      primary: cfg.colors.primary,
+      secondary: cfg.colors.secondary,
+      bg: cfg.colors.bg,
+      name: cfg.name,
+      headline: cfg.headline,
+      desc: cfg.desc,
+      cta: cfg.cta,
+    },
+  });
 
   return (
     <>
@@ -232,6 +255,7 @@ async function OrderDetailContent({ params, searchParams }: PageProps<"/admin/or
             <Tabs
               initial={typeof tab === "string" ? tab : undefined}
               tabs={[
+                { id: "prompt", label: "Prompt", content: <OrderPrompt text={prompt} /> },
                 { id: "overview", label: "Тойм", content: overview },
                 { id: "answers", label: "Анкет", content: answers },
                 { id: "design", label: "Дизайн", content: design },
@@ -240,11 +264,28 @@ async function OrderDetailContent({ params, searchParams }: PageProps<"/admin/or
               ]}
             />
           </div>
-          <aside aria-label="Товч мэдээлэл" className="flex flex-col gap-4 min-[1100px]:sticky min-[1100px]:top-4">
+          <aside aria-label="Товч мэдээлэл" className="flex flex-col gap-4 min-[1100px]:sticky min-[1100px]:top-[84px]">
+            {project && (
+              <Panel title="Ажлын checklist" id="side-checklist">
+                <div className="p-[18px]">
+                  {milestoneError ? <LoadFailed what="ажлын жагсаалтыг" /> : <WorkChecklist projectId={project.id} milestones={(milestones ?? []) as Milestone[]} />}
+                </div>
+              </Panel>
+            )}
             <Panel title="Хөгжүүлэлтийн төсөл">
               <div className="flex flex-col gap-3 p-[18px]">
                 {projectError && !isMissingMigration(projectError) ? <LoadFailed what="холбоотой төслийг" /> : isMissingMigration(projectError) ? <Notice tone="warn">{ADMIN_MODULE_MIGRATION_HINT}</Notice> : <CreateProjectButton orderId={o.id} projectId={project?.id ?? null} />}
-                <p className="m-0 text-xs leading-relaxed text-muted">Төслийг энэ захиалгын дэлгэрэнгүйгээс админ гараар үүсгэнэ. Анкет, хэрэглэгчийн хариултыг өөрчлөхгүй.</p>
+                <p className="m-0 text-xs leading-relaxed text-muted">{project ? "Checklist-ийн алхмуудыг төслийн хуудаснаас засаж, хасаж болно." : "Төсөл үүсгэснээр ажлын checklist нээгдэнэ. Анкет, хэрэглэгчийн хариултыг өөрчлөхгүй."}</p>
+              </div>
+            </Panel>
+            <Panel title="Төлбөр" id="side-payment">
+              <div className="p-[18px]">
+                {/* select("*") simply lacks these columns until the migration runs. */}
+                {o.payment_status === undefined ? (
+                  <Notice tone="warn">{ORDER_PAYMENT_MIGRATION_HINT}</Notice>
+                ) : (
+                  <OrderPaymentPanel id={o.id} updatedAt={o.updated_at} amount={o.quote_amount != null ? Number(o.quote_amount) : null} paid={o.payment_status === "paid"} paidAt={o.paid_at} token={o.payment_token} />
+                )}
               </div>
             </Panel>
             <Panel title="Төлөв ба хугацаа" id="side-status">

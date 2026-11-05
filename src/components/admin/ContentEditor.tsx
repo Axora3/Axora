@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { publishContentAction, saveContentDraftAction } from "@/app/admin/content-actions";
 import { Faq } from "@/components/home/Faq";
-import { Hero } from "@/components/home/Hero";
+import { HomeHero } from "@/components/home/HomeHero";
 import { CTA_TARGETS, type SiteContent } from "@/lib/content/schema";
 import { btn, field } from "./ui";
 
@@ -91,7 +91,7 @@ export function ContentEditor(p: Props) {
           <section aria-label="Нооргийн preview" className="overflow-hidden rounded-card border-2 border-dashed border-brand bg-sunken">
             <p className="bg-primary px-4 py-2 text-sm font-bold text-on-primary">Preview — зөвхөн танд харагдаж байна, нийтлэгдээгүй.</p>
             <div className="pointer-events-none" aria-hidden="true">
-              <Hero c={c} />
+              <HomeHero c={c} />
             </div>
             <div className="px-6 pb-8">
               <h2 className="mb-3 text-2xl font-extrabold">Түгээмэл асуулт</h2>
@@ -114,6 +114,15 @@ export function ContentEditor(p: Props) {
               {Cta({ label: "Хоёрдогч товч", k: "heroSecondary" })}
             </section>
 
+            <section className={box} aria-labelledby="c-bank">
+              <h2 id="c-bank" className="text-[17px] font-extrabold">Дансны мэдээлэл</h2>
+              <p className="text-[13px] leading-normal text-muted">Анкетын дараах төлбөрийн хуудсанд олон нийтэд харагдана. Хоосон үед “үнийн саналын хамт илгээнэ” гэж бичнэ.</p>
+              <div className="grid gap-3 sm:grid-cols-2">
+                {T({ label: "Банк", value: c.bank.name, max: 80, onChange: (v) => set({ bank: { ...c.bank, name: v } }) })}
+                {T({ label: "Дансны дугаар", value: c.bank.account, max: 60, onChange: (v) => set({ bank: { ...c.bank, account: v } }) })}
+                {T({ label: "Хүлээн авагч", value: c.bank.holder, max: 120, onChange: (v) => set({ bank: { ...c.bank, holder: v } }) })}
+              </div>
+            </section>
             <section className={box} aria-labelledby="c-contact">
               <h2 id="c-contact" className="text-[17px] font-extrabold">Холбоо барих</h2>
               <div className="grid gap-3 min-[600px]:grid-cols-2">

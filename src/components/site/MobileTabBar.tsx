@@ -14,11 +14,11 @@ const TABS = [
 
 /**
  * Bottom navigation for phones and small tablets (<900px), as in the mobile
- * design. Hidden on pages with their own sticky action bar (template detail, order).
+ * design. Hidden on pages with their own sticky action bar (template detail, order, builder).
  */
 export function MobileTabBar() {
   const pathname = usePathname();
-  const hidden = /^\/templates\/[^/]+/.test(pathname) || /^\/learn\/[^/]+/.test(pathname) || pathname.startsWith("/order") || pathname.startsWith("/admin") || pathname.startsWith("/dev");
+  const hidden = /^\/templates\/[^/]+/.test(pathname) || /^\/learn\/[^/]+/.test(pathname) || pathname.startsWith("/order") || pathname.startsWith("/builder") || pathname.startsWith("/admin") || pathname.startsWith("/dev");
 
   useEffect(() => {
     document.body.classList.toggle("has-tabbar", !hidden);

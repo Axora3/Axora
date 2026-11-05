@@ -3,11 +3,13 @@
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { DENIED, requireAdminAction, type ActionFail, type ActionResult } from "@/lib/admin/auth";
+import { EMAIL_LINK_HOURS, type DeliveryOutcome } from "@/lib/admin/delivery";
 import { ORDER_STATUS, ORDER_STATUSES, REQUEST_STATUS, REQUEST_STATUSES } from "@/lib/admin/labels";
 import { CONTACT_STATUSES } from "@/lib/admin/projects";
 import { isCalendarDate } from "@/lib/admin/dates";
 import { ADMIN_MODULE_MIGRATION_HINT, isMissingMigration } from "@/lib/admin/db-errors";
 import { canOrderTransition, canRequestTransition, orderTransitionHint, requestTransitionHint } from "@/lib/admin/transitions";
+import { isEmailConfigured, sendDownloadEmail } from "@/lib/server/email";
 import { BUCKETS } from "@/lib/supabase/server";
 
 /*
@@ -131,7 +133,7 @@ const payment = z.object({
  * locks the row (double clicks resolve to "already confirmed") and writes
  * who/when/how much plus an audit entry in one transaction.
  */
-export async function confirmPaymentAction(input: z.input<typeof payment>): Promise<ActionResult<{ already: boolean; amount: number; currency: string }>> {
+export async function confirmPaymentAction(input: z.input<typeof payment>): Promise<ActionResult<{ already: boolean; amount: number; currency: string; delivery: DeliveryOutcome | null }>> {
   const ctx = await requireAdminAction();
   if (!ctx) return DENIED;
   const p = payment.safeParse(input);
@@ -154,8 +156,10 @@ export async function confirmPaymentAction(input: z.input<typeof payment>): Prom
   if (r.status !== "confirmed" && r.status !== "already_confirmed") {
     return { ok: false, code: r.status, message: messages[r.status] ?? FAILED.message };
   }
+  // Only the confirmation that just happened emails the customer. A failed email never undoes it.
+  const delivery = r.status === "confirmed" ? await emailDownloadLink(ctx.db, p.data.id) : null;
   revalidateAdmin(`/admin/template-requests/${p.data.id}`, "/admin/template-requests", "/admin");
-  return { ok: true, already: r.status === "already_confirmed", amount: Number(r.amount ?? 0), currency: r.currency ?? "MNT" };
+  return { ok: true, already: r.status === "already_confirmed", amount: Number(r.amount ?? 0), currency: r.currency ?? "MNT", delivery };
 }
 
 const contactUpdate = z.object({ id: z.uuid(), expected: z.string().min(10), status: z.enum(CONTACT_STATUSES) });
@@ -223,8 +227,16 @@ export async function createDownloadLinkAction(requestId: string, hours: number)
   const ctx = await requireAdminAction();
   if (!ctx) return DENIED;
   if (!z.uuid().safeParse(requestId).success || ![24, 72, 168].includes(hours)) return { ok: false, code: "invalid", message: "Утга буруу байна." };
+  const link = await issueDeliveryLink(ctx.db, requestId, hours);
+  if (!link.ok) return link;
+  revalidateAdmin(`/admin/template-requests/${requestId}`, "/admin/template-requests");
+  return link;
+}
 
-  const { data: gate, error: gateErr } = await ctx.db.rpc("authorize_delivery_link", { p_request: requestId });
+type AdminDb = NonNullable<Awaited<ReturnType<typeof requireAdminAction>>>["db"];
+
+async function issueDeliveryLink(db: AdminDb, requestId: string, hours: number): Promise<ActionResult<{ url: string; expiresAt: string | null; external: boolean }>> {
+  const { data: gate, error: gateErr } = await db.rpc("authorize_delivery_link", { p_request: requestId });
   if (gateErr) {
     console.error("[admin] delivery gate:", gateErr.code);
     if (gateErr.code === "PGRST202") return { ok: false, code: "migration", message: "Хүргэлтийн migration ажиллаагүй байна. README-ийн дагуу 20261029000000 migration-ыг ажиллуулна уу." };
@@ -245,7 +257,7 @@ export async function createDownloadLinkAction(requestId: string, hours: number)
   let expiresAt: string | null = null;
   if (g.storage_path) {
     // Fails if the object is missing — the link is never created for a file that is not there.
-    const { data, error } = await ctx.db.storage.from(BUCKETS.templateFiles).createSignedUrl(g.storage_path, hours * 3600, { download: true });
+    const { data, error } = await db.storage.from(BUCKETS.templateFiles).createSignedUrl(g.storage_path, hours * 3600, { download: true });
     if (error || !data) return { ok: false, code: "file_missing", message: "Хамгаалагдсан файл storage-д олдсонгүй. Бүтээгдэхүүний файлыг дахин upload хийнэ үү." };
     url = data.signedUrl;
     expiresAt = new Date(Date.now() + hours * 3600 * 1000).toISOString();
@@ -253,11 +265,35 @@ export async function createDownloadLinkAction(requestId: string, hours: number)
   if (!url) return { ok: false, code: "no_file", message: refusals.no_file };
 
   // The URL itself is never stored or logged.
-  const { data: recorded, error: recErr } = await ctx.db.rpc("record_delivery_link", { p_request: requestId, p_hours: g.storage_path ? hours : null });
+  const { data: recorded, error: recErr } = await db.rpc("record_delivery_link", { p_request: requestId, p_hours: g.storage_path ? hours : null });
   if (recErr || recorded?.status !== "ok") {
     if (recErr) console.error("[admin] record delivery link:", recErr.code);
     return { ok: false, code: "record_failed", message: "Холбоосын зөвшөөрөл эсвэл түүхийг баталгаажуулж чадсангүй. Хүсэлтийг шинэчлээд дахин оролдоно уу." };
   }
-  revalidateAdmin(`/admin/template-requests/${requestId}`, "/admin/template-requests");
   return { ok: true, url, expiresAt, external: !g.storage_path };
+}
+
+async function emailDownloadLink(db: AdminDb, requestId: string): Promise<DeliveryOutcome> {
+  const { data: request, error } = await db.from("template_requests").select("customer_name, contact_channel, contact_value, templates(title)").eq("id", requestId).maybeSingle();
+  if (error || !request) return { sent: false, message: "Хүсэлтийг уншиж чадсангүй." };
+  if (request.contact_channel !== "email") return { sent: false, message: "Энэ хүсэлтэд имэйл хаяг байхгүй. Холбоосыг өөрөө илгээнэ үү." };
+  if (!isEmailConfigured()) return { sent: false, message: "Имэйл үйлчилгээ тохируулагдаагүй. Холбоосыг өөрөө илгээнэ үү." };
+  const link = await issueDeliveryLink(db, requestId, EMAIL_LINK_HOURS);
+  if (!link.ok) return { sent: false, message: link.message };
+  const template = request.templates as unknown as { title: string } | null;
+  const sent = await sendDownloadEmail({ to: request.contact_value, name: request.customer_name, title: template?.title ?? "Загвар", url: link.url, expiresAt: link.expiresAt });
+  if (!sent) return { sent: false, message: "Имэйл илгээж чадсангүй. Дахин илгээх товчийг ашиглана уу." };
+  const { error: recordError } = await db.rpc("record_delivery_email", { p_request: requestId });
+  if (recordError) console.error("[admin] record delivery email:", recordError.code);
+  return { sent: true, message: `Татах холбоос ${request.contact_value} хаягт илгээгдлээ.` };
+}
+
+/** For a failed or expired email. The database still re-checks payment and file first. */
+export async function resendDeliveryEmailAction(requestId: string): Promise<ActionResult<{ delivery: DeliveryOutcome }>> {
+  const ctx = await requireAdminAction();
+  if (!ctx) return DENIED;
+  if (!z.uuid().safeParse(requestId).success) return { ok: false, code: "invalid", message: "Хүсэлт олдсонгүй." };
+  const delivery = await emailDownloadLink(ctx.db, requestId);
+  revalidateAdmin(`/admin/template-requests/${requestId}`, "/admin/template-requests");
+  return { ok: true, delivery };
 }

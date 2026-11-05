@@ -1,6 +1,7 @@
 "use client";
 
 import { Icon } from "@/components/ui/icon";
+import { FieldError } from "@/components/ui/Notice";
 
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
@@ -26,8 +27,10 @@ import {
 } from "@/lib/order/questions";
 import type { BuilderSnapshot, OrderResponse } from "@/lib/order/schema";
 import { SUCCESS_TEXT } from "@/lib/site";
+import type { SiteContent } from "@/lib/content/schema";
 import { FieldRenderer } from "./FieldRenderer";
 import { FileField } from "./FileField";
+import { OrderPayment } from "./OrderPayment";
 import { uploadOne, type LocalFile, type OrderReceipt } from "./uploads";
 
 const SESSION_KEY = "axora-order-session-v1";
@@ -87,7 +90,7 @@ function focusIdFor(f: Field, a: Answers): string {
   return `f-${f.id}`;
 }
 
-export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
+export function OrderForm({ backendEnabled, bank }: { backendEnabled: boolean; bank: SiteContent["bank"] }) {
   const builder = useBuilder();
   const [answers, setAnswers] = useState<Answers>(emptyAnswers);
   const [step, setStep] = useState(0);
@@ -104,6 +107,11 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
   const [lostFiles, setLostFiles] = useState<string[]>([]);
   const [phase, setPhase] = useState<Phase>("form");
   const [serverErr, setServerErr] = useState<ApiError | null>(null);
+  // The customer signs off on the review screen; editing any step asks again.
+  const [confirmed, setConfirmed] = useState(false);
+  const [confirmErr, setConfirmErr] = useState(false);
+  // Failed uploads stay on screen for retry until the customer chooses to move on.
+  const [skipFiles, setSkipFiles] = useState(false);
   const [receipt, setReceipt] = useState<OrderReceipt | null>(null);
   const [usedBuilder, setUsedBuilder] = useState<BuilderConfig | null>(null);
   const [hydrated, setHydrated] = useState(false);
@@ -188,6 +196,8 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
   const errMap = Object.fromEntries(errs.map((e) => [e.field.id, e.message]));
 
   function go(n: number, opts: { fromReview?: boolean } = {}) {
+    if (n !== REVIEW) setConfirmed(false);
+    setConfirmErr(false);
     setStep(n);
     setMaxStep((m) => Math.max(m, n));
     setFromReview(!!opts.fromReview);
@@ -245,6 +255,11 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
   }
 
   async function submitAll() {
+    if (!confirmed) {
+      setConfirmErr(true);
+      focusLater("ox-confirm");
+      return;
+    }
     for (let i = 0; i < 7; i++) {
       const l = stepErrors(i, answers, { showLinks: true });
       if (l.length) {
@@ -416,8 +431,36 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
 
   const resultView = phase === "done" || phase === "partial" || phase === "test-done";
 
+  // The questionnaire ends on the payment page once the order is saved.
+  if (phase === "done" || phase === "test-done" || (phase === "partial" && skipFiles)) {
+    return (
+      <OrderPayment
+        reference={receipt?.reference ?? null}
+        business={typeof answers.q2 === "string" ? answers.q2 : ""}
+        budget={typeof answers.q35 === "string" ? answers.q35 : ""}
+        bank={bank}
+        testMode={phase === "test-done"}
+        onDownload={downloadJson}
+        onReview={
+          phase === "test-done"
+            ? () => {
+                setPhase("form");
+                go(REVIEW);
+              }
+            : undefined
+        }
+      />
+    );
+  }
+
   return (
     <>
+      <div className="ax-in-sm flex max-w-[760px] flex-col gap-2.5">
+        <h1 className="ax-h1">
+          Веб захиалгын <span className="serif">анкет</span>
+        </h1>
+        <p className="ax-lead">39 асуулт, 7 алхам. Одтой (*) талбар заавал. Хариулт тань алхам хооронд хадгалагдана.</p>
+      </div>
       {!backendEnabled && (
         <div role="note" className="ax-in-sm mt-5 flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-control border border-warn-line bg-warn-bg px-4 py-3 text-sm font-bold text-warn-ink">
           <span className="inline-flex items-center gap-2">
@@ -449,7 +492,12 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
       )}
 
       {!resultView && (
-        <details className="ax-surface mt-5 p-4 min-[900px]:hidden">
+        <div aria-hidden="true" className="mt-5 flex gap-1 min-[900px]:hidden">
+          {STEPS.map((item, index) => <span key={item.title} className="h-1.5 flex-1 rounded-full" style={{ background: index < progressNow ? "var(--ax-primary)" : index === progressNow ? "var(--ax-lime-hover)" : "var(--ax-line)" }} />)}
+        </div>
+      )}
+      {!resultView && (
+        <details className="ax-surface mt-3 p-4 min-[900px]:hidden">
           <summary className="min-h-11 cursor-pointer content-center text-sm font-bold text-brand">{progressLabel} · Алхмуудыг харах</summary>
           <nav aria-label="Захиалгын алхмууд" className="mt-3 grid gap-1">
             {[...STEPS.map((item) => item.title), "Шалгах"].map((title, index) => (
@@ -464,7 +512,15 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
         </details>
       )}
       <div className="mt-6 grid items-start gap-6 min-[900px]:grid-cols-[260px_minmax(0,1fr)]">
-        <aside aria-label="Алхмууд" className="sticky top-[92px] hidden flex-col gap-3.5 min-[900px]:flex">
+        <aside aria-label="Алхмууд" className="sticky top-[88px] hidden flex-col gap-4 min-[900px]:flex">
+          <div className="flex flex-col gap-4 rounded-card bg-band p-3 text-on-band">
+          <div className="flex items-center gap-3 px-1.5 pt-1">
+            <span aria-hidden="true" className="ax-ring" style={{ "--p": pct } as React.CSSProperties}><span>{pct}%</span></span>
+            <span className="flex min-w-0 flex-col">
+              <span className="text-xs font-bold text-band-faint">{resultView ? "Анкет" : "Явц"}</span>
+              <span className="truncate text-[15px] font-extrabold">{inForm && !resultView ? `Алхам ${step + 1} / 7` : progressLabel}</span>
+            </span>
+          </div>
           <ol className="m-0 flex list-none flex-col gap-0.5 p-0">
             {[...STEPS.map((s) => s.title), "Шалгах"].map((title, i) => {
               const cur = !resultView && i === step;
@@ -472,21 +528,21 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
               const locked = resultView || phase === "submitting" || i > maxStep;
               return (
                 <li key={title} className="relative">
-                  {i < REVIEW && <span aria-hidden="true" className="absolute top-[42px] bottom-[-8px] left-[23.5px] w-px" style={{ background: done && i < maxStep ? "var(--ax-brand)" : "var(--ax-line)" }} />}
+                  {i < REVIEW && <span aria-hidden="true" className="absolute top-[42px] bottom-[-8px] left-[23.5px] w-px" style={{ background: done && i < maxStep ? "var(--ax-lime)" : "var(--ax-band-line)" }} />}
                   <button
                     type="button"
                     disabled={locked}
                     aria-current={cur ? "step" : undefined}
                     onClick={() => go(i, { fromReview: step === REVIEW || fromReview })}
                     className="relative flex min-h-12 w-full items-center gap-3 rounded-control border-0 px-2.5 py-1.5 text-left text-[15px] font-bold transition-colors disabled:opacity-100"
-                    style={{ background: cur ? "var(--ax-surface)" : "transparent", boxShadow: cur ? "var(--ax-shadow-card)" : undefined, color: locked && !done ? "var(--ax-faint)" : "var(--ax-ink)", cursor: locked ? "not-allowed" : "pointer" }}
+                    style={{ background: cur ? "var(--ax-band-hover)" : "transparent", color: locked && !done ? "var(--ax-band-faint)" : "var(--ax-on-band)", cursor: locked ? "not-allowed" : "pointer" }}
                   >
                     <span
                       className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-inner text-[13px] font-extrabold"
                       style={{
-                        background: cur ? "var(--ax-primary)" : done && i < REVIEW ? "var(--ax-lime)" : "var(--ax-surface)",
-                        color: cur ? "var(--ax-on-primary)" : done && i < REVIEW ? "var(--ax-on-lime)" : "var(--ax-ink)",
-                        border: cur || (done && i < REVIEW) ? 0 : "1px solid var(--ax-line-mid)",
+                        background: cur || (done && i < REVIEW) ? "var(--ax-lime)" : "var(--ax-band)",
+                        color: cur || (done && i < REVIEW) ? "var(--ax-on-lime)" : "inherit",
+                        border: cur || (done && i < REVIEW) ? 0 : "1px solid var(--ax-band-ring)",
                       }}
                     >
                       {done && !cur && i < REVIEW ? <Check size={14} strokeWidth={3} /> : i + 1}
@@ -498,8 +554,9 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
               );
             })}
           </ol>
+          </div>
           {!resultView && (
-            <div className="flex flex-col gap-2.5 border-t border-line pt-3.5">
+            <div className="flex flex-col gap-2.5 px-1">
               <label className="flex cursor-pointer items-start gap-2.5 text-sm leading-snug font-bold">
                 <input type="checkbox" checked={saveDraft} onChange={(e) => toggleDraft(e.target.checked)} className="ax-check" />
                 Энэ төхөөрөмж дээр ноорог хадгалах
@@ -514,16 +571,8 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
           )}
         </aside>
 
-        <section aria-labelledby={resultView ? "ox-result-title" : "ox-step-title"} className="ax-surface min-w-0">
-          <div className="flex flex-col gap-3 px-[clamp(18px,3vw,36px)] pt-[clamp(18px,3vw,32px)]">
-            <div className="flex items-center justify-between gap-3 text-sm font-extrabold">
-              <span className="text-brand">{inForm && !resultView ? `Алхам ${step + 1} / 7` : progressLabel}</span>
-              <span className="text-muted">{pct}%</span>
-            </div>
-            <div role="progressbar" aria-valuemin={0} aria-valuemax={7} aria-valuenow={progressNow} aria-label="Анкетын явц" className="h-2 overflow-hidden rounded-lg bg-soft">
-              <div className="h-full rounded-lg bg-primary transition-[width] duration-500" style={{ width: `${pct}%` }} />
-            </div>
-          </div>
+        <section aria-labelledby={resultView ? "ox-result-title" : "ox-step-title"} className="ax-surface min-w-0 pt-[clamp(0px,1vw,10px)]">
+          
 
           {inForm && !resultView && (
             <form noValidate onSubmit={onNext} className="px-[clamp(18px,3vw,36px)] pt-[22px] pb-[clamp(20px,3vw,36px)]">
@@ -694,6 +743,25 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                 </div>
               )}
 
+              <div className="flex flex-col gap-2">
+                <label htmlFor="ox-confirm" className="flex cursor-pointer items-start gap-3 rounded-control border bg-sunken p-4 text-[15px] leading-normal font-bold" style={{ borderColor: confirmErr ? "var(--ax-danger)" : "var(--ax-line)" }}>
+                  <input
+                    id="ox-confirm"
+                    type="checkbox"
+                    checked={confirmed}
+                    onChange={(e) => {
+                      setConfirmed(e.target.checked);
+                      if (e.target.checked) setConfirmErr(false);
+                    }}
+                    aria-invalid={confirmErr}
+                    aria-describedby={confirmErr ? "ox-confirm-e" : undefined}
+                    className="ax-check mt-px"
+                  />
+                  Дээрх мэдээлэл зөв болохыг шалгаж, баталж байна.
+                </label>
+                {confirmErr && <FieldError id="ox-confirm-e">Илгээхийн өмнө мэдээллээ баталгаажуулна уу.</FieldError>}
+              </div>
+
               {/* Honeypot (bots fill it; people never see it). */}
               <input ref={honeypot} type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
 
@@ -709,7 +777,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                   aria-busy={phase === "submitting"}
                   className="ax-btn ax-primary min-h-13 rounded-xl border-0 bg-primary px-[26px] text-base font-bold text-on-primary max-[480px]:w-full"
                 >
-                  {phase === "submitting" ? "Илгээж байна…" : !backendEnabled ? "Илгээх (туршилт)" : serverErr ? "Дахин илгээх" : "Илгээх"}
+                  {phase === "submitting" ? "Илгээж байна…" : !backendEnabled ? "Илгээх (туршилт)" : serverErr ? "Дахин илгээх" : "Илгээгээд төлбөр рүү үргэлжлүүлэх"}
                 </button>
               </div>
             </div>
@@ -717,26 +785,18 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
 
           {resultView && (
             <div role="status" className="ax-in-sm flex flex-col items-start gap-[18px] px-[clamp(18px,3vw,36px)] py-[clamp(28px,5vw,56px)]">
-              <span className={`inline-flex h-16 w-16 items-center justify-center rounded-card ${phase === "test-done" ? "bg-warn-bg text-warn" : "bg-soft text-brand"}`}>
+              <span className="inline-flex h-16 w-16 items-center justify-center rounded-card bg-soft text-brand">
                 <Check size={30} strokeWidth={2.4} className="ax-draw" />
               </span>
               <h2 id="ox-result-title" tabIndex={-1} className="text-[clamp(26px,3vw,36px)] leading-[1.15] font-extrabold tracking-[-0.02em] outline-none">
-                {phase === "test-done" ? "Туршилтын анкет бөглөгдлөө" : phase === "partial" ? "Захиалга хадгалагдсан, зарим файл илгээгдээгүй" : "Хүсэлт хүлээн авлаа"}
+                Захиалга хадгалагдсан, зарим файл илгээгдээгүй
               </h2>
 
-              {phase === "test-done" ? (
-                <p className="max-w-[34em] ax-lead">
-                  Мэдээлэл илгээгдээгүй — энэ бол backend холбогдоогүй үзүүлэн. Бодит захиалга хүлээн аваагүй. Хариултаа хадгалж авах бол доорх товчийг ашиглана уу.
+              <p className="ax-lead max-w-[34em]">{SUCCESS_TEXT}</p>
+              {receipt && (
+                <p className="text-[15px]">
+                  Захиалгын дугаар: <strong className="font-mono">{receipt.reference}</strong>
                 </p>
-              ) : (
-                <>
-                  <p className="max-w-[34em] ax-lead">{SUCCESS_TEXT}</p>
-                  {receipt && (
-                    <p className="text-[15px]">
-                      Захиалгын дугаар: <strong className="font-mono">{receipt.reference}</strong>
-                    </p>
-                  )}
-                </>
               )}
 
               {phase === "partial" && (
@@ -778,34 +838,17 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                       Бүх дутуу файлыг дахин илгээх
                     </button>
                   )}
+                  <button type="button" onClick={() => setSkipFiles(true)} className="ax-btn ax-ghost min-h-12 self-start rounded-control border border-line-strong bg-surface px-5 text-[15px] font-bold text-ink">
+                    Төлбөр рүү үргэлжлүүлэх
+                  </button>
                 </div>
               )}
 
               <div className="flex flex-wrap gap-2.5">
-                <button
-                  type="button"
-                  onClick={downloadJson}
-                  className={`ax-btn inline-flex min-h-13 items-center gap-2 rounded-xl px-[22px] text-base font-bold ${phase === "test-done" ? "ax-primary border-0 bg-primary text-on-primary" : "ax-ghost border border-line-strong bg-surface text-ink"}`}
-                >
+                <button type="button" onClick={downloadJson} className="ax-btn ax-ghost inline-flex min-h-13 items-center gap-2 rounded-control border border-line-strong bg-surface px-[22px] text-base font-bold text-ink">
                   <Download size={18} />
                   Хариултаа JSON-оор татах
                 </button>
-                {phase === "test-done" ? (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setPhase("form");
-                      go(REVIEW);
-                    }}
-                    className="ax-btn ax-ghost min-h-13 rounded-xl border border-line-strong bg-surface px-5 text-base font-bold text-ink"
-                  >
-                    Хариултаа харах
-                  </button>
-                ) : (
-                  <Link href="/" className="ax-btn ax-ghost inline-flex min-h-13 items-center rounded-xl border border-line-strong bg-surface px-5 text-base font-bold text-ink no-underline">
-                    Нүүр хуудас руу
-                  </Link>
-                )}
               </div>
             </div>
           )}
