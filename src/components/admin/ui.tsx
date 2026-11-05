@@ -1,5 +1,7 @@
 import { Icon } from "@/components/ui/icon";
 import Link from "next/link";
+import { Card, CardHeader } from "@/components/ui/card";
+import { buttonStyles } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ORDER_STATUS, PAYMENT_STATUS, REQUEST_STATUS, type OrderStatus, type PaymentStatus, type RequestStatus } from "@/lib/admin/labels";
 import { AdminMenuButton } from "./AdminShell";
@@ -82,17 +84,17 @@ export function Body({ children, className = "" }: { children: React.ReactNode; 
 
 export function Panel({ title, action, children, className = "", id }: { title?: React.ReactNode; action?: React.ReactNode; children: React.ReactNode; className?: string; id?: string }) {
   return (
-    <section aria-labelledby={title && id ? id : undefined} className={`min-w-0 overflow-hidden rounded-[18px] border border-line bg-surface ${className}`}>
+    <Card role={title && id ? "region" : undefined} aria-labelledby={title && id ? id : undefined} className={`overflow-hidden ${className}`}>
       {title && (
-        <div className="flex items-center justify-between gap-3 border-b border-soft px-[18px] py-3.5">
+        <CardHeader>
           <h2 id={id} className="text-[17px] font-extrabold">
             {title}
           </h2>
           {action}
-        </div>
+        </CardHeader>
       )}
       {children}
-    </section>
+    </Card>
   );
 }
 
@@ -122,6 +124,7 @@ export function PubPill({ published }: { published: boolean }) {
 export function EmptyState({ title, text, action }: { title: string; text?: string; action?: React.ReactNode }) {
   return (
     <div className="flex flex-col items-center gap-3 px-6 py-12 text-center">
+      <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-line bg-soft text-brand"><Icon name="inbox" size={24} /></span>
       <h3 className="text-lg font-extrabold">{title}</h3>
       {text && <p className="max-w-[30em] text-[15px] leading-relaxed text-muted">{text}</p>}
       {action}
@@ -148,15 +151,15 @@ export function Notice({ tone = "info", children }: { tone?: "info" | "warn"; ch
 }
 
 export const btn = {
-  primary: "ax-btn ax-primary inline-flex min-h-11 items-center justify-center gap-2 rounded-[11px] border-0 bg-primary px-4 text-sm font-bold text-on-primary no-underline disabled:opacity-60",
-  ghost: "ax-btn ax-ghost inline-flex min-h-11 items-center justify-center gap-2 rounded-[11px] border border-line-strong bg-surface px-4 text-sm font-bold text-ink no-underline disabled:opacity-60",
-  danger: "ax-btn inline-flex min-h-11 items-center justify-center gap-2 rounded-[11px] border border-danger-line bg-surface px-4 text-sm font-bold text-danger no-underline disabled:opacity-60",
+  primary: buttonStyles("primary"),
+  ghost: buttonStyles("secondary"),
+  danger: buttonStyles("danger"),
 };
 
 export const field = {
   label: "text-sm font-bold",
-  input: "min-h-11 w-full rounded-[10px] border border-line-strong bg-sunken px-3 text-base text-ink",
-  textarea: "w-full resize-y rounded-[10px] border border-line-strong bg-sunken px-3 py-2.5 text-base leading-normal text-ink",
+  input: "ax-control min-h-11 w-full rounded-[10px] border border-line-strong bg-sunken px-3 text-base text-ink",
+  textarea: "ax-control w-full resize-y rounded-[10px] border border-line-strong bg-sunken px-3 py-2.5 text-base leading-normal text-ink",
   hint: "text-[13px] leading-normal text-muted",
 };
 

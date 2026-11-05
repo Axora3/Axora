@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Icon } from "@/components/ui/icon";
 import { useState } from "react";
 import { createPortal } from "react-dom";
 import { ArrowLeft, ChevronLeft, Close, LogoMark, Menu } from "@/components/icons";
@@ -34,7 +35,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
   const max = wide ? "max-w-[1400px] px-[clamp(16px,3vw,32px)]" : "max-w-[1240px] px-[clamp(16px,4vw,40px)]";
 
   return (
-    <header className="sticky top-0 z-30 border-b border-line bg-header backdrop-blur-[10px]">
+    <header className="ax-site-header sticky top-0 z-30 border-b border-line bg-header backdrop-blur-[18px]">
       {mobileBack && (
         <div className="flex h-[60px] items-center gap-2 px-3 min-[900px]:hidden">
           <Link
@@ -59,7 +60,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
 
         {variant === "main" ? (
           <>
-            <nav aria-label="Үндсэн цэс" className="hidden items-center gap-[22px] text-[15px] font-semibold min-[1100px]:flex">
+            <nav aria-label="Үндсэн цэс" className="hidden items-center gap-0.5 rounded-full border border-line-soft bg-surface/65 p-1 text-[13px] font-semibold min-[1100px]:flex">
               {NAV.map((n) => {
                 const active = n.href === current;
                 return (
@@ -67,7 +68,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
                     key={n.href}
                     href={n.href}
                     aria-current={active ? "page" : undefined}
-                    className={`ax-link ${active ? "text-brand underline decoration-2 underline-offset-[6px]" : "text-ink no-underline"}`}
+                    className={`ax-link inline-flex min-h-9 items-center rounded-full px-3 no-underline transition-colors ${active ? "bg-soft text-brand" : "text-muted hover:bg-soft-2"}`}
                   >
                     {n.label}
                   </Link>
@@ -75,6 +76,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
               })}
             </nav>
             <div className="flex items-center gap-2">
+              <Link href="/favorites" aria-label="Хадгалсан загварууд" className="ax-btn hidden h-11 w-11 items-center justify-center rounded-xl border border-line bg-surface text-brand min-[1280px]:inline-flex"><Icon name="heart" size={20} /></Link>
               <ThemeToggle />
               <Link
                 href="/order"

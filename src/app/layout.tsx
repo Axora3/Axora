@@ -6,6 +6,7 @@ import { MobileTabBar } from "@/components/site/MobileTabBar";
 import { themeInitScript, THEME_COLOR } from "@/components/theme/theme-script";
 import { ThemeSync } from "@/components/theme/ThemeToggle";
 import { SITE } from "@/lib/site";
+import { MotionProvider } from "@/components/ui/motion-provider";
 import "./globals.css";
 
 // Every face loads the Cyrillic subset so Ө, Ү and the rest render in the real font.
@@ -56,10 +57,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           Үндсэн агуулга руу шилжих
         </a>
         <BuilderProvider>
+          <MotionProvider>
           {children}
           <Suspense fallback={null}>
             <MobileTabBar />
           </Suspense>
+          </MotionProvider>
         </BuilderProvider>
       </body>
     </html>

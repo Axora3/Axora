@@ -7,16 +7,16 @@ export function Hero({ c }: { c: SiteContent }) {
   return (
     <section
       aria-labelledby="hero-title"
-      className="mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-[clamp(40px,5vw,72px)] px-[clamp(16px,4vw,40px)] pt-[clamp(40px,7vw,96px)] pb-[clamp(56px,8vw,112px)] min-[1024px]:grid-cols-2"
+      className="ax-hero relative isolate mx-auto grid max-w-[1240px] grid-cols-1 items-center gap-[clamp(40px,5vw,72px)] px-[clamp(16px,4vw,40px)] pt-[clamp(40px,7vw,96px)] pb-[clamp(56px,8vw,112px)] min-[1024px]:grid-cols-2"
     >
-      <div className="flex flex-col gap-7">
+      <div className="relative z-10 flex flex-col gap-7">
         <div className="ax-in d1 inline-flex items-center gap-2.5 self-start rounded-full border border-line bg-surface py-2 pr-3.5 pl-2.5 text-sm font-bold text-brand">
           <Icon name="circle-record" size={8} className="ax-live text-primary" />
           Бэлэн загвар • Захиалгат веб
         </div>
         <h1
           id="hero-title"
-          className="ax-in d2 text-[clamp(40px,5.6vw,80px)] leading-[1.04] font-extrabold tracking-[-0.035em] [word-break:keep-all]"
+          className="ax-in d2 text-[clamp(40px,5.1vw,70px)] leading-[1.08] font-extrabold tracking-[-0.045em] [word-break:keep-all]"
         >
           {c.heroTitle}{c.heroAccent && <> <span className="serif ax-mark px-[0.06em]">{c.heroAccent}</span></>}
         </h1>
@@ -34,7 +34,7 @@ export function Hero({ c }: { c: SiteContent }) {
             {c.heroSecondary.label}
           </Link>
         </div>
-        <div className="ax-in d5 flex flex-wrap gap-x-5 gap-y-2 pt-2 text-sm font-semibold text-muted">
+        <div className="ax-in d5 flex flex-wrap gap-x-5 gap-y-3 border-t border-line pt-6 text-xs font-semibold text-muted" aria-label="Загварын төрлүүд">
           <span className="inline-flex items-center gap-2">
             <span className="inline-flex h-[18px] w-[18px] items-center justify-center rounded-[5px] bg-band text-[11px] font-extrabold text-white"><Icon name="file-text" size={16} /></span>Notion
           </span>

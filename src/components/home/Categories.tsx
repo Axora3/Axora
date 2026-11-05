@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Icon, type IconName } from "@/components/ui/icon";
 import { ArrowRight } from "@/components/icons";
 import type { TemplateCategory } from "@/lib/templates/types";
@@ -48,7 +49,7 @@ export function Categories({ counts }: { counts?: Record<TemplateCategory, numbe
         </p>
       </div>
 
-      <div className="mt-8 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))]">
+      <AnimatedGroup className="mt-8 grid gap-4 [grid-template-columns:repeat(auto-fit,minmax(min(300px,100%),1fr))]">
         {CATEGORIES.map((c) => (
           <Link
             key={c.category}
@@ -77,7 +78,7 @@ export function Categories({ counts }: { counts?: Record<TemplateCategory, numbe
             </span>
           </Link>
         ))}
-      </div>
+      </AnimatedGroup>
     </section>
   );
 }

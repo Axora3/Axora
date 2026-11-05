@@ -30,8 +30,8 @@ export function TemplateCard({
   const H = headingLevel;
   const img = t.previewImages[0];
   return (
-    <article className={`ax-card flex flex-col overflow-hidden rounded-[18px] border border-line bg-surface ${className}`} style={style}>
-      <div className="relative h-[200px] overflow-hidden" style={{ background: t.previewStyle.tint }}>
+    <article className={`ax-card relative isolate flex flex-col overflow-hidden rounded-[18px] border border-line bg-surface ${className}`} style={style}>
+      <div className="relative h-[220px] overflow-hidden" style={{ background: t.previewStyle.tint }}>
         {img ? (
           <Image src={img.url} alt={img.alt} fill sizes="(max-width: 700px) 100vw, 400px" className="ax-prev object-cover" />
         ) : (
@@ -71,7 +71,7 @@ export function TemplateCard({
         <span className="text-xs font-extrabold tracking-[0.06em] text-brand uppercase">{t.category}</span>
         <H className="text-[19px] leading-[1.3] font-extrabold tracking-[-0.01em]">{t.title}</H>
         <p className="text-[15px] leading-[1.55] text-muted">{t.shortDescription}</p>
-        <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+        <div className="mt-auto flex items-center justify-between gap-3 border-t border-line-soft pt-4">
           <span className="text-base font-extrabold">{formatPrice(t)}</span>
           <Link
             href={`/templates/${t.slug}`}
@@ -102,7 +102,7 @@ export function CardSkeletons({ count = 3 }: { count?: number }) {
     <div aria-busy="true" aria-label="Ачаалж байна" className="grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))]">
       {Array.from({ length: count }, (_, i) => (
         <div key={i} className="overflow-hidden rounded-[18px] border border-line bg-surface">
-          <div className="ax-sk h-[200px]" />
+          <div className="ax-sk h-[220px]" />
           <div className="flex flex-col gap-2.5 p-5">
             <div className="ax-sk h-3 w-[30%] rounded-md" />
             <div className="ax-sk h-[18px] w-[78%] rounded-md" />

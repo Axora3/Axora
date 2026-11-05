@@ -448,6 +448,21 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
         </div>
       )}
 
+      {!resultView && (
+        <details className="ax-surface mt-5 p-4 min-[900px]:hidden">
+          <summary className="min-h-11 cursor-pointer content-center text-sm font-bold text-brand">{progressLabel} · Алхмуудыг харах</summary>
+          <nav aria-label="Захиалгын алхмууд" className="mt-3 grid gap-1">
+            {[...STEPS.map((item) => item.title), "Шалгах"].map((title, index) => (
+              <button key={title} type="button" disabled={index > maxStep || phase === "submitting"}
+                aria-current={index === step ? "step" : undefined}
+                onClick={() => go(index)}
+                className={`min-h-11 rounded-xl px-3 text-left text-sm font-semibold disabled:opacity-40 ${index === step ? "bg-soft text-brand" : "text-muted"}`}>
+                {index + 1}. {title}
+              </button>
+            ))}
+          </nav>
+        </details>
+      )}
       <div className="mt-6 flex flex-wrap items-start gap-6">
         <aside aria-label="Алхмууд" className="sticky top-[92px] hidden max-w-[290px] flex-[1_1_240px] flex-col gap-3.5 min-[900px]:flex">
           <ol className="m-0 flex list-none flex-col gap-0.5 p-0">
@@ -498,7 +513,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
           )}
         </aside>
 
-        <section aria-labelledby={resultView ? "ox-result-title" : "ox-step-title"} className="min-w-0 flex-[999_1_560px] overflow-hidden rounded-[22px] border border-line bg-surface">
+        <section aria-labelledby={resultView ? "ox-result-title" : "ox-step-title"} className="ax-surface min-w-0 flex-[999_1_560px] overflow-hidden">
           <div className="flex flex-col gap-3 px-[clamp(18px,3vw,36px)] pt-[clamp(18px,3vw,32px)]">
             <div className="flex items-center justify-between gap-3 text-sm font-extrabold">
               <span className="text-brand">{progressLabel}</span>
@@ -521,7 +536,16 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
 
                 {errs.length > 0 && (
                   <ErrorBox>
-                    {errs.length} талбарт засвар хэрэгтэй.
+                    <p>{errs.length} талбарт засвар хэрэгтэй.</p>
+                    <ul className="mt-2 list-none space-y-1 p-0">
+                      {errs.map(({ field, message }) => (
+                        <li key={field.id}>
+                          <button type="button" className="min-h-11 text-left underline underline-offset-4" onClick={() => focusLater(focusIdFor(field, answers))}>
+                            {field.n}. {field.label}: {message}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
                   </ErrorBox>
                 )}
 

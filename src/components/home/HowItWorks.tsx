@@ -39,7 +39,7 @@ export function HowItWorks() {
 
       <ol className="relative m-0 mt-10 grid list-none gap-4 p-0 [grid-template-columns:repeat(auto-fit,minmax(min(280px,100%),1fr))]">
         {STEPS.map((s, i) => (
-          <li key={s.title} className="ax-reveal relative flex flex-col gap-3.5 rounded-[20px] border border-line bg-surface p-6">
+          <li key={s.title} className="ax-reveal ax-surface relative flex flex-col gap-4 p-6">
             <span className="flex items-center justify-between">
               <span
                 aria-hidden="true"
@@ -47,7 +47,7 @@ export function HowItWorks() {
               >
                 {s.icon}
               </span>
-              <span className="serif text-[40px] leading-none text-line-mid" aria-hidden="true">
+              <span className="serif text-[44px] leading-none text-muted" aria-hidden="true">
                 {i + 1}
               </span>
             </span>

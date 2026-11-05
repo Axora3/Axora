@@ -26,9 +26,9 @@ const COLOR_FIELDS: [keyof BuilderConfig["colors"], string][] = [
   ["bg", "Суурь"],
 ];
 
-const fs = "ax-fs rounded-[18px] border border-line bg-surface p-[18px]";
+const fs = "ax-fs ax-surface p-5";
 const legend = "float-left mb-3 w-full p-0 text-[13px] font-extrabold tracking-[0.06em] text-brand uppercase";
-const textInput = "min-h-11 w-full rounded-[10px] border border-line-strong bg-sunken px-3 text-base text-ink";
+const textInput = "ax-control min-h-11 w-full rounded-[10px] border border-line-strong bg-sunken px-3 text-base text-ink";
 
 export function Builder() {
   const b = useBuilder();
@@ -145,7 +145,7 @@ export function Builder() {
 
           <fieldset className={fs}>
             <legend className={legend}>3. Өнгө</legend>
-            <div className="clear-both grid grid-cols-3 gap-2">
+            <div className="clear-both grid grid-cols-2 gap-2">
               {PALETTES.map((p) => {
                 const on = config.palette === p.id;
                 return (
@@ -204,9 +204,13 @@ export function Builder() {
                           const n = normalizeHex(raw);
                           if (n) b.setColor(k, n);
                         }}
+                        onBlur={() => {
+                          const normalized = normalizeHex(draft);
+                          if (normalized) setDrafts((current) => ({ ...current, [k]: normalized }));
+                        }}
                         aria-invalid={!valid}
                         aria-describedby={valid ? undefined : `hex-err-${k}`}
-                        className="min-h-11 min-w-0 flex-1 rounded-[10px] bg-sunken px-3 font-mono text-base text-ink uppercase"
+                        className="ax-control min-h-11 min-w-0 flex-1 rounded-[10px] bg-sunken px-3 font-mono text-base text-ink uppercase"
                         style={{ border: valid ? "1px solid var(--ax-line-strong)" : "2px solid var(--ax-danger)" }}
                       />
                     </div>
@@ -239,7 +243,7 @@ export function Builder() {
               ).map(([k, label, max]) => (
                 <div key={k} className="flex flex-col gap-1.5">
                   <label htmlFor={`bx-${k}`} className="text-sm font-bold">
-                    {label}
+                    {label}<span className="float-right text-xs font-normal text-muted">{config[k].length}/{max}</span>
                   </label>
                   <input id={`bx-${k}`} type="text" maxLength={max} value={config[k]} onChange={(e) => b.setText(k, e.target.value)} className={textInput} />
                 </div>
@@ -254,7 +258,7 @@ export function Builder() {
                   maxLength={160}
                   value={config.desc}
                   onChange={(e) => b.setText("desc", e.target.value)}
-                  className="resize-y rounded-[10px] border border-line-strong bg-sunken px-3 py-2.5 text-base text-ink"
+                  className="ax-control resize-y rounded-[10px] border border-line-strong bg-sunken px-3 py-2.5 text-base text-ink"
                 />
               </div>
               <div className="flex flex-col gap-1.5">
@@ -332,12 +336,12 @@ export function Builder() {
                 );
               })}
             </div>
-            <span className="text-[13px] font-bold text-muted">{dv.note}</span>
+            <span className="rounded-full border border-line bg-surface px-3 py-1.5 text-xs font-bold text-muted">{dv.note}</span>
           </div>
 
-          <div className="flex justify-center overflow-x-auto rounded-[22px] border border-line bg-soft p-[clamp(10px,2vw,24px)]">
+          <div tabIndex={0} aria-label="Загварын preview — өргөн харагдацыг хажуу тийш гүйлгэнэ" className="flex overflow-x-auto rounded-[22px] border border-line bg-soft p-[clamp(10px,2vw,24px)]">
             <div
-              className="bx-frame ax-light shrink-0 overflow-hidden rounded-2xl border border-line-mid bg-white shadow-[0_30px_60px_-36px_rgba(23,37,30,.5)]"
+              className="bx-frame ax-light mx-auto shrink-0 overflow-hidden rounded-2xl border border-line-mid bg-white shadow-[0_30px_60px_-36px_rgba(23,37,30,.5)]"
               style={{ width: dv.width, maxWidth: dv.max }}
             >
               <div className="flex h-9 items-center gap-[7px] border-b border-line bg-soft-2 px-3.5">

@@ -62,10 +62,10 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
   const n = (r: { count: number | null }) => r.count ?? 0;
 
   const kpis = [
-    { label: "Өнөөдөр ирсэн захиалга", value: todayOrders.count ?? "—", note: "Улаанбаатарын цагаар", href: `/admin/orders?from=${today.day}&to=${today.day}`, band: true },
-    { label: "Шинэ захиалга", value: newNow.count ?? "—", note: "Холбогдоогүй, одоогийн байдлаар", href: "/admin/orders?status=new" },
-    { label: "Хариу хүлээж буй хүсэлт", value: reqNew.count ?? "—", note: n(reqOverdue) ? `${n(reqOverdue)} нь ${REQUEST_OVERDUE_HOURS}+ цаг хүлээсэн` : "Шинэ төлөвтэй", href: "/admin/template-requests?status=new", warn: n(reqOverdue) > 0 },
-    { label: "Хийгдэж буй ажил", value: progressNow.count ?? "—", note: "“Хийгдэж байгаа” захиалга", href: "/admin/orders?status=in_progress" },
+    { icon: "calendar" as const, label: "Өнөөдөр ирсэн захиалга", value: todayOrders.count ?? "—", note: "Улаанбаатарын цагаар", href: `/admin/orders?from=${today.day}&to=${today.day}`, band: true },
+    { icon: "inbox" as const, label: "Шинэ захиалга", value: newNow.count ?? "—", note: "Холбогдоогүй, одоогийн байдлаар", href: "/admin/orders?status=new" },
+    { icon: "clock" as const, label: "Хариу хүлээж буй хүсэлт", value: reqNew.count ?? "—", note: n(reqOverdue) ? `${n(reqOverdue)} нь ${REQUEST_OVERDUE_HOURS}+ цаг хүлээсэн` : "Шинэ төлөвтэй", href: "/admin/template-requests?status=new", warn: n(reqOverdue) > 0 },
+    { icon: "activity" as const, label: "Хийгдэж буй ажил", value: progressNow.count ?? "—", note: "“Хийгдэж байгаа” захиалга", href: "/admin/orders?status=in_progress" },
   ];
 
   const alerts = [
@@ -117,9 +117,9 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
               <Link
                 key={k.label}
                 href={k.href}
-                className={`ax-btn flex min-h-[118px] flex-col justify-between gap-2 rounded-[18px] border p-3.5 no-underline min-[900px]:p-[18px] ${k.band ? "border-band bg-band text-on-band" : "border-line bg-surface text-ink"}`}
+                className={`ax-btn ax-kpi flex min-h-[156px] flex-col justify-between gap-2 rounded-[18px] border p-3.5 no-underline min-[900px]:p-[18px] ${k.band ? "border-band bg-band text-on-band" : "border-line bg-surface text-ink"}`}
               >
-                <span className="text-[12.5px] leading-snug font-bold opacity-85 min-[900px]:text-[13.5px]">{k.label}</span>
+                <span className="flex w-full items-start justify-between gap-2 text-[12.5px] leading-snug font-bold min-[900px]:text-[13.5px]"><span>{k.label}</span><Icon name={k.icon} size={20} className="shrink-0 opacity-70" /></span>
                 <span className="text-[34px] leading-none font-extrabold tracking-[-0.03em] tabular-nums">{k.value}</span>
                 <span className={`text-xs font-semibold ${k.warn ? "text-danger" : "opacity-75"}`}>
                   {k.warn && <Icon name="circle-alert" size={16} />}

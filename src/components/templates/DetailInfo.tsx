@@ -1,5 +1,6 @@
 "use client";
 
+import { Card, CardContent } from "@/components/ui/card";
 import { useState } from "react";
 import { Check, ChevronDown } from "@/components/icons";
 import type { Template } from "@/lib/templates/types";
@@ -48,10 +49,10 @@ export function DetailInfo({ t }: { t: Template }) {
     <>
       <div className="hidden flex-col gap-[18px] min-[900px]:flex">
         {sections.slice(0, 3).map((s) => (
-          <div key={s.title} className="flex flex-col gap-2">
+          <Card key={s.title}><CardContent className="flex flex-col gap-3">
             <h2 className="text-base font-extrabold">{s.title}</h2>
             {s.body}
-          </div>
+          </CardContent></Card>
         ))}
         <p className="border-t border-line pt-3.5 text-sm leading-normal text-muted">Лиценз: {LICENSE}</p>
       </div>

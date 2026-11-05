@@ -26,7 +26,13 @@ export function Gallery({ category, style, images, title }: { category: Template
   const cur = slides[i];
 
   return (
-    <section aria-label="Зургийн цомог" className="flex flex-col gap-3">
+    <section aria-label="Зургийн цомог" className="flex flex-col gap-3"
+      tabIndex={count > 1 ? 0 : undefined}
+      onKeyDown={(event) => {
+        if (event.key !== "ArrowLeft" && event.key !== "ArrowRight") return;
+        event.preventDefault();
+        go(i + (event.key === "ArrowRight" ? 1 : -1));
+      }}>
       <div
         className="relative aspect-[4/3] overflow-hidden rounded-[18px] max-[899px]:aspect-auto max-[899px]:h-[290px] max-[899px]:rounded-[22px]"
         style={{ background: style.tint }}
@@ -81,7 +87,7 @@ export function Gallery({ category, style, images, title }: { category: Template
                 aria-label={`${n + 1}-р слайд: ${s.label}`}
                 aria-pressed={i === n}
                 onClick={() => go(n)}
-                className="inline-flex h-8 w-11 cursor-pointer items-center justify-center border-0 bg-transparent"
+                className="inline-flex h-11 w-11 cursor-pointer items-center justify-center border-0 bg-transparent"
               >
                 <span
                   className="h-1.5 rounded-md transition-[width,background-color] duration-[250ms]"
