@@ -4,7 +4,7 @@ import { Icon } from "@/components/ui/icon";
 
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useId, useState } from "react";
 
 /** Remembers the list URL (filters + page) so “back to list” restores it. */
 export function RememberListUrl({ storageKey }: { storageKey: string }) {
@@ -63,6 +63,7 @@ export function CopyButton({ value, label }: { value: string; label: string }) {
 
 /** Client-only tabs over server-rendered panels; the active tab lives in ?tab= for deep links. */
 export function Tabs({ tabs, initial }: { tabs: { id: string; label: string; content: React.ReactNode }[]; initial?: string }) {
+  const instanceId = useId();
   const [cur, setCur] = useState(tabs.some((t) => t.id === initial) ? initial! : tabs[0].id);
   function pick(id: string) {
     setCur(id);
@@ -76,19 +77,20 @@ export function Tabs({ tabs, initial }: { tabs: { id: string; label: string; con
         {tabs.map((t, i) => (
           <button
             key={t.id}
-            id={`tab-${t.id}`}
+            id={`${instanceId}-tab-${t.id}`}
             role="tab"
             type="button"
             aria-selected={cur === t.id}
-            aria-controls={`panel-${t.id}`}
+            aria-controls={`${instanceId}-panel-${t.id}`}
             tabIndex={cur === t.id ? 0 : -1}
             onClick={() => pick(t.id)}
             onKeyDown={(e) => {
               const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
-              if (!d) return;
-              const n = tabs[(i + d + tabs.length) % tabs.length];
+              if (!d && e.key !== "Home" && e.key !== "End") return;
+              e.preventDefault();
+              const n = tabs[e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : (i + d + tabs.length) % tabs.length];
               pick(n.id);
-              document.getElementById(`tab-${n.id}`)?.focus();
+              document.getElementById(`${instanceId}-tab-${n.id}`)?.focus();
             }}
             className={`min-h-11 shrink-0 cursor-pointer rounded-[9px] border-0 px-3.5 text-sm font-bold ${cur === t.id ? "bg-surface text-ink shadow-[0_1px_2px_var(--ax-shadow)]" : "bg-transparent text-muted"}`}
           >
@@ -97,7 +99,7 @@ export function Tabs({ tabs, initial }: { tabs: { id: string; label: string; con
         ))}
       </div>
       {tabs.map((t) => (
-        <div key={t.id} id={`panel-${t.id}`} role="tabpanel" aria-labelledby={`tab-${t.id}`} hidden={cur !== t.id} tabIndex={0}>
+        <div key={t.id} id={`${instanceId}-panel-${t.id}`} role="tabpanel" aria-labelledby={`${instanceId}-tab-${t.id}`} hidden={cur !== t.id} tabIndex={0}>
           {t.content}
         </div>
       ))}

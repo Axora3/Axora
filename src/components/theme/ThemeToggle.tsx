@@ -2,6 +2,7 @@
 
 import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
 import { Check, Monitor, Moon, Sun } from "@/components/icons";
+import { m, useReducedMotion } from "motion/react";
 import type { ThemePref } from "./theme-script";
 import { getThemePref, setThemePref, subscribeTheme } from "./theme-store";
 
@@ -24,6 +25,7 @@ export function ThemeSync() {
  */
 export function ThemeToggle({ tone = "default", className = "", size = 19 }: { tone?: "default" | "band"; className?: string; size?: number }) {
   // null on the server and during hydration; the real value right after.
+  const reduced = useReducedMotion();
   const pref = useSyncExternalStore<ThemePref | null>(subscribeTheme, getThemePref, () => null);
   const [open, setOpen] = useState(false);
   const btn = useRef<HTMLButtonElement>(null);
@@ -86,12 +88,15 @@ export function ThemeToggle({ tone = "default", className = "", size = 19 }: { t
         </span>
       </button>
       {open && (
-        <div
+        <m.div
+          initial={reduced ? false : { opacity: 0, y: -4 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.16 }}
           ref={menu}
           id={`${id}-menu`}
           role="menu"
           aria-label="Өнгөний горим"
-          className="absolute top-[calc(100%+6px)] right-0 z-[80] flex w-[232px] flex-col gap-0.5 rounded-2xl border border-line bg-elevated p-1.5 text-ink shadow-[0_24px_48px_-24px_var(--ax-shadow)] [animation:axUpSm_.18s_ease_both]"
+          className="absolute top-[calc(100%+6px)] right-0 z-[80] flex w-[232px] flex-col gap-0.5 rounded-2xl border border-line bg-elevated p-1.5 text-ink shadow-[0_24px_48px_-24px_var(--ax-shadow)]"
         >
           {OPTIONS.map(({ id: o, label: l, hint, Icon }) => (
             <button
@@ -114,7 +119,7 @@ export function ThemeToggle({ tone = "default", className = "", size = 19 }: { t
               {pref === o && <Check size={16} />}
             </button>
           ))}
-        </div>
+        </m.div>
       )}
     </div>
   );

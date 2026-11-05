@@ -98,7 +98,7 @@ function Badge({ n, label, on }: { n: number | null; label?: string; on?: boolea
 
 function SideContent({ counts, email, onNavigate }: { counts: Counts; email: string; onNavigate?: () => void }) {
   const path = usePathname();
-  const link = "flex min-h-11 items-center gap-3 rounded-[10px] px-3 text-[14.5px] font-semibold no-underline transition-colors";
+  const link = "flex min-h-12 items-center gap-3 rounded-xl px-3 text-[14.5px] font-semibold no-underline transition-colors";
   return (
     <>
       <nav aria-label="Админ цэс" className="flex flex-col gap-4">
@@ -113,7 +113,7 @@ function SideContent({ counts, email, onNavigate }: { counts: Counts; email: str
                   href={n.href}
                   onClick={onNavigate}
                   aria-current={on ? "page" : undefined}
-                  className={`${link} ${on ? "bg-lime font-extrabold text-on-lime" : "text-band-muted hover:bg-band-hover hover:text-on-band"}`}
+                  className={`${link} ${on ? "bg-lime font-extrabold text-on-lime shadow-[inset_0_1px_0_rgb(255_255_255_/_0.25)]" : "text-band-muted hover:bg-band-hover hover:text-on-band"}`}
                 >
                   <Icon name={n.icon} size={20} />
                   <span className="flex-1">{n.label}</span>

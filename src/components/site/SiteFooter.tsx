@@ -1,14 +1,15 @@
 import Link from "next/link";
+import { LogoMark } from "@/components/icons";
 import { getSiteContent } from "@/lib/content/service";
 import { emailHref, phoneHref } from "@/lib/contact-links";
 
 export async function SiteFooter() {
   const c = await getSiteContent();
   return (
-    <footer className="border-t border-line">
+    <footer className="ax-site-footer border-t border-line bg-surface/60">
       <div className="mx-auto grid max-w-[1240px] items-start gap-8 px-[clamp(16px,4vw,40px)] py-12 min-[700px]:grid-cols-2 min-[1100px]:grid-cols-[1fr_1.5fr_1fr]">
         <div className="flex max-w-[320px] flex-col gap-2.5">
-          <span className="text-lg font-extrabold tracking-[0.08em]">AXORA</span>
+          <Link href="/" className="inline-flex items-center gap-2.5 text-lg font-extrabold tracking-[0.08em] no-underline"><LogoMark />AXORA</Link>
           <span className="text-sm leading-relaxed text-muted">{c.footerText}</span>
         </div>
         <nav aria-label="Доод холбоосууд" className="grid grid-cols-2 gap-x-6 gap-y-1 text-[15px] font-semibold">
@@ -42,6 +43,7 @@ export async function SiteFooter() {
           ))}
         </div>
       </div>
+      <div className="mx-auto flex max-w-[1160px] flex-wrap items-center justify-between gap-3 border-t border-line-soft px-5 py-5 text-xs text-muted"><span>AXORA · Бүтээх ажлыг хялбарчилъя.</span><Link href="/privacy" className="inline-flex min-h-11 items-center hover:text-brand">Нууцлал ба мэдээллийн хамгаалалт</Link></div>
     </footer>
   );
 }

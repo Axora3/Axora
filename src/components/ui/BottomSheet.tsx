@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useId, useRef, useState } from "react";
+import { m, useReducedMotion } from "motion/react";
 import { createPortal } from "react-dom";
 import { Close } from "@/components/icons";
 import { useDialog } from "./use-dialog";
@@ -27,6 +28,7 @@ type Props = {
  * the on-screen keyboard never covers the focused field.
  */
 export function BottomSheet({ open, onClose, title, description, children, footer, dirty = false, size = "auto" }: Props) {
+  const reduced = useReducedMotion();
   const [confirming, setConfirming] = useState(false);
   const [kb, setKb] = useState(0);
   const titleId = useId();
@@ -68,13 +70,16 @@ export function BottomSheet({ open, onClose, title, description, children, foote
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center md:items-center md:p-6" style={{ paddingBottom: kb || undefined }}>
       <div aria-hidden="true" onClick={requestClose} className="absolute inset-0 bg-overlay [animation:axFade_.2s_ease_both]" />
-      <div
+      <m.div
+        initial={reduced ? false : { opacity: 0, y: 16 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.22, ease: "easeOut" }}
         ref={ref}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={description ? descId : undefined}
-        className={`ax-sheet-panel relative flex w-full flex-col overflow-hidden rounded-t-[24px] border border-line bg-elevated text-ink shadow-[0_-20px_60px_-30px_var(--ax-shadow)] md:rounded-[24px] ${
+        className={`relative flex w-full flex-col overflow-hidden rounded-t-[24px] border border-line bg-elevated text-ink shadow-[0_-20px_60px_-30px_var(--ax-shadow)] md:rounded-[24px] ${
           size === "tall" ? "h-[min(94dvh,100%)] md:h-auto md:max-h-[88dvh] md:max-w-[720px]" : "max-h-[min(92dvh,100%)] md:max-h-[85dvh] md:max-w-[520px]"
         }`}
       >
@@ -126,7 +131,7 @@ export function BottomSheet({ open, onClose, title, description, children, foote
             )}
           </div>
         )}
-      </div>
+      </m.div>
     </div>,
     document.body,
   );

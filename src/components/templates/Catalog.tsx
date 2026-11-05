@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { AnimatedGroup } from "@/components/ui/animated-group";
+import { Button } from "@/components/ui/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Close, Search, SearchEmpty } from "@/components/icons";
@@ -31,7 +33,14 @@ export function Catalog({ templates }: { templates: Template[] }) {
   const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
-  const [q, setQ] = useState(sp.get("q") ?? "");
+  const urlQuery = sp.get("q") ?? "";
+  const [lastUrlQuery, setLastUrlQuery] = useState(urlQuery);
+  const [q, setQ] = useState(urlQuery);
+  // Reconcile navigation before rendering so Back/Forward cannot rewrite the URL.
+  if (urlQuery !== lastUrlQuery) {
+    setLastUrlQuery(urlQuery);
+    setQ(urlQuery);
+  }
   const [savedOnly, setSavedOnly] = useState(false);
   const { favorites, comparison, toggleFavorite, toggleComparison, clearComparison } = useTemplateCollections();
   const cat = pick<Cat>(sp.get("cat"), ["all", ...TEMPLATE_CATEGORIES], "all");
@@ -51,11 +60,15 @@ export function Catalog({ templates }: { templates: Template[] }) {
   // Keep the search box responsive; write it to the URL after a short pause.
   useEffect(() => {
     const id = setTimeout(() => {
-      if ((sp.get("q") ?? "") !== q.trim()) setParam({ q: q.trim() });
+      if ((sp.get("q") ?? "") === q.trim()) return;
+      const params = new URLSearchParams(sp.toString());
+      if (q.trim()) params.set("q", q.trim());
+      else params.delete("q");
+      const query = params.toString();
+      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
     }, 250);
     return () => clearTimeout(id);
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to typing
-  }, [q]);
+  }, [q, sp, pathname, router]);
 
   const items = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -88,7 +101,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
 
   return (
     <>
-      <div className="ax-in-sm mt-8 flex flex-col gap-3.5 rounded-[18px] border border-line bg-surface p-4">
+      <div className="ax-surface mt-8 flex flex-col gap-4 p-4 sm:p-5">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex flex-[999_1_320px] items-center">
             <label htmlFor="tp-search" className="sr-only">
@@ -101,7 +114,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Хайх: төсөв, контент, кофе…"
-              className="min-h-12 w-full rounded-[11px] border border-line-strong bg-sunken py-0 pr-3.5 pl-[42px] text-base text-ink"
+              className="ax-control min-h-12 w-full rounded-[11px] border border-line-strong bg-sunken py-0 pr-3.5 pl-[42px] text-base text-ink"
             />
           </div>
           <div className="flex flex-[1_1_220px] items-center gap-2.5">
@@ -112,7 +125,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
               id="tp-sort"
               value={sort}
               onChange={(e) => setParam({ sort: e.target.value })}
-              className="min-h-12 flex-1 rounded-[11px] border border-line-strong bg-surface px-3 text-base text-ink"
+              className="ax-control min-h-12 flex-1 rounded-[11px] border border-line-strong bg-surface px-3 text-base text-ink"
             >
               <option value="rec">Санал болгосон</option>
               <option value="asc">Үнэ: багаас их</option>
@@ -171,20 +184,20 @@ export function Catalog({ templates }: { templates: Template[] }) {
           {items.length} загвар олдлоо
         </p>
         {hasFilters && (
-          <button
-            type="button"
+          <Button
+            variant="quiet"
             onClick={clearAll}
             className="ax-btn ax-ghost inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink"
           >
             <Close size={14} strokeWidth={2.4} />
             Шүүлтүүр цэвэрлэх
-          </button>
+          </Button>
         )}
       </div>
 
       {items.length > 0 ? (
-        <div className="mt-5 grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))]">
-          {items.map((t, i) => (
+        <AnimatedGroup className="mt-5 grid gap-6 [grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))]">
+          {items.map((t) => (
             <TemplateCard
               key={t.id}
               t={t}
@@ -193,11 +206,9 @@ export function Catalog({ templates }: { templates: Template[] }) {
               comparisonFull={comparison.length >= 3}
               onFavorite={() => toggleFavorite(t.id)}
               onCompare={() => toggleComparison(t.id)}
-              className="ax-in-sm"
-              style={{ animationDelay: `${Math.min(i, 8) * 0.05}s` }}
             />
           ))}
-        </div>
+        </AnimatedGroup>
       ) : (
         <div className="ax-in-sm mt-5 flex flex-col items-center gap-3.5 rounded-[18px] border border-dashed border-line-mid bg-surface px-6 py-[clamp(32px,6vw,72px)] text-center">
           <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-brand">
