@@ -9,13 +9,14 @@ import { SITE } from "@/lib/site";
 import { MotionProvider } from "@/components/ui/motion-provider";
 import "./globals.css";
 
-// Every face loads the Cyrillic subset so Ө, Ү and the rest render in the real font.
-const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "cyrillic"], weight: ["400", "500", "600", "700", "800"], display: "swap" });
-const lora = Lora({ variable: "--font-lora", subsets: ["latin", "cyrillic"], weight: ["500", "600"], style: ["normal", "italic"], display: "swap" });
+// Ө and Ү live in Google's cyrillic-ext subset, not cyrillic. Both are preloaded so
+// Mongolian text never swaps those two letters in late.
+const manrope = Manrope({ variable: "--font-manrope", subsets: ["latin", "cyrillic", "cyrillic-ext"], weight: ["400", "500", "600", "700", "800"], display: "swap" });
+const lora = Lora({ variable: "--font-lora", subsets: ["latin", "cyrillic", "cyrillic-ext"], weight: ["500", "600"], style: ["normal", "italic"], display: "swap" });
 // Builder demo faces (used only inside the preview).
-const onest = Onest({ variable: "--font-onest", subsets: ["latin", "cyrillic"], weight: ["500", "700", "800"], display: "swap", preload: false });
-const rubik = Rubik({ variable: "--font-rubik", subsets: ["latin", "cyrillic"], weight: ["500", "700"], display: "swap", preload: false });
-const cormorant = Cormorant_Garamond({ variable: "--font-cormorant", subsets: ["latin", "cyrillic"], weight: ["500", "600"], display: "swap", preload: false });
+const onest = Onest({ variable: "--font-onest", subsets: ["latin", "cyrillic", "cyrillic-ext"], weight: ["500", "700", "800"], display: "swap", preload: false });
+const rubik = Rubik({ variable: "--font-rubik", subsets: ["latin", "cyrillic", "cyrillic-ext"], weight: ["500", "700"], display: "swap", preload: false });
+const cormorant = Cormorant_Garamond({ variable: "--font-cormorant", subsets: ["latin", "cyrillic", "cyrillic-ext"], weight: ["500", "600"], display: "swap", preload: false });
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || "http://localhost:3000"),

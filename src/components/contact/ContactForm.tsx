@@ -57,7 +57,7 @@ export function ContactForm({ backendEnabled, initialMessage = "" }: { backendEn
   if (done) {
     return (
       <div role="status" className="ax-in-sm flex flex-col items-start gap-3">
-        <span className={`inline-flex h-[52px] w-[52px] items-center justify-center rounded-[15px] ${done === "saved" ? "bg-soft text-brand" : "bg-warn-bg text-warn"}`}>
+        <span className={`inline-flex h-[52px] w-[52px] items-center justify-center rounded-control ${done === "saved" ? "bg-soft text-brand" : "bg-warn-bg text-warn"}`}>
           <Check size={24} strokeWidth={2.4} className="ax-draw" />
         </span>
         <strong className="text-[17px]">{done === "saved" ? "Зурвас илгээгдлээ" : "Туршилтын зурвас бөглөгдлөө"}</strong>
@@ -82,7 +82,7 @@ export function ContactForm({ backendEnabled, initialMessage = "" }: { backendEn
           Нэр<span aria-hidden="true" className="text-danger"> *</span>
           <span className="sr-only"> (заавал)</span>
         </label>
-        <input id="ct-name" type="text" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} aria-invalid={nE} aria-describedby={nE ? "ct-name-e" : undefined} className={`min-h-[50px] ${box}`} style={border(nE)} />
+        <input id="ct-name" type="text" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} aria-invalid={nE} aria-describedby={nE ? "ct-name-e" : undefined} className={`min-h-13 ${box}`} style={border(nE)} />
         {nE && <FieldError id="ct-name-e">Нэрээ оруулна уу.</FieldError>}
       </div>
       <div className="flex flex-col gap-1.5">
@@ -90,7 +90,7 @@ export function ContactForm({ backendEnabled, initialMessage = "" }: { backendEn
           Утас эсвэл имэйл<span aria-hidden="true" className="text-danger"> *</span>
           <span className="sr-only"> (заавал)</span>
         </label>
-        <input id="ct-contact" type="text" autoComplete="email" value={contact} onChange={(e) => setContact(e.target.value)} aria-invalid={cE} aria-describedby={cE ? "ct-contact-e" : undefined} className={`min-h-[50px] ${box}`} style={border(cE)} />
+        <input id="ct-contact" type="text" autoComplete="email" value={contact} onChange={(e) => setContact(e.target.value)} aria-invalid={cE} aria-describedby={cE ? "ct-contact-e" : undefined} className={`min-h-13 ${box}`} style={border(cE)} />
         {cE && <FieldError id="ct-contact-e">{cErr}</FieldError>}
       </div>
       <div className="flex flex-col gap-1.5">
@@ -102,7 +102,7 @@ export function ContactForm({ backendEnabled, initialMessage = "" }: { backendEn
         {mE && <FieldError id="ct-msg-e">Зурвасаа бичнэ үү.</FieldError>}
       </div>
       {err && <ErrorBox>{err}</ErrorBox>}
-      <button type="submit" disabled={busy} className="ax-btn ax-primary min-h-[54px] rounded-[14px] border-0 bg-primary text-base font-bold text-on-primary">
+      <button type="submit" disabled={busy} className="ax-btn ax-primary min-h-13 rounded-control border-0 bg-primary text-base font-bold text-on-primary">
         {busy ? "Илгээж байна…" : backendEnabled ? (err ? "Дахин илгээх" : "Илгээх") : "Илгээх (туршилт)"}
       </button>
     </form>

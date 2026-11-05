@@ -239,7 +239,7 @@ export function TemplateEditor(p: Props) {
     "aria-describedby": errors[k] ? `tf-${k}-e` : undefined,
     style: errors[k] ? { border: "2px solid var(--ax-danger)" } : undefined,
   });
-  const section = "flex flex-col gap-4 rounded-[18px] border border-line bg-surface p-[18px]";
+  const section = "flex flex-col gap-4 rounded-card border border-line bg-surface p-[18px]";
   const h2 = "text-[17px] font-extrabold";
 
   return (
@@ -447,7 +447,8 @@ export function TemplateEditor(p: Props) {
               <UploadRow key={u.key} u={u} onRetry={() => runUpload(u)} onRemove={() => dropUpload(u.key)} />
             ))}
           {f.file?.storagePath ? (
-            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-sunken p-3">
+            // Keys keep React from reusing the file input as the link input when switching branches.
+            <div key="stored-file" className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-sunken p-3">
               <span className="min-w-0 flex-1 text-sm">
                 <strong className="[overflow-wrap:anywhere]">{f.file.label || "Файл"}</strong>
                 <span className="block text-xs text-muted">
@@ -464,7 +465,7 @@ export function TemplateEditor(p: Props) {
               <Err id="tf-file-e" text={errors.file} />
             </div>
           ) : (
-            <div className="flex flex-col gap-3">
+            <div key="file-or-link" className="flex flex-col gap-3">
               <label className={`${btn.ghost} cursor-pointer self-start`}>
                 Файл сонгох (200MB хүртэл)
                 <input type="file" className="sr-only" onChange={(e) => { if (e.target.files?.[0]) uploadPrivate(e.target.files[0]); e.target.value = ""; }} />
@@ -497,9 +498,9 @@ export function TemplateEditor(p: Props) {
           <p className={field.hint}>
             “Ноорог хадгалах” нь дутуу агуулгыг зөвшөөрнө{status === "published" ? " — гэхдээ нийтлэгдсэн загварын өөрчлөлт шууд сайтад харагдана" : ""}. “Нийтлэх” нь бүх шаардлагатай талбарыг шалгана.
           </p>
-          {dirty && <p className="rounded-[10px] bg-warn-bg px-3 py-2 text-[13px] font-bold text-warn-ink">Хадгалаагүй өөрчлөлт байна.</p>}
+          {dirty && <p className="rounded-control bg-warn-bg px-3 py-2 text-[13px] font-bold text-warn-ink">Хадгалаагүй өөрчлөлт байна.</p>}
           {msg && (
-            <p role={msg.kind === "err" ? "alert" : "status"} className={`rounded-[10px] px-3 py-2.5 text-sm font-bold ${msg.kind === "ok" ? "bg-soft text-brand" : "border border-danger-line bg-danger-bg text-danger-ink"}`}>
+            <p role={msg.kind === "err" ? "alert" : "status"} className={`rounded-control px-3 py-2.5 text-sm font-bold ${msg.kind === "ok" ? "bg-soft text-brand" : "border border-danger-line bg-danger-bg text-danger-ink"}`}>
               {msg.kind === "ok" ? <><Icon name="check" size={16} /> </> : <><Icon name="x" size={16} /> </>}
               {msg.text}
             </p>

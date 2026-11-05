@@ -1,4 +1,5 @@
 import "server-only";
+import { io } from "next/cache";
 import { isCatalogConfigured, previewPublicUrl, publicReadClient } from "@/lib/supabase/server";
 import { DEMO_TEMPLATES } from "./demo-data";
 import { TEMPLATE_CATEGORIES, type PreviewStyle, type Template, type TemplateCategory, type TemplatesResult } from "./types";
@@ -59,6 +60,8 @@ function mapRow(r: Row): Template {
  */
 export async function getPublishedTemplates(): Promise<TemplatesResult> {
   if (!isCatalogConfigured()) return { ok: true, source: "demo", templates: DEMO_TEMPLATES };
+  // Supabase may read the clock before its first fetch. Keep that work out of prerendering.
+  await io();
   try {
     const { data, error } = await publicReadClient()
       .from("templates")
@@ -86,6 +89,7 @@ export async function getTemplateBySlug(slug: string): Promise<TemplateLookup> {
   if (!isCatalogConfigured()) {
     return { ok: true, source: "demo", template: DEMO_TEMPLATES.find((t) => t.slug === slug) ?? null };
   }
+  await io();
   try {
     const { data, error } = await publicReadClient().from("templates").select(COLUMNS).eq("status", "published").eq("slug", slug).maybeSingle();
     if (error) {

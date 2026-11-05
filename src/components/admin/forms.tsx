@@ -19,7 +19,7 @@ function Feedback({ msg }: { msg: Msg }) {
   return (
     <div
       role={msg.kind === "err" ? "alert" : "status"}
-      className={`rounded-[10px] px-3 py-2.5 text-sm font-bold ${msg.kind === "ok" ? "bg-soft text-brand" : "border border-danger-line bg-danger-bg text-danger-ink"}`}
+      className={`rounded-control px-3 py-2.5 text-sm font-bold ${msg.kind === "ok" ? "bg-soft text-brand" : "border border-danger-line bg-danger-bg text-danger-ink"}`}
     >
       {msg.kind === "ok" ? <><Icon name="check" size={16} /> </> : <><Icon name="x" size={16} /> </>}
       {msg.text}

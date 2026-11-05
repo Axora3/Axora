@@ -23,32 +23,32 @@ export default function ServicesPage() {
   return (
     <>
       <SiteHeader active="/services" mobileBack={{ href: "/", label: "Нүүр рүү буцах", title: "Веб хөгжүүлэлт" }} />
-      <main id="main" className="mx-auto max-w-[1240px] px-[clamp(16px,4vw,40px)] pt-4 min-[900px]:pt-10">
-        <section aria-labelledby="sv-h" className="relative overflow-hidden rounded-[26px] bg-band px-5 pt-7 text-on-band min-[900px]:grid min-[900px]:grid-cols-[1.2fr_1fr] min-[900px]:items-end min-[900px]:gap-10 min-[900px]:rounded-[28px] min-[900px]:px-[clamp(36px,5vw,72px)] min-[900px]:pt-16">
-          <span aria-hidden="true" className="ax-spin absolute -top-20 -right-20 h-[220px] w-[220px] rounded-full border border-dashed border-band-ring min-[900px]:h-[340px] min-[900px]:w-[340px]" />
+      <main id="main" className="ax-container pt-4 min-[900px]:pt-10">
+        <section aria-labelledby="sv-h" className="relative overflow-hidden rounded-panel bg-band px-5 pt-7 text-on-band min-[900px]:grid min-[900px]:grid-cols-[1.2fr_1fr] min-[900px]:items-end min-[900px]:gap-10 min-[900px]:rounded-panel min-[900px]:px-[clamp(36px,5vw,72px)] min-[900px]:pt-16">
+          <span aria-hidden="true" className="absolute -top-20 -right-20 h-[220px] w-[220px] rounded-full border border-dashed border-band-ring min-[900px]:h-[340px] min-[900px]:w-[340px]" />
           <div className="relative pb-0 min-[900px]:pb-16">
             <span className="ax-in d1 inline-flex text-xs font-extrabold tracking-[0.08em] text-lime uppercase">Захиалгат веб</span>
-            <h1 id="sv-h" className="ax-in d2 mt-3 text-[36px] leading-[1.06] font-extrabold tracking-[-0.03em] min-[900px]:text-[clamp(40px,5vw,64px)]">
+            <h1 id="sv-h" className="ax-h1 ax-in d2 mt-3">
               Бизнесийнхээ вебийг <span className="serif text-lime">өөрийнхөөрөө</span> бүтээ.
             </h1>
             <p className="ax-in d3 mt-3.5 max-w-[34em] text-base leading-relaxed text-dark-muted min-[900px]:text-lg">
               Өнгө, хэв маягаа урьдчилан туршаад, хэрэгцээгээ анкетаар илгээнэ. Үнэ, хугацааг хамтдаа тохирно.
             </p>
             <div className="ax-in d4 mt-5 flex flex-col gap-2.5 min-[480px]:flex-row min-[480px]:flex-wrap">
-              <Link href="/builder" className="ax-btn ax-lime flex min-h-[54px] items-center justify-center rounded-[14px] bg-lime px-6 text-base font-extrabold text-on-lime no-underline">
+              <Link href="/builder" className="ax-btn ax-lime flex min-h-13 items-center justify-center rounded-control bg-lime px-6 text-base font-extrabold text-on-lime no-underline">
                 Вебээ загварчлах
               </Link>
-              <Link href="/order" className="ax-btn flex min-h-[54px] items-center justify-center rounded-[14px] border border-dark-line-2 px-6 text-base font-bold text-on-band no-underline">
+              <Link href="/order" className="ax-btn flex min-h-13 items-center justify-center rounded-control border border-dark-line-2 px-6 text-base font-bold text-on-band no-underline">
                 Анкет бөглөх
               </Link>
             </div>
           </div>
           <div aria-hidden="true" className="ax-light ax-in d4 relative mx-auto mt-7 h-[150px] w-[210px] overflow-hidden min-[900px]:mt-0 min-[900px]:h-[300px] min-[900px]:w-[340px]">
-            <div className="flex h-[190px] w-[210px] flex-col gap-2 rounded-t-[26px] border-[6px] border-b-0 border-[#2C3F34] bg-[#FBF7EF] px-3 py-3.5 min-[900px]:h-[360px] min-[900px]:w-[340px] min-[900px]:gap-3.5 min-[900px]:rounded-t-[36px] min-[900px]:border-[9px] min-[900px]:px-6 min-[900px]:py-6">
+            <div className="flex h-[190px] w-[210px] flex-col gap-2 rounded-t-panel border-[6px] border-b-0 border-[#2C3F34] bg-[#FBF7EF] px-3 py-3.5 min-[900px]:h-[360px] min-[900px]:w-[340px] min-[900px]:gap-3.5 min-[900px]:rounded-t-panel min-[900px]:border-[9px] min-[900px]:px-6 min-[900px]:py-6">
               <span className="h-2 w-[46%] rounded bg-[#3B2A20] opacity-70" />
-              <span className="h-4 w-[86%] rounded-[5px] bg-[#2B1A12] min-[900px]:h-6" />
-              <span className="h-4 w-[64%] rounded-[5px] bg-[#2B1A12] min-[900px]:h-6" />
-              <span className="mt-1 h-[26px] w-[48%] rounded-[7px] bg-[#8A4B2E] min-[900px]:h-10" />
+              <span className="h-4 w-[86%] rounded-inner bg-[#2B1A12] min-[900px]:h-6" />
+              <span className="h-4 w-[64%] rounded-inner bg-[#2B1A12] min-[900px]:h-6" />
+              <span className="mt-1 h-[26px] w-[48%] rounded-inner bg-[#8A4B2E] min-[900px]:h-10" />
               <span className="mt-1 grid grid-cols-3 gap-[5px] min-[900px]:gap-2">
                 <span className="h-[34px] rounded-md bg-[#E9D3B5] min-[900px]:h-16" />
                 <span className="h-[34px] rounded-md bg-[#E9D3B5] min-[900px]:h-16" />
@@ -71,7 +71,7 @@ export default function ServicesPage() {
           </h2>
           <div className="mt-4 grid grid-cols-2 gap-2.5 min-[900px]:mt-8 min-[900px]:grid-cols-4 min-[900px]:gap-5">
             {FACTORS.map(({ Icon, t, d }) => (
-              <div key={t} className="ax-reveal flex flex-col gap-2.5 rounded-[18px] border border-line bg-surface p-4 min-[900px]:p-6">
+              <div key={t} className="ax-reveal flex flex-col gap-2.5 rounded-card border border-line bg-surface p-4 min-[900px]:p-6">
                 <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-soft text-brand">
                   <Icon size={20} />
                 </span>
@@ -80,7 +80,7 @@ export default function ServicesPage() {
               </div>
             ))}
           </div>
-          <p className="ax-reveal mt-3 rounded-[14px] bg-warn-bg p-3.5 text-sm leading-[1.55] font-semibold text-warn-ink min-[900px]:mt-5 min-[900px]:text-[15px]">
+          <p className="ax-reveal mt-3 rounded-control bg-warn-bg p-3.5 text-sm leading-[1.55] font-semibold text-warn-ink min-[900px]:mt-5 min-[900px]:text-[15px]">
             Тодорхой үнэ, хугацааг анкетаа илгээсний дараа үнийн саналаар тохирно.
           </p>
         </section>
@@ -94,7 +94,7 @@ export default function ServicesPage() {
               Бэлэн байвал ажил хурдан эхэлнэ. Бэлэн биш бол анкетад “Дараа илгээнэ” гэж сонгоно.
             </p>
           </div>
-          <ol className="ax-reveal m-0 mt-4 list-none rounded-[18px] border border-line bg-surface px-4 py-1 min-[900px]:mt-0">
+          <ol className="ax-reveal m-0 mt-4 list-none rounded-card border border-line bg-surface px-4 py-1 min-[900px]:mt-0">
             {["Лого, брэндийн өнгө", "Бүтээгдэхүүн, байршлын зураг", "Үнийн жагсаалт эсвэл меню", "Хаяг, утас, ажиллах цаг"].map((x, i, a) => (
               <li key={x} className={`flex min-h-14 items-center gap-3 text-[15px] font-semibold ${i < a.length - 1 ? "border-b border-soft" : ""}`}>
                 <span className="inline-flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-lime text-xs font-extrabold text-on-lime">{i + 1}</span>
@@ -113,10 +113,10 @@ export default function ServicesPage() {
               <p className="text-[15px] leading-[1.55] text-muted min-[900px]:text-[17px]">Live demo дээр туршсан тохиргоо тань анкет руу автоматаар дамжина.</p>
             </div>
             <div className="flex flex-col gap-2 min-[900px]:flex-row">
-              <Link href="/order" className="ax-btn ax-primary flex min-h-[54px] items-center justify-center rounded-[14px] bg-primary px-6 text-base font-bold text-on-primary no-underline">
+              <Link href="/order" className="ax-btn ax-primary flex min-h-13 items-center justify-center rounded-control bg-primary px-6 text-base font-bold text-on-primary no-underline">
                 Үнийн санал авах
               </Link>
-              <Link href="/contact" className="ax-btn ax-ghost flex min-h-12 items-center justify-center rounded-[14px] px-5 text-[15px] font-bold text-ink no-underline min-[900px]:min-h-[54px] min-[900px]:border min-[900px]:border-line-strong">
+              <Link href="/contact" className="ax-btn ax-ghost flex min-h-12 items-center justify-center rounded-control px-5 text-[15px] font-bold text-ink no-underline min-[900px]:min-h-13 min-[900px]:border min-[900px]:border-line-strong">
                 Эхлээд асуулт асуух
               </Link>
             </div>

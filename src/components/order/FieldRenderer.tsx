@@ -29,8 +29,6 @@ const req = (
   </>
 );
 
-const borderFor = (bad: boolean) => ({ border: bad ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)" });
-
 export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggle, builder }: Props) {
   const fid = `f-${f.id}`;
   const hintId = `h-${f.id}`;
@@ -53,7 +51,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
           type="button"
           onClick={() => onToggle(f.id)}
           aria-expanded={open}
-          className="ax-btn ax-ghost inline-flex min-h-[46px] items-center gap-2.5 self-start rounded-[11px] border border-dashed border-line-dashed bg-surface px-4 text-left text-sm font-bold text-ink"
+          className="ax-btn ax-ghost inline-flex min-h-11 items-center gap-2.5 self-start rounded-control border border-dashed border-line-dashed bg-surface px-4 text-left text-sm font-bold text-ink"
         >
           <span className="inline-flex transition-transform duration-200" style={{ transform: open ? "rotate(45deg)" : "none" }}>
             <Plus size={16} strokeWidth={2.4} />
@@ -77,7 +75,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
     case "builder": {
       if (!builder) {
         return (
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-[14px] border border-dashed border-line-dashed px-4 py-3.5 text-sm leading-normal text-muted">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-dashed border-line-dashed px-4 py-3.5 text-sm leading-normal text-muted">
             <span>Live demo дээр өнгө, хэв маягаа туршвал энд автоматаар бөглөгдөнө.</span>
             <Link href="/builder" className="inline-flex min-h-11 items-center font-bold">
               Вебээ загварчлах
@@ -127,20 +125,19 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
         "aria-invalid": !!error,
         "aria-describedby": describedBy,
         "aria-required": f.req || undefined,
-        style: borderFor(!!error),
         onChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => set(f.id, e.target.value),
       };
       return (
         <div className="flex flex-col gap-2">
           <label htmlFor={fid} className="text-[15px] leading-snug font-bold">
-            {f.n}. {label}
+            <span className="font-semibold text-muted tabular-nums">{f.n}.</span> {label}
             {f.req && req}
           </label>
           {hintEl}
           {f.kind === "input" ? (
-            <input {...common} type={f.type ?? "text"} autoComplete={f.auto ?? "off"} inputMode={f.mode} className="min-h-[50px] w-full rounded-[11px] bg-sunken px-3.5 text-base text-ink" />
+            <input {...common} type={f.type ?? "text"} autoComplete={f.auto ?? "off"} inputMode={f.mode} className="ax-control min-h-12 px-3.5 text-base" />
           ) : (
-            <textarea {...common} rows={3} className="w-full resize-y rounded-[11px] bg-sunken px-3.5 py-3 text-base leading-normal text-ink" />
+            <textarea {...common} rows={3} className="ax-control resize-y px-3.5 py-3 text-base leading-normal" />
           )}
           {errEl}
         </div>
@@ -164,8 +161,8 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
       return (
         <div className="flex flex-col gap-2">
           <fieldset className="ax-fs" aria-describedby={describedBy} aria-required={f.req || undefined}>
-            <legend className="mb-2 p-0 text-[15px] leading-snug font-bold">
-              {f.n}. {label}
+            <legend className="mb-2.5 p-0 text-[15px] leading-snug font-bold">
+              <span className="font-semibold text-muted tabular-nums">{f.n}.</span> {label}
               {f.req && req}
             </legend>
             {f.hint && (
@@ -180,8 +177,8 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
                   <label
                     key={lab}
                     htmlFor={`${fid}-${j}`}
-                    className="ax-opt flex min-h-[50px] cursor-pointer items-center gap-2.5 rounded-xl px-3.5 py-2.5 text-[15px] leading-snug font-semibold transition-colors"
-                    style={{ border: on ? "2px solid var(--ax-brand)" : error && !otherErr ? "1px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)", background: on ? "var(--ax-soft)" : "var(--ax-surface)" }}
+                    className="ax-option min-h-12 items-center gap-2.5 px-3.5 py-2.5 text-[15px] leading-snug font-semibold"
+                    data-invalid={error && !otherErr ? "true" : undefined}
                   >
                     <input
                       id={`${fid}-${j}`}
@@ -190,7 +187,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
                       checked={on}
                       onChange={() => toggle(lab)}
                       aria-invalid={!!error || undefined}
-                      className="m-0 h-5 w-5 shrink-0"
+                      className="ax-check"
                     />
                     {lab}
                   </label>
@@ -211,8 +208,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
                 onChange={(e) => set(f.id + "o", e.target.value)}
                 aria-invalid={otherErr}
                 aria-describedby={otherErr ? errId : undefined}
-                className="min-h-12 rounded-[11px] bg-sunken px-3.5 text-base text-ink"
-                style={borderFor(otherErr)}
+                className="ax-control min-h-12 px-3.5 text-base"
               />
             </div>
           )}
@@ -227,12 +223,12 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
       return (
         <div className="flex flex-col gap-2">
           <label htmlFor={fid} className="text-[15px] leading-snug font-bold">
-            {f.n}. {label}
+            <span className="font-semibold text-muted tabular-nums">{f.n}.</span> {label}
             {f.req && req}
           </label>
           <div className="flex flex-wrap items-center gap-2.5">
             <input
-              className="ax-color h-[50px] w-[50px] cursor-pointer rounded-[11px] border border-line-strong bg-surface p-[3px] disabled:opacity-50"
+              className="ax-color h-12 w-12 cursor-pointer rounded-control border border-line-strong bg-surface p-[3px] disabled:opacity-50"
               type="color"
               aria-label={`${label} — өнгө сонгох`}
               value={(hv ?? "#245C45").toLowerCase()}
@@ -251,12 +247,11 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
               onChange={(e) => set(f.id, e.target.value)}
               aria-invalid={!!error}
               aria-describedby={describedBy}
-              className="min-h-[50px] w-40 rounded-[11px] bg-sunken px-3.5 font-mono text-base text-ink uppercase disabled:opacity-50"
-              style={borderFor(!!error)}
+              className="ax-control min-h-12 w-40 px-3.5 font-mono text-base uppercase disabled:opacity-50"
             />
             {f.unknown && (
               <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 text-sm font-semibold">
-                <input type="checkbox" checked={unknown} onChange={(e) => set(f.id + "u", e.target.checked)} className="m-0 h-5 w-5" />
+                <input type="checkbox" checked={unknown} onChange={(e) => set(f.id + "u", e.target.checked)} className="ax-check" />
                 Өнгөө мэдэхгүй, санал авъя
               </label>
             )}
@@ -269,7 +264,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
     case "consent":
       return (
         <div className="flex flex-col gap-2">
-          <div className="flex flex-col gap-2.5 rounded-[14px] bg-sunken p-4" style={{ border: error ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line)" }}>
+          <div className="flex flex-col gap-2.5 rounded-control bg-sunken p-4" style={{ border: error ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line)" }}>
             <label htmlFor={fid} className="flex cursor-pointer items-start gap-3 text-[15px] leading-normal font-bold">
               <input
                 id={fid}
@@ -278,14 +273,14 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
                 onChange={(e) => set("q39", e.target.checked)}
                 aria-invalid={!!error}
                 aria-describedby={[hintId, error ? errId : ""].filter(Boolean).join(" ")}
-                className="m-0 mt-px h-[22px] w-[22px] shrink-0"
+                className="ax-check mt-px"
               />
               <span>
                 {f.n}. {CONSENT_LABEL}
                 {req}
               </span>
             </label>
-            <span id={hintId} className="pl-[34px] text-sm leading-normal text-muted">
+            <span id={hintId} className="pl-8 text-sm leading-normal text-muted">
               {CONSENT_NOTE}
             </span>
           </div>

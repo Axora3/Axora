@@ -109,7 +109,7 @@ export function ThemeToggle({ tone = "default", className = "", size = 19 }: { t
                 setOpen(false);
                 btn.current?.focus();
               }}
-              className={`flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-[11px] border-0 px-3 text-left ${pref === o ? "bg-soft" : "bg-transparent hover:bg-soft-2"}`}
+              className={`flex min-h-12 w-full cursor-pointer items-center gap-3 rounded-control border-0 px-3 text-left ${pref === o ? "bg-soft" : "bg-transparent hover:bg-soft-2"}`}
             >
               <Icon size={18} />
               <span className="flex min-w-0 flex-1 flex-col">

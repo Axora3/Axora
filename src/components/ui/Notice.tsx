@@ -4,7 +4,7 @@ import { Alert, Info } from "@/components/icons";
 /** Yellow test-mode / demo notice and red error box from the design. */
 export function TestModeNotice({ children, className = "" }: { children?: React.ReactNode; className?: string }) {
   return (
-    <p role="note" className={`flex items-start gap-2 rounded-[10px] bg-warn-bg px-3 py-2.5 text-[13px] leading-normal font-bold text-warn-ink ${className}`}>
+    <p role="note" className={`flex items-start gap-2 rounded-control bg-warn-bg px-3 py-2.5 text-[13px] leading-normal font-bold text-warn-ink ${className}`}>
       <Info size={16} className="mt-px shrink-0" />
       <span>{children ?? "Туршилтын горим — мэдээлэл илгээгдэхгүй."}</span>
     </p>

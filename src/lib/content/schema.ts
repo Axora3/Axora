@@ -30,6 +30,8 @@ export const siteContentSchema = z.object({
   heroPrimary: z.object({ label: text(30).min(1), href: target }),
   heroSecondary: z.object({ label: text(30).min(1), href: target }),
   contact: z.object({ phone: text(40), email: text(120), messenger: text(120), hours: text(120) }),
+  /** Shown on the payment page once a bank and account are filled in. */
+  bank: z.object({ name: text(80), account: text(60), holder: text(120) }),
   social: z.array(z.object({ label: text(30).min(1), url: z.string().trim().regex(/^https:\/\/\S{3,300}$/) })).max(4),
   faq: z.array(z.object({ q: text(200).min(1), a: text(1200).min(1) })).min(1).max(12),
   footerText: text(200),
@@ -44,6 +46,7 @@ export const DEFAULT_CONTENT: SiteContent = {
   heroPrimary: { label: "Загварууд үзэх", href: "/templates" },
   heroSecondary: { label: "Веб сайт захиалах", href: "/order" },
   contact: { phone: CONTACT.phone, email: CONTACT.email, messenger: CONTACT.messenger, hours: CONTACT.hours },
+  bank: { name: "", account: "", holder: "" },
   social: [],
   faq: FAQ,
   footerText: "Бэлэн дижитал загвар ба захиалгат веб сайт.",

@@ -51,6 +51,10 @@ export const DELIVERY_STATUS: Record<string, string> = {
 export const CHANNEL_LABEL: Record<string, string> = { phone: "Утас", email: "Имэйл", messenger: "Messenger", instagram: "Instagram" };
 
 export const AUDIT_ACTION: Record<string, string> = {
+  delivery_emailed: "Татах холбоос имэйлээр илгээсэн",
+  order_quote_set: "Захиалгын дүн оруулсан",
+  order_marked_paid: "Захиалгыг төлөгдсөн гэж тэмдэглэсэн",
+  order_marked_unpaid: "Захиалгыг төлөгдөөгүй болгосон",
   payment_confirmed: "Төлбөр гараар баталгаажуулсан",
   status_changed: "Төлөв өөрчилсөн",
   dates_changed: "Огноо шинэчилсэн",

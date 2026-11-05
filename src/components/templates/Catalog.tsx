@@ -1,33 +1,41 @@
 "use client";
 
 import Link from "next/link";
-import { AnimatedGroup } from "@/components/ui/animated-group";
-import { Button } from "@/components/ui/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Close, Search, SearchEmpty } from "@/components/icons";
-import { formatPrice, TEMPLATE_CATEGORIES, type Template } from "@/lib/templates/types";
+import { AnimatedGroup } from "@/components/ui/animated-group";
+import { Button, buttonStyles } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
+import { TEMPLATE_CATEGORIES, type Template } from "@/lib/templates/types";
 import { useTemplateCollections } from "@/lib/templates/use-template-collections";
+import { CompareTray } from "./Collections";
 import { TemplateCard } from "./TemplateCard";
 
 type Cat = "all" | (typeof TEMPLATE_CATEGORIES)[number];
 type Price = "all" | "free" | "paid";
 type Sort = "rec" | "asc" | "desc";
 
-const CATS: [Cat, string][] = [["all", "Бүгд"], ...TEMPLATE_CATEGORIES.map((c) => [c, c] as [Cat, string])];
-const PRICES: [Price, string][] = [
-  ["all", "Бүх үнэ"],
-  ["free", "Үнэгүй"],
-  ["paid", "Төлбөртэй"],
-];
+const filterHeading = "mb-1.5 hidden px-3.5 text-xs font-extrabold text-muted min-[1024px]:block";
+const filterGroup = "flex shrink-0 gap-1.5 min-[1024px]:flex-col min-[1024px]:gap-0.5";
 
 function pick<T extends string>(v: string | null, allowed: readonly T[], fallback: T): T {
   return v && (allowed as readonly string[]).includes(v) ? (v as T) : fallback;
 }
 
+function Filter({ on, onClick, label, count }: { on: boolean; onClick: () => void; label: string; count?: number }) {
+  return (
+    <button type="button" aria-pressed={on} onClick={onClick} className="ax-filter">
+      {label}
+      {count !== undefined && <span className="ax-filter-count">{count}</span>}
+    </button>
+  );
+}
+
 /**
  * Search / filter / sort over the published list. Filters live in the URL
  * (no personal data), so back/forward and shared links keep them.
+ * Sidebar from 1024px; a single scrolling row of filters below that.
  */
 export function Catalog({ templates }: { templates: Template[] }) {
   const router = useRouter();
@@ -42,7 +50,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
     setQ(urlQuery);
   }
   const [savedOnly, setSavedOnly] = useState(false);
-  const { favorites, comparison, toggleFavorite, toggleComparison, clearComparison } = useTemplateCollections();
+  const { favorites, comparison, toggleFavorite, toggleComparison } = useTemplateCollections();
   const cat = pick<Cat>(sp.get("cat"), ["all", ...TEMPLATE_CATEGORIES], "all");
   const price = pick<Price>(sp.get("price"), ["all", "free", "paid"], "all");
   const sort = pick<Sort>(sp.get("sort"), ["rec", "asc", "desc"], "rec");
@@ -92,172 +100,117 @@ export function Catalog({ templates }: { templates: Template[] }) {
     router.replace(pathname, { scroll: false });
   };
 
-  const comparisonRows: { label: string; value: (template: Template) => React.ReactNode }[] = [
-    { label: "Загвар", value: (template) => <Link className="font-bold text-brand underline-offset-4 hover:underline" href={`/templates/${template.slug}`}>{template.title}</Link> },
-    { label: "Төрөл", value: (template) => template.category },
-    { label: "Үнэ", value: (template) => formatPrice(template) },
-    { label: "Формат", value: (template) => template.format || "Тодорхойгүй" },
-  ];
+  // Nothing published is a different situation from "no match": filters could not help.
+  if (templates.length === 0) {
+    return (
+      <div className="ax-empty ax-in-sm mt-8">
+        <span aria-hidden="true" className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-brand">
+          <Icon name="layers" size={24} />
+        </span>
+        <h2 className="text-[22px] font-extrabold">Одоогоор нийтлэгдсэн загвар алга</h2>
+        <p className="max-w-[30em] text-base leading-relaxed text-muted">Загвар нийтлэгдмэгц энд харагдана. Яаралтай хэрэгтэй бол бидэнтэй холбогдоорой.</p>
+        <Link href="/contact" className={buttonStyles("primary", "mt-1")}>
+          Холбоо барих
+        </Link>
+      </div>
+    );
+  }
+
+  const countOf = (c: (typeof TEMPLATE_CATEGORIES)[number]) => templates.filter((t) => t.category === c).length;
+  const freeCount = templates.filter((t) => t.isFree).length;
 
   return (
-    <>
-      <div className="ax-surface mt-8 flex flex-col gap-4 p-4 sm:p-5">
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="relative flex flex-[999_1_320px] items-center">
-            <label htmlFor="tp-search" className="sr-only">
-              Нэр, тайлбараар хайх
-            </label>
-            <Search className="pointer-events-none absolute left-3.5 text-muted" />
-            <input
-              id="tp-search"
-              type="search"
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              placeholder="Хайх: төсөв, контент, кофе…"
-              className="ax-control min-h-12 w-full rounded-[11px] border border-line-strong bg-sunken py-0 pr-3.5 pl-[42px] text-base text-ink"
-            />
+    <div className="mt-8 grid items-start gap-x-8 gap-y-5 min-[1024px]:grid-cols-[236px_minmax(0,1fr)]">
+      <aside aria-label="Шүүлтүүр" className="flex min-w-0 flex-col gap-3 min-[1024px]:sticky min-[1024px]:top-[92px] min-[1024px]:gap-6">
+        <div className="relative flex items-center">
+          <label htmlFor="tp-search" className="sr-only">Нэр, тайлбараар хайх</label>
+          <Search className="pointer-events-none absolute left-3.5 z-[1] text-muted" />
+          <input id="tp-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Төсөв, контент, кофе…" className="ax-control min-h-12 w-full py-0 pr-3.5 pl-[42px] text-base" />
+        </div>
+
+        <div className="ax-scroll -mx-[clamp(16px,4vw,40px)] items-start gap-3 px-[clamp(16px,4vw,40px)] pb-1 min-[1024px]:mx-0 min-[1024px]:flex-col min-[1024px]:gap-6 min-[1024px]:overflow-visible min-[1024px]:px-0 min-[1024px]:pb-0">
+          <div role="group" aria-label="Ангилал" className="shrink-0 min-[1024px]:w-full">
+            <p aria-hidden="true" className={filterHeading}>Ангилал</p>
+            <div className={filterGroup}>
+              <Filter on={cat === "all"} onClick={() => setParam({ cat: "all" })} label="Бүгд" count={templates.length} />
+              {TEMPLATE_CATEGORIES.map((c) => (
+                <Filter key={c} on={cat === c} onClick={() => setParam({ cat: c })} label={c} count={countOf(c)} />
+              ))}
+            </div>
           </div>
-          <div className="flex flex-[1_1_220px] items-center gap-2.5">
-            <label htmlFor="tp-sort" className="text-sm font-bold whitespace-nowrap text-muted">
-              Эрэмбэ
-            </label>
-            <select
-              id="tp-sort"
-              value={sort}
-              onChange={(e) => setParam({ sort: e.target.value })}
-              className="ax-control min-h-12 flex-1 rounded-[11px] border border-line-strong bg-surface px-3 text-base text-ink"
-            >
+          <span aria-hidden="true" className="w-px shrink-0 self-stretch bg-line min-[1024px]:hidden" />
+          <div role="group" aria-label="Үнэ" className="shrink-0 min-[1024px]:w-full">
+            <p aria-hidden="true" className={filterHeading}>Үнэ</p>
+            <div className={filterGroup}>
+              <Filter on={price === "all"} onClick={() => setParam({ price: "all" })} label="Бүх үнэ" />
+              <Filter on={price === "free"} onClick={() => setParam({ price: "free" })} label="Үнэгүй" count={freeCount} />
+              <Filter on={price === "paid"} onClick={() => setParam({ price: "paid" })} label="Төлбөртэй" count={templates.length - freeCount} />
+            </div>
+          </div>
+          <span aria-hidden="true" className="w-px shrink-0 self-stretch bg-line min-[1024px]:hidden" />
+          <div className="shrink-0 min-[1024px]:w-full min-[1024px]:border-t min-[1024px]:border-line min-[1024px]:pt-4">
+            <button type="button" aria-pressed={savedOnly} onClick={() => setSavedOnly((v) => !v)} className="ax-filter">
+              <span className="inline-flex items-center gap-2">
+                <Icon name={savedOnly ? "heart-filled" : "heart"} size={16} />
+                Хадгалсан
+              </span>
+              <span className="ax-filter-count">{favorites.length}</span>
+            </button>
+          </div>
+        </div>
+      </aside>
+
+      <div className="min-w-0">
+        <div className="flex min-h-12 flex-wrap items-center justify-between gap-3">
+          <p aria-live="polite" className="text-[15px] font-bold">{items.length} загвар олдлоо</p>
+          <div className="flex items-center gap-2">
+            {hasFilters && (
+              <Button variant="quiet" onClick={clearAll}>
+                <Close size={14} strokeWidth={2.4} />
+                Цэвэрлэх
+              </Button>
+            )}
+            <label htmlFor="tp-sort" className="sr-only">Эрэмбэ</label>
+            <select id="tp-sort" value={sort} onChange={(e) => setParam({ sort: e.target.value })} className="ax-control min-h-11 w-auto bg-surface px-3 text-[15px]">
               <option value="rec">Санал болгосон</option>
               <option value="asc">Үнэ: багаас их</option>
               <option value="desc">Үнэ: ихээс бага</option>
             </select>
           </div>
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div role="group" aria-label="Ангилал" className="ax-scroll max-w-full gap-1.5 rounded-xl bg-soft-2 p-1">
-            {CATS.map(([v, label]) => {
-              const on = cat === v;
-              return (
-                <button
-                  key={v}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => setParam({ cat: v })}
-                  className="ax-btn min-h-11 shrink-0 rounded-[9px] border-0 px-4 text-[15px] font-bold"
-                  style={{ background: on ? "var(--ax-elevated)" : "transparent", color: on ? "var(--ax-ink)" : "var(--ax-muted)", boxShadow: on ? "0 1px 2px var(--ax-shadow), 0 0 0 1px var(--ax-line)" : "none" }}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-          <div role="group" aria-label="Үнэ" className="flex flex-wrap gap-1.5">
-            {PRICES.map(([v, label]) => {
-              const on = price === v;
-              return (
-                <button
-                  key={v}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => setParam({ price: v })}
-                  className="ax-btn ax-opt min-h-11 rounded-[10px] px-3.5 text-sm font-bold text-ink"
-                  style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line-strong)", background: on ? "var(--ax-soft)" : "var(--ax-surface)" }}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-          <button
-            type="button"
-            aria-pressed={savedOnly}
-            onClick={() => setSavedOnly((value) => !value)}
-            className="ax-btn min-h-11 rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink"
-          >
-            Хадгалсан ({favorites.length})
-          </button>
-        </div>
-      </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-        <p aria-live="polite" className="text-[15px] font-bold">
-          {items.length} загвар олдлоо
-        </p>
-        {hasFilters && (
-          <Button
-            variant="quiet"
-            onClick={clearAll}
-            className="ax-btn ax-ghost inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink"
-          >
-            <Close size={14} strokeWidth={2.4} />
-            Шүүлтүүр цэвэрлэх
-          </Button>
+        {items.length > 0 ? (
+          <AnimatedGroup className="mt-4 grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr))]">
+            {items.map((t) => (
+              <TemplateCard
+                key={t.id}
+                t={t}
+                favorite={favorites.includes(t.id)}
+                comparing={comparison.includes(t.id)}
+                comparisonFull={comparison.length >= 3}
+                onFavorite={() => toggleFavorite(t.id)}
+                onCompare={() => toggleComparison(t.id)}
+              />
+            ))}
+          </AnimatedGroup>
+        ) : (
+          <div className="ax-empty ax-in-sm mt-4">
+            <span aria-hidden="true" className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-brand">
+              <SearchEmpty size={24} />
+            </span>
+            <h2 className="text-[22px] font-extrabold">{savedOnly && favorites.length === 0 ? "Хадгалсан загвар алга" : "Тохирох загвар олдсонгүй"}</h2>
+            <p className="max-w-[26em] text-base leading-relaxed text-muted">{savedOnly && favorites.length === 0 ? "Таалагдсан загвараа зүрхэн товчоор хадгалж, эндээс дахин үзээрэй." : "Өөр түлхүүр үгээр хайх эсвэл шүүлтүүрээ цэвэрлээд дахин үзээрэй."}</p>
+            {hasFilters && (
+              <Button variant="primary" onClick={clearAll} className="mt-1">
+                Шүүлтүүр цэвэрлэх
+              </Button>
+            )}
+          </div>
         )}
       </div>
 
-      {items.length > 0 ? (
-        <AnimatedGroup className="mt-5 grid gap-6 [grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))]">
-          {items.map((t) => (
-            <TemplateCard
-              key={t.id}
-              t={t}
-              favorite={favorites.includes(t.id)}
-              comparing={comparison.includes(t.id)}
-              comparisonFull={comparison.length >= 3}
-              onFavorite={() => toggleFavorite(t.id)}
-              onCompare={() => toggleComparison(t.id)}
-            />
-          ))}
-        </AnimatedGroup>
-      ) : (
-        <div className="ax-in-sm mt-5 flex flex-col items-center gap-3.5 rounded-[18px] border border-dashed border-line-mid bg-surface px-6 py-[clamp(32px,6vw,72px)] text-center">
-          <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-brand">
-            <SearchEmpty size={24} />
-          </span>
-          <h2 className="text-[22px] font-extrabold">{savedOnly && favorites.length === 0 ? "Хадгалсан загвар алга" : "Тохирох загвар олдсонгүй"}</h2>
-          <p className="max-w-[26em] text-base leading-relaxed text-muted">{savedOnly && favorites.length === 0 ? "Таалагдсан загвараа зүрхэн товчоор хадгалж, эндээс дахин үзээрэй." : "Өөр түлхүүр үгээр хайх эсвэл шүүлтүүрээ цэвэрлээд дахин үзээрэй."}</p>
-          {hasFilters && (
-            <button type="button" onClick={clearAll} className="ax-btn ax-primary min-h-12 rounded-xl border-0 bg-primary px-5 text-[15px] font-bold text-on-primary">
-              Шүүлтүүр цэвэрлэх
-            </button>
-          )}
-        </div>
-      )}
-
-      {comparison.length > 0 && (
-        <section aria-labelledby="template-comparison-title" className="mt-8 overflow-hidden rounded-[18px] border border-line bg-surface">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-4 sm:px-5">
-            <div>
-              <h2 id="template-comparison-title" className="text-lg font-extrabold">Загваруудыг харьцуулах</h2>
-              <p className="mt-1 text-sm text-muted">Харьцуулахад {comparison.length}/3 загвар сонгосон.</p>
-            </div>
-            <button type="button" onClick={clearComparison} className="ax-btn min-h-11 rounded-[10px] px-3 text-sm font-bold text-brand">Цэвэрлэх</button>
-          </div>
-          <div className="ax-scroll overflow-x-auto">
-            <table className="w-full min-w-[520px] border-collapse text-left text-sm">
-              <tbody>
-                {comparisonRows.map(({ label, value }) => (
-                  <tr key={label} className="border-b border-line last:border-0">
-                    <th scope="row" className="w-28 px-4 py-3 font-bold text-muted sm:px-5">{label}</th>
-                    {comparison.map((id) => {
-                      const t = templates.find((item) => item.id === id);
-                      return <td key={id} className="min-w-36 px-4 py-3 text-ink sm:px-5">{t ? value(t) : "—"}</td>;
-                    })}
-                  </tr>
-                ))}
-                <tr>
-                  <th scope="row" className="px-4 py-3 font-bold text-muted sm:px-5">Сонголт</th>
-                  {comparison.map((id) => {
-                    const t = templates.find((item) => item.id === id);
-                    return <td key={id} className="px-4 py-2 sm:px-5"><button type="button" onClick={() => toggleComparison(id)} className="ax-btn min-h-11 text-sm font-bold text-brand">{t ? `${t.title} — хасах` : "Хасах"}</button></td>;
-                  })}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          {comparison.length === 3 && <p className="px-5 pb-4 text-xs text-muted">Дээд тал нь 3 загварыг зэрэг харьцуулна.</p>}
-        </section>
-      )}
-    </>
+      {/* The tray stays in view while browsing; the full table lives on /compare. */}
+      <CompareTray templates={templates} />
+    </div>
   );
 }

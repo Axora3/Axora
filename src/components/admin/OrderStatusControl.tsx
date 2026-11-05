@@ -89,7 +89,7 @@ export function OrderStatusControl({ id, updatedAt, status, title, reference, si
             type="button"
             disabled={pending || pick === saved.status}
             onClick={() => save(pick as OrderStatus, saved.updatedAt)}
-            className="ax-btn ax-primary min-h-[54px] w-full rounded-[15px] border-0 bg-primary text-base font-bold text-on-primary"
+            className="ax-btn ax-primary min-h-13 w-full rounded-control border-0 bg-primary text-base font-bold text-on-primary"
           >
             {pending ? "Хадгалж байна…" : pick === saved.status ? "Шинэ төлөв сонгоно уу" : `“${ORDER_STATUS[pick as OrderStatus].label}” болгох`}
           </button>
@@ -104,7 +104,7 @@ export function OrderStatusControl({ id, updatedAt, status, title, reference, si
             return (
               <label
                 key={o}
-                className={`flex min-h-[56px] items-center gap-3 rounded-[14px] border px-3.5 ${allowed ? "cursor-pointer" : "cursor-not-allowed opacity-60"} ${pick === o ? "border-2 border-brand bg-soft" : "border-line bg-surface"}`}
+                className={`flex min-h-14 items-center gap-3 rounded-control border px-3.5 ${allowed ? "cursor-pointer" : "cursor-not-allowed opacity-60"} ${pick === o ? "border-2 border-brand bg-soft" : "border-line bg-surface"}`}
               >
                 <Icon name={ORDER_STATUS[o].icon} size={16} color={ORDER_STATUS[o].bar} />
                 <span className="flex flex-1 flex-col">
@@ -120,7 +120,7 @@ export function OrderStatusControl({ id, updatedAt, status, title, reference, si
           })}
         </fieldset>
         {err && (
-          <p role="alert" className="mt-3 rounded-[10px] border border-danger-line bg-danger-bg px-3 py-2.5 text-sm font-bold text-danger-ink">
+          <p role="alert" className="mt-3 rounded-control border border-danger-line bg-danger-bg px-3 py-2.5 text-sm font-bold text-danger-ink">
             <Icon name="x" size={16} /> {err} Өмнөх төлөв хэвээр байна.
           </p>
         )}

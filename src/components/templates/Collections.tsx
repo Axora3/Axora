@@ -16,7 +16,7 @@ export function HeartButton({ id }: { id: string }) {
 export function CollectionCard({ t, purchase = false }: { t: Template; purchase?: boolean }) {
   const { comparison, toggleComparison } = useTemplateCollections();
   const selected = comparison.includes(t.id);
-  return <article className={`overflow-hidden rounded-[18px] border bg-surface ${selected && !purchase ? "border-brand ring-1 ring-brand" : "border-line"}`}>
+  return <article className={`overflow-hidden rounded-card border bg-surface ${selected && !purchase ? "border-brand ring-1 ring-brand" : "border-line"}`}>
     <div className="ax-light relative flex h-[180px] items-center justify-center p-6 text-center font-extrabold" style={{ background: t.previewStyle.tint, color: t.previewStyle.accent }}>
       {t.previewStyle.p1 || t.title}<div className="absolute top-2.5 right-2.5"><HeartButton id={t.id}/></div>
       {selected && !purchase && <span className="absolute top-3 left-3 rounded-full bg-primary px-2.5 py-1 text-xs text-on-primary">Сонгосон · {comparison.indexOf(t.id) + 1}</span>}
@@ -34,7 +34,7 @@ function CompactTemplateRow({ t }: { t: Template }) {
 export function CompareTray({ templates }: { templates: Template[] }) {
   const { comparison, toggleComparison, clearComparison } = useTemplateCollections();
   if (!comparison.length) return null;
-  return <aside aria-label="Харьцуулах сонголт" className="fixed inset-x-3 bottom-[82px] z-30 mx-auto flex max-w-[1160px] flex-wrap items-center gap-3 rounded-2xl bg-band p-4 text-on-band shadow-xl min-[900px]:bottom-5"><strong className="text-sm">Харьцуулах <span className="text-lime">{comparison.length}/3</span></strong><div className="hidden flex-1 gap-2 sm:flex">{comparison.map(id => <button key={id} onClick={() => toggleComparison(id)} className="min-h-11 max-w-48 truncate rounded-lg bg-band-hover px-3 text-xs" aria-label={`${templates.find(t => t.id === id)?.title ?? "Загвар"} хасах`}>{templates.find(t => t.id === id)?.title ?? "Харагдахгүй загвар"} <Icon name="x" size={16} /></button>)}</div><button className="ml-auto min-h-11 px-2 text-xs" onClick={clearComparison}>Цэвэрлэх</button><Link className="ax-button border-0 bg-lime text-on-lime" href="/compare">Харьцуулах <Icon name="arrow-right" size={16} /></Link></aside>;
+  return <aside aria-label="Харьцуулах сонголт" className="ax-in-sm fixed inset-x-3 bottom-[82px] z-30 mx-auto flex max-w-[860px] flex-wrap items-center gap-3 rounded-card bg-band px-4 py-3 text-on-band shadow-raised min-[900px]:bottom-5"><strong className="text-sm">Харьцуулах <span className="text-lime">{comparison.length}/3</span></strong><div className="hidden flex-1 gap-2 sm:flex">{comparison.map(id => <button key={id} onClick={() => toggleComparison(id)} className="min-h-11 max-w-48 truncate rounded-lg bg-band-hover px-3 text-xs" aria-label={`${templates.find(t => t.id === id)?.title ?? "Загвар"} хасах`}>{templates.find(t => t.id === id)?.title ?? "Харагдахгүй загвар"} <Icon name="x" size={16} /></button>)}</div><button className="ml-auto min-h-11 px-2 text-xs" onClick={clearComparison}>Цэвэрлэх</button><Link className="ax-button ax-button-lime" href="/compare">Харьцуулах <Icon name="arrow-right" size={16} /></Link></aside>;
 }
 export function Favorites({ templates }: { templates: Template[] }) {
   const { favorites, clearFavorites, toggleFavorite } = useTemplateCollections();

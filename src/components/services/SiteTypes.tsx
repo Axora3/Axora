@@ -77,11 +77,11 @@ export function SiteTypes() {
         })}
       </div>
 
-      <div id="sv-panel" role="tabpanel" aria-labelledby={`sv-tab-${cur.id}`} className="mt-3 flex flex-col gap-4 rounded-[22px] border border-line bg-surface p-[18px] min-[900px]:p-8">
+      <div id="sv-panel" role="tabpanel" aria-labelledby={`sv-tab-${cur.id}`} className="mt-3 flex flex-col gap-4 rounded-card border border-line bg-surface p-[18px] min-[900px]:p-8">
         <div key={anim} className="ax-slide flex items-start gap-3.5 min-[900px]:gap-10">
           <div
             aria-hidden="true"
-            className="ax-light flex h-[236px] w-[132px] shrink-0 flex-col gap-[7px] overflow-hidden rounded-[22px] border-[5px] border-band px-[9px] py-3 min-[900px]:h-[360px] min-[900px]:w-[200px] min-[900px]:gap-2.5 min-[900px]:rounded-[30px] min-[900px]:border-[7px] min-[900px]:px-3.5 min-[900px]:py-4"
+            className="ax-light flex h-[236px] w-[132px] shrink-0 flex-col gap-[7px] overflow-hidden rounded-card border-[5px] border-band px-[9px] py-3 min-[900px]:h-[360px] min-[900px]:w-[200px] min-[900px]:gap-2.5 min-[900px]:rounded-panel min-[900px]:border-[7px] min-[900px]:px-3.5 min-[900px]:py-4"
             style={{ background: cur.bg, color: cur.text }}
           >
             <span className="flex items-center gap-[5px] text-[8.5px] font-extrabold min-[900px]:text-xs">
@@ -89,12 +89,12 @@ export function SiteTypes() {
               {cur.brand}
             </span>
             <span className="text-[13px] leading-[1.1] font-extrabold min-[900px]:text-xl">{cur.headline}</span>
-            <span className="self-start rounded-[5px] px-2 py-[5px] text-[8px] font-bold text-white min-[900px]:rounded-lg min-[900px]:px-3 min-[900px]:py-2 min-[900px]:text-xs" style={{ background: cur.primary }}>
+            <span className="self-start rounded-inner px-2 py-[5px] text-[8px] font-bold text-white min-[900px]:rounded-lg min-[900px]:px-3 min-[900px]:py-2 min-[900px]:text-xs" style={{ background: cur.primary }}>
               {cur.cta}
             </span>
             <span className="mt-1 flex flex-col gap-1 min-[900px]:gap-1.5">
               {cur.rows.map((r) => (
-                <span key={r.n} className="flex justify-between gap-1 rounded-[5px] px-1.5 py-[5px] text-[8px] min-[900px]:rounded-lg min-[900px]:px-2.5 min-[900px]:py-2 min-[900px]:text-xs" style={{ background: cur.soft }}>
+                <span key={r.n} className="flex justify-between gap-1 rounded-inner px-1.5 py-[5px] text-[8px] min-[900px]:rounded-lg min-[900px]:px-2.5 min-[900px]:py-2 min-[900px]:text-xs" style={{ background: cur.soft }}>
                   <span className="font-bold">{r.n}</span>
                   <span className="font-extrabold" style={{ color: cur.primary }}>
                     {r.p}
@@ -122,7 +122,7 @@ export function SiteTypes() {
             setType(cur.b);
             router.push("/builder");
           }}
-          className="ax-btn flex min-h-[50px] items-center justify-center gap-2 rounded-[13px] border-0 bg-soft text-[15px] font-bold text-ink min-[900px]:self-start min-[900px]:px-6"
+          className="ax-btn flex min-h-13 items-center justify-center gap-2 rounded-control border-0 bg-soft text-[15px] font-bold text-ink min-[900px]:self-start min-[900px]:px-6"
         >
           Энэ төрлөөр туршиж үзэх
           <ArrowRight size={16} />

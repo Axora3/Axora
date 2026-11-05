@@ -1,10 +1,11 @@
-import { Icon } from "@/components/ui/icon";
+import { Icon, type IconName } from "@/components/ui/icon";
 import Link from "next/link";
 import { Card, CardHeader } from "@/components/ui/card";
 import { buttonStyles } from "@/components/ui/button";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ORDER_STATUS, PAYMENT_STATUS, REQUEST_STATUS, type OrderStatus, type PaymentStatus, type RequestStatus } from "@/lib/admin/labels";
-import { AdminMenuButton } from "./AdminShell";
+import { AdminBell, AdminMenuButton } from "./AdminShell";
+import { CopyButton } from "./client";
 
 /** Shared admin building blocks (server-safe). */
 
@@ -33,10 +34,10 @@ export function PageHeader({
   const band = tone === "band";
   return (
     <header
-      className={`z-30 flex flex-col gap-3 px-[clamp(16px,3vw,32px)] py-3.5 min-[1024px]:min-h-[72px] min-[1024px]:justify-center ${
+      className={`z-30 flex flex-col gap-3 px-[clamp(16px,3vw,32px)] py-3.5 min-[1024px]:justify-center min-[1024px]:py-5 ${
         band
-          ? "rounded-b-[28px] bg-band pb-6 text-on-band min-[1024px]:rounded-none min-[1024px]:pb-3.5"
-          : "sticky top-0 border-b border-line bg-header-admin backdrop-blur-[10px] min-[1024px]:static min-[1024px]:bg-surface"
+          ? "rounded-b-panel bg-band pb-6 text-on-band min-[1024px]:rounded-none min-[1024px]:pb-6"
+          : "sticky top-0 border-b border-line bg-header-admin backdrop-blur-[10px] min-[1024px]:static min-[1024px]:border-b-0 min-[1024px]:bg-transparent min-[1024px]:pb-0 min-[1024px]:backdrop-blur-none"
       }`}
     >
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
@@ -53,12 +54,15 @@ export function PageHeader({
               ))}
             </nav>
           )}
-          <h1 className="text-[24px] leading-tight font-extrabold tracking-[-0.025em] [overflow-wrap:anywhere] min-[1024px]:text-2xl">{title}</h1>
+          <h1 className="text-[24px] leading-tight font-extrabold tracking-[-0.025em] [overflow-wrap:anywhere] min-[1024px]:text-[30px]">{title}</h1>
           {description && <div className={`text-[13.5px] leading-normal ${band ? "text-band-muted" : "text-muted"}`}>{description}</div>}
         </div>
         {actions && <div className="order-3 flex w-full flex-wrap items-center gap-2 min-[1024px]:order-2 min-[1024px]:w-auto">{actions}</div>}
         <div className="order-2 flex shrink-0 items-center gap-2 self-start min-[1024px]:order-3 min-[1024px]:self-center">
-          <ThemeToggle tone={band ? "band" : "default"} size={20} />
+          <span className="flex items-center gap-2 min-[1024px]:hidden">
+            <AdminBell tone={band ? "band" : "default"} />
+            <ThemeToggle tone={band ? "band" : "default"} size={20} />
+          </span>
           <AdminMenuButton tone={band ? "band" : "default"} />
         </div>
       </div>
@@ -121,10 +125,45 @@ export function PubPill({ published }: { published: boolean }) {
   );
 }
 
-export function EmptyState({ title, text, action }: { title: string; text?: string; action?: React.ReactNode }) {
+/** One statistic. Values always come from the caller's real query; "—" means it could not be read. */
+export function StatCard({ label, value, note, icon, href, band, warn }: { label: string; value: React.ReactNode; note?: React.ReactNode; icon?: IconName; href?: string; band?: boolean; warn?: boolean }) {
+  const body = (
+    <>
+      <span className="flex w-full items-start justify-between gap-2">
+        <span className="text-[13px] leading-snug font-bold">{label}</span>
+        {icon && <span aria-hidden="true" className="ax-stat-icon"><Icon name={icon} size={18} /></span>}
+      </span>
+      <span className="flex flex-col gap-1.5">
+        <span className="ax-stat-value">{value}</span>
+        {note && (
+          <span className={`text-xs font-semibold ${warn ? "text-danger" : band ? "text-band-muted" : "text-muted"}`}>
+            {warn && <Icon name="circle-alert" size={14} className="mr-1 -mt-0.5" />}
+            {note}
+          </span>
+        )}
+      </span>
+    </>
+  );
+  const className = `ax-stat ${band ? "ax-stat-band" : ""}`;
+  return href ? <Link href={href} className={className}>{body}</Link> : <div className={className}>{body}</div>;
+}
+
+/** The order as one copyable text. Holds the customer's contact details, so it stays admin-only. */
+export function OrderPrompt({ text }: { text: string }) {
+  return (
+    <Panel title="Prompt" id="order-prompt" action={<CopyButton value={text} label="Prompt" />}>
+      <div className="flex flex-col gap-3 p-[18px]">
+        <p className="text-[13px] leading-normal text-muted">Хэрэглэгчийн баталгаажуулж илгээсэн бүх хариултаас үүссэн. Утас, имэйл зэрэг хувийн мэдээлэл багтсан тул зөвхөн итгэлтэй хэрэгсэлд хуулна уу.</p>
+        <pre tabIndex={0} aria-label="Захиалгын prompt" className="m-0 max-h-[640px] overflow-auto rounded-control border border-line bg-sunken p-4 font-mono text-[13px] leading-relaxed [overflow-wrap:anywhere] whitespace-pre-wrap text-ink">{text}</pre>
+      </div>
+    </Panel>
+  );
+}
+
+export function EmptyState({ title, text, action, icon = "inbox" }: { title: string; text?: string; action?: React.ReactNode; icon?: IconName }) {
   return (
     <div className="flex flex-col items-center gap-3 px-6 py-12 text-center">
-      <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-line bg-soft text-brand"><Icon name="inbox" size={24} /></span>
+      <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-line bg-soft text-brand"><Icon name={icon} size={24} /></span>
       <h3 className="text-lg font-extrabold">{title}</h3>
       {text && <p className="max-w-[30em] text-[15px] leading-relaxed text-muted">{text}</p>}
       {action}
@@ -158,8 +197,8 @@ export const btn = {
 
 export const field = {
   label: "text-sm font-bold",
-  input: "ax-control min-h-11 w-full rounded-[10px] border border-line-strong bg-sunken px-3 text-base text-ink",
-  textarea: "ax-control w-full resize-y rounded-[10px] border border-line-strong bg-sunken px-3 py-2.5 text-base leading-normal text-ink",
+  input: "ax-control min-h-11 w-full rounded-control border border-line-strong bg-sunken px-3 text-base text-ink",
+  textarea: "ax-control w-full resize-y rounded-control border border-line-strong bg-sunken px-3 py-2.5 text-base leading-normal text-ink",
   hint: "text-[13px] leading-normal text-muted",
 };
 

@@ -17,12 +17,12 @@ export function OrderDesignPreview({ config }: { config: BuilderConfig }) {
             ["390px", "Mobile"],
           ] as const
         ).map(([v, l]) => (
-          <button key={v} type="button" aria-pressed={w === v} onClick={() => setW(v)} className={`min-h-11 rounded-[9px] border-0 px-3.5 text-sm font-bold ${w === v ? "bg-surface" : "bg-transparent text-muted"}`}>
+          <button key={v} type="button" aria-pressed={w === v} onClick={() => setW(v)} className={`min-h-11 rounded-inner border-0 px-3.5 text-sm font-bold ${w === v ? "bg-surface" : "bg-transparent text-muted"}`}>
             {l}
           </button>
         ))}
       </div>
-      <div className="overflow-x-auto rounded-[18px] border border-line bg-soft p-3">
+      <div className="overflow-x-auto rounded-card border border-line bg-soft p-3">
         <div className="ax-light mx-auto overflow-hidden rounded-xl border border-line-mid bg-white" style={{ width: w, maxWidth: w === "100%" ? "100%" : undefined }}>
           <DemoPreview config={config} logo={null} animKey={0} />
         </div>

@@ -8,10 +8,10 @@ export default function NotFound() {
       <SiteHeader />
       <main id="main" className="mx-auto flex max-w-[720px] flex-col items-start gap-4 px-[clamp(16px,4vw,40px)] py-24">
         <span className="text-[13px] font-extrabold tracking-[0.08em] text-brand uppercase">404</span>
-        <h1 className="text-[clamp(32px,4vw,48px)] leading-[1.08] font-extrabold tracking-[-0.03em]">
+        <h1 className="ax-h2">
           Хуудас <span className="serif">олдсонгүй</span>
         </h1>
-        <p className="text-[17px] leading-relaxed text-muted">Хаяг буруу эсвэл хуудас устсан байж болзошгүй.</p>
+        <p className="ax-lead">Хаяг буруу эсвэл хуудас устсан байж болзошгүй.</p>
         <div className="flex flex-wrap gap-3">
           <Link href="/" className="ax-btn ax-primary inline-flex min-h-12 items-center rounded-xl bg-primary px-5 font-bold text-on-primary no-underline">
             Нүүр хуудас

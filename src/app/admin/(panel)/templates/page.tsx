@@ -4,7 +4,7 @@ import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import Link from "next/link";
 import { FilterSheet } from "@/components/admin/FilterSheet";
 import { PublishSwitch } from "@/components/admin/ProductControls";
-import { Body, EmptyState, LoadFailed, PageHeader, Pagination, Panel, btn, field } from "@/components/admin/ui";
+import { Body, EmptyState, LoadFailed, PageHeader, Pagination, Panel, PubPill, btn, field } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { fmtDate } from "@/lib/admin/labels";
 import { PAGE_SIZE, hrefWith, one, page as pageOf, safeSearch } from "@/lib/admin/query";
@@ -70,7 +70,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
           <label htmlFor="tpl-q" className="sr-only">
             Бүтээгдэхүүн хайх
           </label>
-          <input id="tpl-q" name="q" type="search" enterKeyHint="search" defaultValue={one(sp, "q")} placeholder="Бүтээгдэхүүн хайх…" className={`${field.input} min-h-12 rounded-[13px] bg-surface pl-11`} />
+          <input id="tpl-q" name="q" type="search" enterKeyHint="search" defaultValue={one(sp, "q")} placeholder="Бүтээгдэхүүн хайх…" className={`${field.input} min-h-12 rounded-control bg-surface pl-11`} />
         </form>
         <nav aria-label="Төлөв" className="grid grid-cols-3 gap-1 rounded-xl bg-soft-3 p-1 md:max-w-[460px]">
           {segs.map((s) => {
@@ -80,7 +80,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
                 key={s.id || "all"}
                 href={hrefWith("/admin/templates", sp, { status: s.id || null, page: null })}
                 aria-current={on ? "page" : undefined}
-                className={`inline-flex min-h-10 items-center justify-center gap-1 rounded-[9px] text-sm font-bold no-underline ${on ? "bg-elevated text-ink shadow-[0_1px_2px_var(--ax-shadow)]" : "text-muted"}`}
+                className={`inline-flex min-h-10 items-center justify-center gap-1 rounded-inner text-sm font-bold no-underline ${on ? "bg-elevated text-ink shadow-[0_1px_2px_var(--ax-shadow)]" : "text-muted"}`}
               >
                 {s.label} <span className="opacity-60 tabular-nums">{s.n ?? ""}</span>
               </Link>
@@ -134,34 +134,44 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
           </Panel>
         ) : (
           <>
-            <ul className="m-0 grid list-none gap-2.5 p-0 min-[700px]:grid-cols-2 min-[1280px]:grid-cols-3">
+            <ul className="m-0 grid list-none gap-4 p-0 min-[700px]:grid-cols-2 min-[1280px]:grid-cols-3">
               {rows.map((t) => {
                 const img = t.preview_images?.[0]?.path;
                 const edit = `/admin/templates/${t.id}/edit`;
                 const fileOk = t.is_free || hasFile.has(t.id);
                 return (
-                  <li key={t.id} className="flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-3.5">
-                    <div className="flex items-center gap-3">
-                      {/* Product cover keeps its own colours in both themes. */}
+                  <li key={t.id} className="flex flex-col overflow-hidden rounded-card border border-line bg-surface">
+                    {/* Product cover keeps its own colours in both themes. */}
+                    <div className="ax-light relative aspect-[16/9]" style={{ background: t.preview_style?.tint ?? "#EEF1E6" }}>
                       {img ? (
                         // eslint-disable-next-line @next/next/no-img-element -- admin thumbnail from the public bucket
-                        <img src={previewPublicUrl(img)} alt="" className="ax-light h-14 w-14 shrink-0 rounded-xl border border-line object-cover" />
+                        <img src={previewPublicUrl(img)} alt="" className="h-full w-full object-cover" />
                       ) : (
-                        <span aria-hidden="true" className="ax-light inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-xl" style={{ background: t.preview_style?.tint ?? "#EEF1E6" }}>
-                          <Icon name={t.category === "Excel" ? "table" : t.category === "Canva" ? "photo" : "file-text"} width={20} height={24} color={t.preview_style?.accent ?? "#245C45"} />
+                        <span aria-hidden="true" className="flex h-full items-center justify-center">
+                          <Icon name={t.category === "Excel" ? "table" : t.category === "Canva" ? "photo" : "file-text"} size={36} color={t.preview_style?.accent ?? "#245C45"} />
                         </span>
                       )}
-                      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                        <strong className="text-[15px] leading-snug">{t.title}</strong>
-                        <span className="text-[12.5px] text-muted">
-                          {t.category} · {formatPrice({ isFree: t.is_free, price: Number(t.price), currency: t.currency })} · {fmtDate(t.updated_at)}
+                      <span className="ax-badge ax-badge-solid absolute top-3 left-3">{t.category}</span>
+                      <span className="absolute top-3 right-3"><PubPill published={t.status === "published"} /></span>
+                    </div>
+                    <div className="flex flex-1 flex-col gap-3 p-4">
+                    <div className="flex items-start gap-3">
+                      <span className="flex min-w-0 flex-1 flex-col gap-1">
+                        <strong className="text-[16px] leading-snug">{t.title}</strong>
+                        <span className="text-[13px] text-muted">
+                          <strong className="text-ink tabular-nums">{formatPrice({ isFree: t.is_free, price: Number(t.price), currency: t.currency })}</strong> · {fmtDate(t.updated_at)}
                         </span>
                       </span>
-                      <Link href={edit} aria-label={`${t.title} — засах`} className="ax-btn inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-line-strong bg-surface text-ink">
+                      {t.status === "published" && (
+                        <a href={`/templates/${t.slug}`} target="_blank" rel="noopener noreferrer" aria-label={`${t.title} — сайтад харах`} title="Сайтад харах" className="ax-btn inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-control border border-line-strong bg-surface text-ink">
+                          <Icon name="external-link" size={18} />
+                        </a>
+                      )}
+                      <Link href={edit} aria-label={`${t.title} — засах`} title="Засах" className="ax-btn inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-control border border-line-strong bg-surface text-ink">
                         <Icon name="pencil" size={18} />
                       </Link>
                     </div>
-                    <div className="flex items-center justify-between gap-2.5 border-t border-soft pt-2">
+                    <div className="mt-auto flex items-center justify-between gap-2.5 border-t border-line-soft pt-2">
                       <span className={`inline-flex items-center gap-1.5 text-[12.5px] font-bold ${fileOk ? "text-muted" : "text-danger"}`}>
                         {t.is_free ? (
                           "Үнэгүй — файл заавал биш"
@@ -174,6 +184,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
                         )}
                       </span>
                       <PublishSwitch id={t.id} title={t.title} published={t.status === "published"} editHref={edit} />
+                    </div>
                     </div>
                   </li>
                 );
@@ -189,7 +200,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
       {/* Floating “+ Шинэ”: sits above the tab bar; the list has bottom padding so it never covers the last card. */}
       <Link
         href="/admin/templates/new"
-        className="ax-btn ax-primary fixed right-4 bottom-[calc(88px+env(safe-area-inset-bottom))] z-[35] inline-flex h-14 items-center gap-2 rounded-[18px] bg-primary pr-5 pl-4 text-base font-extrabold text-on-primary no-underline shadow-[0_18px_36px_-14px_rgba(0,0,0,.45)] min-[1024px]:hidden"
+        className="ax-btn ax-primary fixed right-4 bottom-[calc(88px+env(safe-area-inset-bottom))] z-[35] inline-flex h-14 items-center gap-2 rounded-card bg-primary pr-5 pl-4 text-base font-extrabold text-on-primary no-underline shadow-[0_18px_36px_-14px_rgba(0,0,0,.45)] min-[1024px]:hidden"
       >
         <Icon name="plus" size={20} /> Шинэ
       </Link>

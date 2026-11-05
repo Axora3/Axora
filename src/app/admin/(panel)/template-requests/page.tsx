@@ -91,7 +91,7 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
           <label htmlFor="req-q" className="sr-only">
             Нэр, утас, имэйлээр хайх
           </label>
-          <input id="req-q" name="q" type="search" enterKeyHint="search" defaultValue={one(sp, "q")} placeholder="Нэр, утас, имэйл" className={`${field.input} min-h-12 rounded-[13px] bg-surface pl-11`} />
+          <input id="req-q" name="q" type="search" enterKeyHint="search" defaultValue={one(sp, "q")} placeholder="Нэр, утас, имэйл" className={`${field.input} min-h-12 rounded-control bg-surface pl-11`} />
         </form>
         <nav aria-label="Төлөвөөр шүүх" className="ax-scroll -mx-[clamp(16px,3vw,32px)] gap-1.5 px-[clamp(16px,3vw,32px)]">
           {tabs.map((t) => {
@@ -147,7 +147,49 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
           </Panel>
         ) : (
           <>
-            <ul className="m-0 grid list-none gap-2.5 p-0 min-[900px]:grid-cols-2 min-[1400px]:grid-cols-3">
+            <Panel className="hidden overflow-x-auto min-[1200px]:block">
+              <table className="ax-table min-w-[1040px]">
+                <thead>
+                  <tr>{["Бүтээгдэхүүн", "Захиалагч", "Төлөв", "Төлбөр", "Ирсэн"].map((h) => <th key={h} scope="col">{h}</th>)}<th scope="col"><span className="sr-only">Үйлдэл</span></th></tr>
+                </thead>
+                <tbody>
+                  {data.map((r) => {
+                    const priceLabel = r.price_snapshot != null && r.currency_snapshot ? formatPrice({ isFree: !!r.is_free_snapshot, price: Number(r.price_snapshot), currency: r.currency_snapshot }) : null;
+                    const overdue = r.status === "new" && !r.first_contacted_at && hoursSince(r.created_at, nowMs) >= REQUEST_OVERDUE_HOURS;
+                    const channel = CHANNEL_LABEL[r.contact_channel] ?? r.contact_channel;
+                    return (
+                      <tr key={r.id}>
+                        <td>
+                          <Link href={`/admin/template-requests/${r.id}`} className="block font-bold text-ink no-underline hover:text-brand">{r.templates?.title ?? "Загвар"}</Link>
+                          <span className="text-xs text-muted">{r.templates?.category ?? "—"} · {priceLabel ?? "Үнэ хадгалагдаагүй"}</span>
+                        </td>
+                        <td>
+                          <span className="block font-semibold">{r.customer_name}</span>
+                          <span className="text-xs [overflow-wrap:anywhere] text-muted">{channel} · {r.contact_value}</span>
+                        </td>
+                        <td><StatusPill kind="request" status={r.status} /></td>
+                        <td>{!migrationMissing ? <PaymentPill status={r.payment_status ?? "needs_review"} /> : "—"}</td>
+                        <td className={`text-[13px] whitespace-nowrap ${overdue ? "font-bold text-danger" : "text-muted"}`} title={fmtDateTime(r.created_at)}>
+                          {overdue && <Icon name="circle-alert" size={14} className="mr-1" />}
+                          {fmtAgo(r.created_at, nowMs)}
+                        </td>
+                        <td className="w-[280px]">
+                          {!migrationMissing ? (
+                            <RequestCardActions
+                              detailHref={`/admin/template-requests/${r.id}`}
+                              r={{ id: r.id, updatedAt: r.updated_at, status: r.status, paymentStatus: r.payment_status ?? "needs_review", deliveryStatus: r.delivery_status ?? "not_sent", customer: r.customer_name, product: r.templates?.title ?? "Загвар", channelLabel: channel, contact: r.contact_value, priceLabel, priceAmount: r.price_snapshot != null ? Number(r.price_snapshot) : null, currency: r.currency_snapshot ?? null }}
+                            />
+                          ) : (
+                            <Link href={`/admin/template-requests/${r.id}`} className={btn.ghost}>Дэлгэрэнгүй</Link>
+                          )}
+                        </td>
+                      </tr>
+                    );
+                  })}
+                </tbody>
+              </table>
+            </Panel>
+            <ul className="m-0 grid list-none gap-2.5 p-0 min-[900px]:grid-cols-2 min-[1200px]:hidden">
               {data.map((r) => {
                 const t = r.templates;
                 const priceLabel =
@@ -170,7 +212,7 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
                   currency: r.currency_snapshot ?? null,
                 };
                 return (
-                  <li key={r.id} className={`flex flex-col gap-3 rounded-[18px] border bg-surface p-3.5 ${overdue ? "border-danger-line" : "border-line"}`}>
+                  <li key={r.id} className={`flex flex-col gap-3 rounded-card border bg-surface p-3.5 ${overdue ? "border-danger-line" : "border-line"}`}>
                     <div className="flex items-start gap-3">
                       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                         <span className="text-[11px] font-extrabold tracking-[0.06em] text-muted uppercase">

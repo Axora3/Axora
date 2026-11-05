@@ -32,7 +32,7 @@ export function BackToList({ storageKey, fallback, label }: { storageKey: string
     }
   }, [storageKey, fallback]);
   return (
-    <Link href={href} className="ax-ghost ax-btn inline-flex min-h-11 items-center gap-2 rounded-[11px] border border-line-strong bg-surface px-4 text-sm font-bold text-ink no-underline">
+    <Link href={href} className="ax-ghost ax-btn inline-flex min-h-11 items-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-bold text-ink no-underline">
       <Icon name="arrow-left" size={16} /> {label}
     </Link>
   );
@@ -54,7 +54,7 @@ export function CopyButton({ value, label }: { value: string; label: string }) {
         setTimeout(() => setState("idle"), 2000);
       }}
       aria-label={`${label} хуулах`}
-      className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-[10px] border border-line-strong bg-surface px-3 text-[13px] font-bold text-ink"
+      className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-control border border-line-strong bg-surface px-3 text-[13px] font-bold text-ink"
     >
       <span aria-live="polite">{state === "ok" ? <>Хуулсан <Icon name="check" size={16} /></> : state === "fail" ? "Хуулж чадсангүй" : "Хуулах"}</span>
     </button>
@@ -92,7 +92,7 @@ export function Tabs({ tabs, initial }: { tabs: { id: string; label: string; con
               pick(n.id);
               document.getElementById(`${instanceId}-tab-${n.id}`)?.focus();
             }}
-            className={`min-h-11 shrink-0 cursor-pointer rounded-[9px] border-0 px-3.5 text-sm font-bold ${cur === t.id ? "bg-surface text-ink shadow-[0_1px_2px_var(--ax-shadow)]" : "bg-transparent text-muted"}`}
+            className={`min-h-11 shrink-0 cursor-pointer rounded-inner border-0 px-3.5 text-sm font-bold ${cur === t.id ? "bg-surface text-ink shadow-[0_1px_2px_var(--ax-shadow)]" : "bg-transparent text-muted"}`}
           >
             {t.label}
           </button>

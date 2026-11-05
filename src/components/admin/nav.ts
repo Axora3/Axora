@@ -28,9 +28,9 @@ export const ADMIN_NAV: NavItem[] = [
   { href: "/admin/projects", label: "Веб төслүүд", group: "Удирдлага", icon: "globe" },
   { href: "/admin/payments", label: "Төлбөрүүд", group: "Удирдлага", icon: "credit-card" },
   { href: "/admin/support", label: "Тусламжийн хүсэлтүүд", group: "Удирдлага", count: "support", countLabel: "шинэ тусламжийн хүсэлт", icon: "message" },
-  { href: "/admin/marketing", label: "Маркетинг", group: "Удирдлага", icon: "copy" },
+  { href: "/admin/marketing", label: "Маркетинг", group: "Удирдлага", icon: "send" },
   { href: "/admin/notifications", label: "Мэдэгдэл", group: "Систем", count: "notifications", countLabel: "уншаагүй мэдэгдэл", icon: "bell" },
-  { href: "/admin/content", label: "Сайтын агуулга", group: "Систем", icon: "copy" },
+  { href: "/admin/content", label: "Сайтын агуулга", group: "Систем", icon: "layers" },
   { href: "/admin/activity", label: "Үйлдлийн түүх", group: "Систем", icon: "activity" },
   { href: "/admin/settings", label: "Тохиргоо", group: "Систем", icon: "settings" },
 ];
