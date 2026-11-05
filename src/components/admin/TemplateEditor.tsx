@@ -447,7 +447,8 @@ export function TemplateEditor(p: Props) {
               <UploadRow key={u.key} u={u} onRetry={() => runUpload(u)} onRemove={() => dropUpload(u.key)} />
             ))}
           {f.file?.storagePath ? (
-            <div className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-sunken p-3">
+            // Keys keep React from reusing the file input as the link input when switching branches.
+            <div key="stored-file" className="flex flex-wrap items-center gap-3 rounded-xl border border-line bg-sunken p-3">
               <span className="min-w-0 flex-1 text-sm">
                 <strong className="[overflow-wrap:anywhere]">{f.file.label || "Файл"}</strong>
                 <span className="block text-xs text-muted">
@@ -464,7 +465,7 @@ export function TemplateEditor(p: Props) {
               <Err id="tf-file-e" text={errors.file} />
             </div>
           ) : (
-            <div className="flex flex-col gap-3">
+            <div key="file-or-link" className="flex flex-col gap-3">
               <label className={`${btn.ghost} cursor-pointer self-start`}>
                 Файл сонгох (200MB хүртэл)
                 <input type="file" className="sr-only" onChange={(e) => { if (e.target.files?.[0]) uploadPrivate(e.target.files[0]); e.target.value = ""; }} />
