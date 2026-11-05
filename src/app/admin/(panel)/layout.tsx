@@ -17,7 +17,7 @@ export const instant = false;
 function Centered({ title, children }: { title: string; children: React.ReactNode }) {
   return (
     <main id="main" className="flex min-h-dvh items-center justify-center bg-bg-admin p-5">
-      <div className="flex w-full max-w-[460px] flex-col gap-3.5 rounded-[20px] border border-line bg-surface p-6">
+      <div className="flex w-full max-w-[460px] flex-col gap-3.5 rounded-card border border-line bg-surface p-6">
         <h1 className="text-2xl font-extrabold">{title}</h1>
         {children}
       </div>
@@ -75,7 +75,7 @@ async function Guard({ children }: { children: React.ReactNode }) {
 function ShellLoading() {
   return (
     <div className="flex min-h-dvh bg-bg-admin" aria-busy="true" aria-label="Ачаалж байна">
-      <div className="hidden w-[240px] shrink-0 bg-band min-[1024px]:block" />
+      <div className="hidden w-[280px] shrink-0 bg-band min-[1024px]:block" />
       <div className="flex-1 p-8">
         <div className="ax-sk h-8 w-60 rounded-lg" />
         <div className="ax-sk mt-6 h-40 rounded-2xl" />

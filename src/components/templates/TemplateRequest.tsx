@@ -12,7 +12,7 @@ import { SUCCESS_TEXT } from "@/lib/site";
 type Props = { slug: string; title: string; category: string; priceLabel: string; tint: string; isDemo: boolean; backendEnabled: boolean };
 type Phase = "closed" | "form" | "done";
 
-const input = "min-h-[50px] w-full rounded-xl px-3.5 text-base text-ink bg-sunken";
+const input = "ax-control min-h-13 px-3.5 text-base";
 
 /**
  * “Авах хүсэлт гаргах”. Desktop: inline under the product info.
@@ -116,7 +116,6 @@ export function TemplateRequest(p: Props) {
           aria-invalid={!!nameErr}
           aria-describedby={nameErr ? "rq-name-e" : undefined}
           className={input}
-          style={{ border: nameErr ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)" }}
         />
         {nameErr && <FieldError id="rq-name-e">{nameErr}</FieldError>}
       </div>
@@ -130,8 +129,7 @@ export function TemplateRequest(p: Props) {
             return (
               <label
                 key={k}
-                className="flex min-h-12 cursor-pointer items-center justify-center gap-1.5 rounded-xl px-2 text-center text-sm font-bold has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-brand"
-                style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line-strong)", background: on ? "var(--ax-soft)" : "var(--ax-surface)" }}
+                className="ax-option min-h-12 items-center justify-center gap-1.5 px-2 text-center text-sm font-bold"
               >
                 <input type="radio" name="rq-ch" checked={on} onChange={() => setChannel(k)} className="sr-only" />
                 {CHANNELS[k].label}
@@ -156,7 +154,6 @@ export function TemplateRequest(p: Props) {
           aria-invalid={!!cErr}
           aria-describedby={cErr ? "rq-contact-e" : undefined}
           className={input}
-          style={{ border: cErr ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)" }}
         />
         {cErr && <FieldError id="rq-contact-e">{cErr}</FieldError>}
       </div>
@@ -170,7 +167,7 @@ export function TemplateRequest(p: Props) {
           maxLength={2000}
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          className="w-full resize-y rounded-xl border border-line-strong bg-sunken px-3.5 py-3 text-base text-ink"
+          className="ax-control resize-y px-3.5 py-3 text-base"
         />
       </div>
       {serverErr && (
@@ -187,7 +184,7 @@ export function TemplateRequest(p: Props) {
         <button
           type="submit"
           disabled={busy}
-          className="ax-btn ax-primary min-h-[52px] flex-1 rounded-[13px] border-0 bg-primary px-[22px] text-base font-bold text-on-primary"
+          className="ax-btn ax-primary min-h-13 flex-1 rounded-control border-0 bg-primary px-[22px] text-base font-bold text-on-primary"
         >
           {busy ? "Илгээж байна…" : p.backendEnabled ? (serverErr ? "Дахин илгээх" : "Хүсэлт илгээх") : "Хүсэлт шалгах"}
         </button>
@@ -195,7 +192,7 @@ export function TemplateRequest(p: Props) {
           <button
             type="button"
             onClick={() => setPhase("closed")}
-            className="ax-btn ax-ghost min-h-[52px] rounded-[13px] border border-line-strong bg-surface px-[18px] text-[15px] font-bold text-ink"
+            className="ax-btn ax-ghost min-h-13 rounded-control border border-line-strong bg-surface px-[18px] text-[15px] font-bold text-ink"
           >
             Болих
           </button>
@@ -217,12 +214,12 @@ export function TemplateRequest(p: Props) {
       </p>
       <div className="flex w-full gap-2">
         {!saved && (
-          <button type="button" onClick={() => setPhase("form")} className="ax-btn ax-ghost min-h-[50px] flex-1 rounded-[13px] border border-line-strong bg-surface text-[15px] font-bold text-ink">
+          <button type="button" onClick={() => setPhase("form")} className="ax-btn ax-ghost min-h-13 flex-1 rounded-control border border-line-strong bg-surface text-[15px] font-bold text-ink">
             Засах
           </button>
         )}
         {!desktop && (
-          <button type="button" onClick={closeSheet} className="ax-btn ax-primary min-h-[50px] flex-1 rounded-[13px] border-0 bg-primary text-[15px] font-bold text-on-primary">
+          <button type="button" onClick={closeSheet} className="ax-btn ax-primary min-h-13 flex-1 rounded-control border-0 bg-primary text-[15px] font-bold text-on-primary">
             Хаах
           </button>
         )}
@@ -236,7 +233,7 @@ export function TemplateRequest(p: Props) {
       {desktop && (
         <div>
           {phase === "closed" && (
-            <button type="button" onClick={open} className="ax-btn ax-primary min-h-[54px] w-full rounded-xl border-0 bg-primary text-base font-bold text-on-primary">
+            <button type="button" onClick={open} className="ax-btn ax-primary min-h-13 w-full rounded-xl border-0 bg-primary text-base font-bold text-on-primary">
               Авах хүсэлт гаргах
             </button>
           )}
@@ -252,7 +249,7 @@ export function TemplateRequest(p: Props) {
               <span className="text-xs font-bold text-muted">{p.isDemo ? "Жишээ үнэ" : "Үнэ"}</span>
               <span className="text-[19px] font-extrabold">{p.priceLabel}</span>
             </div>
-            <button type="button" onClick={open} className="ax-btn ax-primary min-h-[54px] flex-1 rounded-[14px] border-0 bg-primary text-base font-bold text-on-primary">
+            <button type="button" onClick={open} className="ax-btn ax-primary min-h-13 flex-1 rounded-control border-0 bg-primary text-base font-bold text-on-primary">
               Авах хүсэлт гаргах
             </button>
           </div>
@@ -266,7 +263,7 @@ export function TemplateRequest(p: Props) {
                 aria-labelledby="rq-sheet-t"
                 className="relative flex max-h-[92dvh] flex-col gap-3.5 overflow-y-auto rounded-t-3xl bg-surface px-5 pt-2.5 pb-[calc(16px+env(safe-area-inset-bottom))] [animation:axSheet_.32s_cubic-bezier(.2,.8,.2,1)_both]"
               >
-                <span aria-hidden="true" className="mx-auto block h-[5px] w-10 rounded-[5px] bg-line-mid" />
+                <span aria-hidden="true" className="mx-auto block h-[5px] w-10 rounded-inner bg-line-mid" />
                 <div className="flex items-center justify-between gap-3">
                   <h2 id="rq-sheet-t" className="text-xl font-extrabold">
                     Авах хүсэлт
@@ -280,8 +277,8 @@ export function TemplateRequest(p: Props) {
                     <Close size={18} />
                   </button>
                 </div>
-                <div className="flex items-center gap-3 rounded-[14px] bg-sunken p-2.5">
-                  <span className="h-11 w-11 shrink-0 rounded-[10px] border border-line" style={{ background: p.tint }} />
+                <div className="flex items-center gap-3 rounded-control bg-sunken p-2.5">
+                  <span className="h-11 w-11 shrink-0 rounded-control border border-line" style={{ background: p.tint }} />
                   <span className="flex min-w-0 flex-col gap-0.5">
                     <strong className="truncate text-sm">{p.title}</strong>
                     <span className="text-[13px] text-muted">

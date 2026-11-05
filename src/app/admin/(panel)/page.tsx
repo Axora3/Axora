@@ -5,7 +5,7 @@ import { DashboardInsights } from "@/components/admin/DashboardInsights";
 import { connection } from "next/server";
 import Link from "next/link";
 import { FilterSheet } from "@/components/admin/FilterSheet";
-import { Body, LoadFailed, Notice, PageHeader, Panel, StatusPill, btn } from "@/components/admin/ui";
+import { Body, LoadFailed, Notice, PageHeader, Panel, StatCard, StatusPill, btn, field } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { REQUEST_OVERDUE_HOURS } from "@/lib/admin/config";
 import { ADMIN_MODULE_MIGRATION_HINT, isMissingMigration, MIGRATION_HINT } from "@/lib/admin/db-errors";
@@ -114,18 +114,7 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
           </h2>
           <div className="grid grid-cols-2 gap-2.5 min-[900px]:grid-cols-4 min-[900px]:gap-3.5">
             {kpis.map((k) => (
-              <Link
-                key={k.label}
-                href={k.href}
-                className={`ax-btn ax-kpi flex min-h-[156px] flex-col justify-between gap-2 rounded-[18px] border p-3.5 no-underline min-[900px]:p-[18px] ${k.band ? "border-band bg-band text-on-band" : "border-line bg-surface text-ink"}`}
-              >
-                <span className="flex w-full items-start justify-between gap-2 text-[12.5px] leading-snug font-bold min-[900px]:text-[13.5px]"><span>{k.label}</span><Icon name={k.icon} size={20} className="shrink-0 opacity-70" /></span>
-                <span className="text-[34px] leading-none font-extrabold tracking-[-0.03em] tabular-nums">{k.value}</span>
-                <span className={`text-xs font-semibold ${k.warn ? "text-danger" : "opacity-75"}`}>
-                  {k.warn && <Icon name="circle-alert" size={16} />}
-                  {k.note}
-                </span>
-              </Link>
+              <StatCard key={k.label} label={k.label} value={k.value} note={k.note} icon={k.icon} href={k.href} band={k.band} warn={k.warn} />
             ))}
           </div>
         </section>
@@ -145,7 +134,7 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
                     {a.title}
                   </strong>
                   <span className="text-[13px] leading-normal text-muted">{a.text}</span>
-                  <Link href={a.href} className="mt-auto inline-flex min-h-10 items-center self-start rounded-[10px] border border-line-strong bg-surface px-3 text-[13px] font-bold text-ink no-underline">
+                  <Link href={a.href} className="mt-auto inline-flex min-h-10 items-center self-start rounded-control border border-line-strong bg-surface px-3 text-[13px] font-bold text-ink no-underline">
                     {a.cta}
                   </Link>
                 </li>
@@ -213,13 +202,13 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
             </h2>
             <FilterSheet title="Хугацаа" active={p.key === "7d" ? 0 : 1}>
               <form method="get" className="flex flex-wrap items-end gap-2" aria-label="Хугацааны шүүлтүүр">
-                <div role="group" aria-label="Хугацаа" className="flex flex-wrap gap-1 rounded-xl bg-soft-3 p-1">
+                <div role="group" aria-label="Хугацаа" className="ax-segment flex-wrap">
                   {PERIODS.map(([k, label]) => (
                     <Link
                       key={k}
                       href={`/admin?period=${k}`}
                       aria-current={p.key === k ? "true" : undefined}
-                      className={`inline-flex min-h-11 items-center rounded-[9px] px-3.5 text-sm font-bold no-underline ${p.key === k ? "bg-elevated text-ink shadow-[0_1px_2px_var(--ax-shadow)]" : "text-muted"}`}
+                      className="ax-segment-item"
                     >
                       {label}
                     </Link>
@@ -228,11 +217,11 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
                 <input type="hidden" name="period" value="custom" />
                 <label className="flex flex-col gap-1 text-[13px] font-bold">
                   Эхлэх
-                  <input type="date" name="from" defaultValue={p.fromDate} className="min-h-11 rounded-[10px] border border-line-strong bg-sunken px-2.5 text-base text-ink" />
+                  <input type="date" name="from" defaultValue={p.fromDate} className={field.input} />
                 </label>
                 <label className="flex flex-col gap-1 text-[13px] font-bold">
                   Дуусах
-                  <input type="date" name="to" defaultValue={p.toDate} className="min-h-11 rounded-[10px] border border-line-strong bg-sunken px-2.5 text-base text-ink" />
+                  <input type="date" name="to" defaultValue={p.toDate} className={field.input} />
                 </label>
                 <button type="submit" className={btn.ghost} aria-pressed={p.key === "custom"}>
                   Өөр хугацаа харах
@@ -241,15 +230,8 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
             </FilterSheet>
           </div>
           <div className="grid grid-cols-2 gap-2.5 min-[900px]:max-w-[640px] min-[900px]:gap-3.5">
-            {[
-              { label: "Ирсэн веб захиалга", value: ordersIn.count ?? "—", href: "/admin/orders" },
-              { label: "Template хүсэлт", value: requestsIn.count ?? "—", href: "/admin/template-requests" },
-            ].map((k) => (
-              <Link key={k.label} href={k.href} className="ax-btn flex flex-col gap-2 rounded-[18px] border border-line bg-surface p-[18px] text-ink no-underline">
-                <span className="text-[13px] font-bold text-muted">{k.label}</span>
-                <span className="text-[30px] leading-none font-extrabold tabular-nums">{k.value}</span>
-              </Link>
-            ))}
+            <StatCard label="Ирсэн веб захиалга" value={ordersIn.count ?? "—"} href="/admin/orders" icon="file-text" />
+            <StatCard label="Template хүсэлт" value={requestsIn.count ?? "—"} href="/admin/template-requests" icon="inbox" />
           </div>
           <p className="text-[13px] text-muted">Тоо бүр өгөгдлийн сангаас шууд тоологдоно. Төлбөрийн автомат бүртгэл байхгүй тул орлого, борлуулалтын үзүүлэлт харуулахгүй.</p>
         </section>
@@ -260,9 +242,9 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
           <h2 id="db-operations" className="text-lg font-extrabold">Удирдлагын ажлууд</h2>
           {activeProjects.error && !newModulesMissing ? <LoadFailed what="төслийн тоог" /> : unreadNotifications.error && !newModulesMissing ? <LoadFailed what="мэдэгдлийн тоог" /> : (
             <div className="grid grid-cols-2 gap-2.5 min-[900px]:grid-cols-3">
-              <Link href="/admin/projects?status=in_progress" className="ax-btn flex min-h-[104px] flex-col justify-between rounded-[18px] border border-line bg-surface p-4 text-ink no-underline"><span className="text-sm font-bold text-muted">Идэвхтэй төсөл</span><strong className="text-3xl tabular-nums">{activeProjects.count ?? "—"}</strong></Link>
-              <Link href="/admin/support?status=new" className="ax-btn flex min-h-[104px] flex-col justify-between rounded-[18px] border border-line bg-surface p-4 text-ink no-underline"><span className="text-sm font-bold text-muted">Шинэ тусламжийн хүсэлт</span><strong className="text-3xl tabular-nums">{newSupport.count ?? "—"}</strong></Link>
-              <Link href="/admin/notifications?status=unread" className="ax-btn flex min-h-[104px] flex-col justify-between rounded-[18px] border border-line bg-surface p-4 text-ink no-underline"><span className="text-sm font-bold text-muted">Уншаагүй мэдэгдэл</span><strong className="text-3xl tabular-nums">{unreadNotifications.count ?? "—"}</strong></Link>
+              <StatCard label="Идэвхтэй төсөл" value={activeProjects.count ?? "—"} href="/admin/projects?status=in_progress" icon="globe" />
+              <StatCard label="Шинэ тусламжийн хүсэлт" value={newSupport.count ?? "—"} href="/admin/support?status=new" icon="message" />
+              <StatCard label="Уншаагүй мэдэгдэл" value={unreadNotifications.count ?? "—"} href="/admin/notifications?status=unread" icon="bell" />
             </div>
           )}
         </section>

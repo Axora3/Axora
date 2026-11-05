@@ -36,7 +36,7 @@ export function TemplateCollectionActions({ template }: { template: Pick<Templat
         {isComparing ? "Харьцуулалтад нэмсэн" : "Харьцуулах"}
       </button>
       {isComparing && (
-        <Link href="/templates#template-comparison-title" className="ax-link inline-flex min-h-11 items-center px-2 text-sm font-bold text-brand">
+        <Link href="/compare" className="ax-link inline-flex min-h-11 items-center px-2 text-sm font-bold text-brand">
           Харьцуулалт харах ({comparison.length})
         </Link>
       )}

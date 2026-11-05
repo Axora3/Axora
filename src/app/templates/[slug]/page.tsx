@@ -35,21 +35,23 @@ async function Detail({ params }: { params: PageProps<"/templates/[slug]">["para
         <Gallery category={t.category} style={t.previewStyle} images={t.previewImages} title={t.title} />
       </div>
       <div className="ax-in-sm flex flex-col gap-[18px] [animation-delay:.06s]">
-        <span className="text-[13px] font-extrabold tracking-[0.06em] text-brand uppercase">{t.category} загвар</span>
-        <h1 className="text-[clamp(28px,2.8vw,36px)] leading-[1.15] font-extrabold tracking-[-0.02em]">{t.title}</h1>
-        <div className="flex flex-wrap items-baseline gap-2.5">
-          <span className="text-[28px] font-extrabold max-[899px]:text-2xl">{price}</span>
-          {t.isDemo && <span className="rounded-md bg-warn-bg px-2 py-1 text-[13px] font-bold text-warn">Жишээ үнэ</span>}
-        </div>
-        <TemplateCollectionActions template={{ id: t.id, title: t.title }} />
+        <span className="ax-eyebrow">{t.category} загвар</span>
+        <h1 className="ax-h2">{t.title}</h1>
         <p className="text-base leading-[1.65] text-muted">{t.longDescription}</p>
+        <div className="ax-surface flex flex-col gap-3.5 p-[18px]">
+          <div className="flex flex-wrap items-baseline gap-2.5">
+            <span className="text-[30px] leading-none font-extrabold tracking-[-0.02em] tabular-nums max-[899px]:text-2xl">{price}</span>
+            {t.isDemo && <span className="ax-badge ax-badge-warn">Жишээ үнэ</span>}
+          </div>
+          <TemplateCollectionActions template={{ id: t.id, title: t.title }} />
+        </div>
         <dl className="m-0 grid grid-cols-2 gap-2.5 min-[900px]:gap-3">
-          <div className="rounded-xl border border-line bg-surface px-3.5 py-3">
-            <dt className="text-xs font-extrabold tracking-[0.06em] text-muted uppercase">Шаардлагатай</dt>
+          <div className="rounded-control border border-line bg-surface px-3.5 py-3">
+            <dt className="text-xs font-extrabold text-muted">Шаардлагатай</dt>
             <dd className="m-0 mt-1.5 text-[15px] leading-snug font-semibold">{t.requirements}</dd>
           </div>
-          <div className="rounded-xl border border-line bg-surface px-3.5 py-3">
-            <dt className="text-xs font-extrabold tracking-[0.06em] text-muted uppercase">Формат</dt>
+          <div className="rounded-control border border-line bg-surface px-3.5 py-3">
+            <dt className="text-xs font-extrabold text-muted">Формат</dt>
             <dd className="m-0 mt-1.5 text-[15px] leading-snug font-semibold">{t.format}</dd>
           </div>
         </dl>
@@ -71,7 +73,7 @@ async function Detail({ params }: { params: PageProps<"/templates/[slug]">["para
 function DetailSkeleton() {
   return (
     <div aria-busy="true" aria-label="Ачаалж байна" className="grid gap-10 [grid-template-columns:repeat(auto-fit,minmax(min(400px,100%),1fr))]">
-      <div className="ax-sk aspect-[4/3] rounded-[18px]" />
+      <div className="ax-sk aspect-[4/3] rounded-card" />
       <div className="flex flex-col gap-4">
         <div className="ax-sk h-3.5 w-1/4 rounded-md" />
         <div className="ax-sk h-9 w-4/5 rounded-md" />
@@ -86,7 +88,7 @@ export default function TemplateDetailPage({ params }: PageProps<"/templates/[sl
   return (
     <>
       <SiteHeader active="/templates" mobileBack={{ href: "/templates", label: "Загварууд руу буцах", title: "Загварын дэлгэрэнгүй" }} />
-      <main id="main" className="mx-auto max-w-[1240px] px-[clamp(16px,4vw,40px)] pt-[clamp(16px,4vw,48px)] pb-[calc(120px+env(safe-area-inset-bottom))] min-[900px]:pb-[104px]">
+      <main id="main" className="ax-container pt-[clamp(16px,4vw,48px)] pb-[calc(120px+env(safe-area-inset-bottom))] min-[900px]:pb-[104px]">
         <Link href="/templates" className="ax-link mb-4 hidden min-h-11 items-center gap-1.5 text-sm font-bold text-muted no-underline min-[900px]:inline-flex">
           <ArrowLeft size={16} />
           Бүх загвар

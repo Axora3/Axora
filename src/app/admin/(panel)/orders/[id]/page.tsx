@@ -267,7 +267,7 @@ async function OrderDetailContent({ params, searchParams }: PageProps<"/admin/or
                     <span className="font-bold [overflow-wrap:anywhere]">{v}</span>
                     <span className="flex flex-wrap gap-2">
                       <CopyButton value={v} label={l} />
-                      <a href={href} className="inline-flex min-h-11 items-center rounded-[10px] border border-line-strong px-3 text-[13px] font-bold text-ink no-underline">
+                      <a href={href} className="inline-flex min-h-11 items-center rounded-control border border-line-strong px-3 text-[13px] font-bold text-ink no-underline">
                         {act}
                       </a>
                     </span>

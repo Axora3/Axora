@@ -1,9 +1,11 @@
-import { Icon } from "@/components/ui/icon";
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
+import { Icon } from "@/components/ui/icon";
 import { formatPrice, type Template } from "@/lib/templates/types";
 import { TemplatePreview } from "./TemplatePreview";
+
+const iconButton = "ax-btn inline-flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface/95 text-brand shadow-sm backdrop-blur disabled:cursor-not-allowed disabled:opacity-60";
 
 /** Catalogue card. The whole card is clickable through one real link. */
 export function TemplateCard({
@@ -29,9 +31,10 @@ export function TemplateCard({
 }) {
   const H = headingLevel;
   const img = t.previewImages[0];
+  const compareLabel = comparing ? `${t.title} загварыг харьцуулалтаас хасах` : `${t.title} загварыг харьцуулахад нэмэх`;
   return (
-    <article className={`ax-card relative isolate flex flex-col overflow-hidden rounded-[18px] border border-line bg-surface ${className}`} style={style}>
-      <div className="relative h-[220px] overflow-hidden" style={{ background: t.previewStyle.tint }}>
+    <article className={`ax-card relative isolate flex flex-col overflow-hidden rounded-card border border-line bg-surface ${className}`} style={style}>
+      <div className="relative aspect-[16/10] overflow-hidden" style={{ background: t.previewStyle.tint }}>
         {img ? (
           <Image src={img.url} alt={img.alt} fill sizes="(max-width: 700px) 100vw, 400px" className="ax-prev object-cover" />
         ) : (
@@ -39,19 +42,19 @@ export function TemplateCard({
             <TemplatePreview category={t.category} s={t.previewStyle} />
           </div>
         )}
-        <div className="absolute right-3 top-3 z-[1] flex gap-2">
+        <span className="ax-badge ax-badge-solid absolute top-3 left-3 z-[1]">{t.category}</span>
+        <div className="absolute top-2 right-2 z-[1] flex gap-1.5">
           {onCompare && (
             <button
               type="button"
               aria-pressed={comparing}
               disabled={!comparing && comparisonFull}
-              aria-label={comparing ? `${t.title} загварыг харьцуулалтаас хасах` : `${t.title} загварыг харьцуулахад нэмэх`}
+              aria-label={compareLabel}
               onClick={onCompare}
-              title={!comparing && comparisonFull ? "Нэг удаад 3 хүртэл загвар сонгоно" : undefined}
-              className="ax-btn inline-flex min-h-11 items-center gap-1.5 rounded-full border border-line bg-surface/95 px-3 text-xs font-bold text-ink shadow-sm backdrop-blur disabled:cursor-not-allowed disabled:opacity-60"
+              title={!comparing && comparisonFull ? "Нэг удаад 3 хүртэл загвар сонгоно" : comparing ? "Харьцуулалтаас хасах" : "Харьцуулах"}
+              className={`${iconButton} ${comparing ? "!border-primary !bg-primary !text-on-primary" : ""}`}
             >
-              <span aria-hidden="true">{comparing ? <><Icon name="check" size={16} /></> : <><Icon name="swap" size={16} /></>}</span>
-              {comparing ? "Нэмсэн" : "Харьцуулах"}
+              <Icon name={comparing ? "check" : "swap"} size={18} />
             </button>
           )}
           {onFavorite && (
@@ -59,25 +62,21 @@ export function TemplateCard({
               type="button"
               aria-pressed={favorite}
               aria-label={favorite ? `${t.title} хадгалсан загвараас хасах` : `${t.title} хадгалсан загварт нэмэх`}
+              title={favorite ? "Хадгалсан" : "Хадгалах"}
               onClick={onFavorite}
-              className="ax-btn inline-flex h-11 w-11 items-center justify-center rounded-full border border-line bg-surface/95 text-brand shadow-sm backdrop-blur"
+              className={iconButton}
             >
-              <Icon name={favorite ? "heart-filled" : "heart"} size={19} />
+              <Icon name={favorite ? "heart-filled" : "heart"} size={18} />
             </button>
           )}
         </div>
       </div>
-      <div className="flex flex-1 flex-col gap-2 px-[22px] pt-5 pb-[22px]">
-        <span className="text-xs font-extrabold tracking-[0.06em] text-brand uppercase">{t.category}</span>
-        <H className="text-[19px] leading-[1.3] font-extrabold tracking-[-0.01em]">{t.title}</H>
-        <p className="text-[15px] leading-[1.55] text-muted">{t.shortDescription}</p>
-        <div className="mt-auto flex items-center justify-between gap-3 border-t border-line-soft pt-4">
-          <span className="text-base font-extrabold">{formatPrice(t)}</span>
-          <Link
-            href={`/templates/${t.slug}`}
-            className="ax-stretch inline-flex min-h-11 items-center gap-1.5 px-0.5 text-sm font-bold text-brand no-underline"
-            aria-label={`${t.title} — дэлгэрэнгүй`}
-          >
+      <div className="flex flex-1 flex-col gap-2 px-5 pt-[18px] pb-4">
+        <H className="text-[18px] leading-[1.3] font-extrabold tracking-[-0.01em]">{t.title}</H>
+        <p className="line-clamp-2 text-[15px] leading-[1.5] text-muted">{t.shortDescription}</p>
+        <div className="mt-auto flex items-center justify-between gap-3 pt-3">
+          {t.isFree ? <span className="ax-badge ax-badge-lime text-[13px]">{formatPrice(t)}</span> : <span className="text-[17px] font-extrabold tabular-nums">{formatPrice(t)}</span>}
+          <Link href={`/templates/${t.slug}`} className="ax-stretch inline-flex min-h-11 items-center gap-1.5 px-0.5 text-sm font-bold text-brand no-underline" aria-label={`${t.title} — дэлгэрэнгүй`}>
             Дэлгэрэнгүй
             <span className="ax-arrow">
               <ArrowRight size={16} />
@@ -90,23 +89,19 @@ export function TemplateCard({
 }
 
 export function DemoNotice({ className = "" }: { className?: string }) {
-  return (
-    <p className={`inline-flex items-center gap-2 rounded-lg bg-warn-bg px-2.5 py-1.5 text-[13px] font-bold text-warn ${className}`}>
-      Үзүүлэн бүтээгдэхүүн — нэр, үнэ нь жишээ
-    </p>
-  );
+  return <p className={`ax-badge ax-badge-warn rounded-inner py-1.5 text-[13px] ${className}`}>Үзүүлэн бүтээгдэхүүн — нэр, үнэ нь жишээ</p>;
 }
 
 export function CardSkeletons({ count = 3 }: { count?: number }) {
   return (
     <div aria-busy="true" aria-label="Ачаалж байна" className="grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))]">
       {Array.from({ length: count }, (_, i) => (
-        <div key={i} className="overflow-hidden rounded-[18px] border border-line bg-surface">
-          <div className="ax-sk h-[220px]" />
+        <div key={i} className="overflow-hidden rounded-card border border-line bg-surface">
+          <div className="ax-sk aspect-[16/10]" />
           <div className="flex flex-col gap-2.5 p-5">
-            <div className="ax-sk h-3 w-[30%] rounded-md" />
             <div className="ax-sk h-[18px] w-[78%] rounded-md" />
             <div className="ax-sk h-3 w-[92%] rounded-md" />
+            <div className="ax-sk h-3 w-[30%] rounded-md" />
           </div>
         </div>
       ))}

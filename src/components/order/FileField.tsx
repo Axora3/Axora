@@ -53,7 +53,7 @@ export function FileField(p: Props) {
             setDrag(false);
             p.onAdd(e.dataTransfer?.files ?? null);
           }}
-          className="flex cursor-pointer flex-col items-center gap-2 rounded-[14px] border-2 border-dashed px-4 py-[22px] text-center transition-colors has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand"
+          className="flex cursor-pointer flex-col items-center gap-2 rounded-control border-2 border-dashed px-4 py-[22px] text-center transition-colors has-[:focus-visible]:outline-3 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-brand"
           style={{ borderColor: drag ? "var(--ax-brand)" : "var(--ax-line-mid)", background: drag ? "var(--ax-soft)" : "var(--ax-surface)" }}
         >
           <Upload size={26} className="text-brand" />
@@ -99,7 +99,7 @@ export function FileField(p: Props) {
                   <button
                     type="button"
                     onClick={() => p.onRetry!(f.ref)}
-                    className="ax-btn ax-ghost inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-[10px] border border-line-strong bg-surface px-3 text-sm font-bold text-ink"
+                    className="ax-btn ax-ghost inline-flex min-h-11 shrink-0 items-center gap-1.5 rounded-control border border-line-strong bg-surface px-3 text-sm font-bold text-ink"
                   >
                     <Refresh size={14} />
                     Дахин илгээх
@@ -110,7 +110,7 @@ export function FileField(p: Props) {
                     type="button"
                     onClick={() => p.onRemove(f.ref)}
                     aria-label={`${f.name} файлыг устгах`}
-                    className="ax-btn ax-ghost inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[10px] border border-line-strong bg-surface text-ink"
+                    className="ax-btn ax-ghost inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-control border border-line-strong bg-surface text-ink"
                   >
                     <Close size={16} strokeWidth={2.2} />
                   </button>
@@ -135,12 +135,12 @@ export function FileField(p: Props) {
               onChange={(e) => p.onDrive(e.target.value)}
               aria-invalid={!!p.driveErr}
               aria-describedby={p.driveErr ? `e-${p.id}` : undefined}
-              className="min-h-12 rounded-[11px] bg-sunken px-3.5 text-base text-ink"
+              className="min-h-12 rounded-control bg-sunken px-3.5 text-base text-ink"
               style={{ border: p.driveErr ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)" }}
             />
           </div>
           <label className="inline-flex min-h-12 cursor-pointer items-center gap-2 text-sm font-semibold">
-            <input type="checkbox" checked={p.later} onChange={(e) => p.onLater(e.target.checked)} className="m-0 h-5 w-5" />
+            <input type="checkbox" checked={p.later} onChange={(e) => p.onLater(e.target.checked)} className="ax-check" />
             Дараа илгээнэ
           </label>
         </div>

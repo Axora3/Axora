@@ -25,6 +25,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+## shadcn/ui — Tabs and Button recipes
+
+src/components/ui/segmented.tsx and src/components/ui/button.tsx follow the shadcn/ui variant recipes under the same MIT License as above, on native elements. The shadcn CLI and its Select, Dropdown and similar registry components were not installed: they import lucide-react, and AXORA uses Regen icons only.
+Source: https://github.com/shadcn-ui/ui/blob/main/apps/v4/registry/new-york-v4/ui/tabs.tsx
+
 ## Motion Primitives — AnimatedGroup
 
 Adapted in src/components/ui/animated-group.tsx. Only child grouping and staggered entrance behavior were retained; server HTML stays visible and reduced motion disables translation.
@@ -50,6 +55,11 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 
+## Motion Primitives — Spotlight
+
+The pointer-following idea in src/components/ui/spotlight.tsx follows Motion Primitives Spotlight under the same MIT License as above. It was rebuilt with one delegated listener and CSS variables; no source was copied.
+Source: https://github.com/ibelick/motion-primitives/blob/main/components/core/spotlight.tsx
+
 ## Runtime and other assets
 
-Motion 14.9.1 is installed through npm with its packaged license. See node_modules/motion/LICENSE.md and package-lock.json for dependency versions. Regen source attribution and license remain in vendor/regen-icons. The hero gradient is original CSS; no Aceternity code or paid assets were copied.
+Motion 14.9.1 is installed through npm with its packaged license. See node_modules/motion/LICENSE.md and package-lock.json for dependency versions. Regen source attribution and license remain in vendor/regen-icons. The hero gradient and grid, and the home bento grid, are original CSS. No Aceternity code or paid assets were copied.

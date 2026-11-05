@@ -49,7 +49,7 @@ export function ContentEditor(p: Props) {
     });
   }
 
-  const box = "flex flex-col gap-4 rounded-[18px] border border-line bg-surface p-[18px]";
+  const box = "flex flex-col gap-4 rounded-card border border-line bg-surface p-[18px]";
   const T = ({ label, value, onChange, max, rows }: { label: string; value: string; onChange: (v: string) => void; max: number; rows?: number }) => (
     <label className="flex flex-col gap-1.5">
       <span className={field.label}>{label}</span>
@@ -88,7 +88,7 @@ export function ContentEditor(p: Props) {
     <div className="grid items-start gap-5 min-[1100px]:grid-cols-[minmax(0,1fr)_320px]">
       <div className="flex min-w-0 flex-col gap-4">
         {preview ? (
-          <section aria-label="Нооргийн preview" className="overflow-hidden rounded-[18px] border-2 border-dashed border-brand bg-sunken">
+          <section aria-label="Нооргийн preview" className="overflow-hidden rounded-card border-2 border-dashed border-brand bg-sunken">
             <p className="bg-primary px-4 py-2 text-sm font-bold text-on-primary">Preview — зөвхөн танд харагдаж байна, нийтлэгдээгүй.</p>
             <div className="pointer-events-none" aria-hidden="true">
               <Hero c={c} />
@@ -177,15 +177,15 @@ export function ContentEditor(p: Props) {
         )}
       </div>
 
-      <aside className="flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-[18px] min-[1100px]:sticky min-[1100px]:top-4" aria-label="Нийтлэх">
+      <aside className="flex flex-col gap-3 rounded-card border border-line bg-surface p-[18px] min-[1100px]:sticky min-[1100px]:top-4" aria-label="Нийтлэх">
         <h2 className="text-[17px] font-extrabold">Төлөв</h2>
         <p className="text-sm">
           {isLive && !dirty ? "Сайт дээрх агуулгатай ижил." : "Ноорог сайтаас ялгаатай — нийтлэх хүртэл сайт өөрчлөгдөхгүй."}
         </p>
         <p className={field.hint}>Сүүлд нийтэлсэн: {publishedAt ? new Date(publishedAt).toLocaleString("mn-MN") : "хараахан нийтлээгүй (анхны текст харагдаж байна)"}</p>
-        {dirty && <p className="rounded-[10px] bg-warn-bg px-3 py-2 text-[13px] font-bold text-warn-ink">Хадгалаагүй өөрчлөлт байна.</p>}
+        {dirty && <p className="rounded-control bg-warn-bg px-3 py-2 text-[13px] font-bold text-warn-ink">Хадгалаагүй өөрчлөлт байна.</p>}
         {msg && (
-          <div role={msg.kind === "err" ? "alert" : "status"} className={`rounded-[10px] px-3 py-2.5 text-sm font-bold ${msg.kind === "ok" ? "bg-soft text-brand" : "border border-danger-line bg-danger-bg text-danger-ink"}`}>
+          <div role={msg.kind === "err" ? "alert" : "status"} className={`rounded-control px-3 py-2.5 text-sm font-bold ${msg.kind === "ok" ? "bg-soft text-brand" : "border border-danger-line bg-danger-bg text-danger-ink"}`}>
             {msg.text}
             {msg.conflict && (
               <button type="button" onClick={() => router.refresh()} className="mt-1 block min-h-11 underline">

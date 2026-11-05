@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 function Loading() {
   return (
     <>
-      <div className="mt-8 h-[136px] rounded-[18px] border border-line bg-surface" aria-hidden="true" />
+      <div className="mt-8 h-[136px] rounded-card border border-line bg-surface" aria-hidden="true" />
       <p aria-live="polite" className="mt-6 text-[15px] font-bold">
         Загваруудыг ачаалж байна…
       </p>
@@ -47,16 +47,16 @@ export default function TemplatesPage() {
   return (
     <>
       <SiteHeader active="/templates" />
-      <main id="main" className="mx-auto max-w-[1240px] px-[clamp(16px,4vw,40px)] pt-[clamp(24px,5vw,64px)] pb-[104px]">
+      <main id="main" className="ax-container pt-[clamp(24px,5vw,64px)] pb-[104px]">
         <Link href="/" className="ax-link inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-muted no-underline">
           <ArrowLeft size={16} />
           Нүүр
         </Link>
         <div className="ax-in-sm mt-2 flex max-w-[640px] flex-col gap-3">
-          <h1 className="text-[clamp(34px,4.6vw,60px)] leading-[1.04] font-extrabold tracking-[-0.03em]">
+          <h1 className="ax-h1">
             Бэлэн <span className="serif">загварууд</span>
           </h1>
-          <p className="text-[17px] leading-relaxed text-muted">Notion, Canva, Excel загваруудаас хайж, шүүж, өөрт тохирохыг нь сонго.</p>
+          <p className="ax-lead">Notion, Canva, Excel загваруудаас хайж, шүүж, өөрт тохирохыг нь сонго.</p>
         </div>
 
         <Suspense fallback={<Loading />}>
@@ -65,7 +65,7 @@ export default function TemplatesPage() {
 
         <section
           aria-labelledby="custom-title"
-          className="mt-[72px] flex flex-wrap items-center justify-between gap-5 rounded-[22px] bg-band p-[clamp(24px,4vw,48px)] text-on-band"
+          className="mt-[72px] flex flex-wrap items-center justify-between gap-5 rounded-card bg-band p-[clamp(24px,4vw,48px)] text-on-band"
         >
           <div className="flex max-w-[560px] flex-col gap-2">
             <h2 id="custom-title" className="text-[clamp(22px,2.4vw,30px)] font-extrabold tracking-[-0.02em]">
@@ -73,7 +73,7 @@ export default function TemplatesPage() {
             </h2>
             <p className="text-base leading-relaxed text-dark-muted">Өнгө, хэв маягаа туршаад үнийн санал аваарай.</p>
           </div>
-          <Link href="/builder" className="ax-btn ax-lime inline-flex min-h-[50px] items-center rounded-xl bg-lime px-[22px] text-[15px] font-extrabold text-on-lime no-underline">
+          <Link href="/builder" className="ax-btn ax-lime inline-flex min-h-13 items-center rounded-xl bg-lime px-[22px] text-[15px] font-extrabold text-on-lime no-underline">
             Вебээ загварчлах
           </Link>
         </section>

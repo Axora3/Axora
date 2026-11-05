@@ -18,7 +18,7 @@ function Feature({ children, dark }: { children: React.ReactNode; dark?: boolean
     <li className="flex items-start gap-2.5">
       <span
         aria-hidden="true"
-        className={`inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-[7px] ${dark ? "bg-lime text-on-lime" : "bg-soft text-brand"}`}
+        className={`inline-flex h-[22px] w-[22px] shrink-0 items-center justify-center rounded-inner ${dark ? "bg-lime text-on-lime" : "bg-soft text-brand"}`}
       >
         <Check size={13} strokeWidth={3} />
       </span>
@@ -32,14 +32,14 @@ export function Compare() {
     <section
       id="services"
       aria-labelledby="cmp-title"
-      className="mx-auto max-w-[1240px] px-[clamp(16px,4vw,40px)] pt-16 pb-14 min-[900px]:pb-[104px]"
+      className="ax-container pb-[var(--ax-space-section)]"
     >
-      <h2 id="cmp-title" className="ax-reveal max-w-[16em] text-[clamp(28px,3.4vw,44px)] leading-[1.12] font-extrabold tracking-[-0.025em]">
+      <h2 id="cmp-title" className="ax-reveal max-w-[16em] ax-h2">
         Танд <span className="serif">аль нь</span> тохирох вэ?
       </h2>
 
       <div className="mt-10 grid gap-5 [grid-template-columns:repeat(auto-fit,minmax(min(420px,100%),1fr))]">
-        <article className="ax-reveal ax-card flex flex-col gap-[22px] rounded-[22px] border border-line bg-surface p-[clamp(24px,3vw,40px)]">
+        <article className="ax-reveal ax-card flex flex-col gap-[22px] rounded-card border border-line bg-surface p-[clamp(24px,3vw,40px)]">
           <div className="flex items-center justify-between gap-4">
             <span className="text-[13px] font-extrabold tracking-[0.08em] text-brand uppercase">01</span>
             <span className="text-[13px] font-bold text-muted">Excel · Notion · Canva</span>
@@ -61,7 +61,7 @@ export function Compare() {
           </ul>
           <Link
             href="/templates"
-            className="ax-btn ax-primary mt-auto inline-flex min-h-[52px] items-center gap-2.5 self-start rounded-xl bg-primary px-[22px] text-[15px] font-bold text-on-primary no-underline"
+            className="ax-btn ax-primary mt-auto inline-flex min-h-13 items-center gap-2.5 self-start rounded-xl bg-primary px-[22px] text-[15px] font-bold text-on-primary no-underline"
           >
             Загварууд үзэх
             <span className="ax-arrow">
@@ -70,7 +70,7 @@ export function Compare() {
           </Link>
         </article>
 
-        <article className="ax-reveal ax-card flex flex-col gap-[22px] rounded-[22px] border border-band bg-band p-[clamp(24px,3vw,40px)] text-on-band">
+        <article className="ax-reveal ax-card flex flex-col gap-[22px] rounded-card border border-band bg-band p-[clamp(24px,3vw,40px)] text-on-band">
           <div className="flex items-center justify-between gap-4">
             <span className="text-[13px] font-extrabold tracking-[0.08em] text-lime uppercase">02</span>
             <span className="text-[13px] font-bold text-dark-muted">Жижиг бизнест</span>
@@ -97,7 +97,7 @@ export function Compare() {
           <div className="mt-auto flex flex-wrap gap-2.5">
             <Link
               href="/order"
-              className="ax-btn ax-lime inline-flex min-h-[52px] items-center gap-2.5 rounded-xl bg-lime px-[22px] text-[15px] font-extrabold text-on-lime no-underline"
+              className="ax-btn ax-lime inline-flex min-h-13 items-center gap-2.5 rounded-xl bg-lime px-[22px] text-[15px] font-extrabold text-on-lime no-underline"
             >
               Веб сайт захиалах
               <span className="ax-arrow">
@@ -106,7 +106,7 @@ export function Compare() {
             </Link>
             <Link
               href="/builder"
-              className="ax-btn inline-flex min-h-[52px] items-center rounded-xl border border-dark-line-2 px-[18px] text-[15px] font-bold text-on-band no-underline"
+              className="ax-btn inline-flex min-h-13 items-center rounded-xl border border-dark-line-2 px-[18px] text-[15px] font-bold text-on-band no-underline"
             >
               Эхлээд загварчлах
             </Link>

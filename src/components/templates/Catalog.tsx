@@ -1,24 +1,27 @@
 "use client";
 
 import Link from "next/link";
-import { AnimatedGroup } from "@/components/ui/animated-group";
-import { Button } from "@/components/ui/button";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Close, Search, SearchEmpty } from "@/components/icons";
-import { formatPrice, TEMPLATE_CATEGORIES, type Template } from "@/lib/templates/types";
+import { AnimatedGroup } from "@/components/ui/animated-group";
+import { Button, buttonStyles } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
+import { Segmented } from "@/components/ui/segmented";
+import { TEMPLATE_CATEGORIES, type Template } from "@/lib/templates/types";
 import { useTemplateCollections } from "@/lib/templates/use-template-collections";
+import { CompareTray } from "./Collections";
 import { TemplateCard } from "./TemplateCard";
 
 type Cat = "all" | (typeof TEMPLATE_CATEGORIES)[number];
 type Price = "all" | "free" | "paid";
 type Sort = "rec" | "asc" | "desc";
 
-const CATS: [Cat, string][] = [["all", "Бүгд"], ...TEMPLATE_CATEGORIES.map((c) => [c, c] as [Cat, string])];
-const PRICES: [Price, string][] = [
-  ["all", "Бүх үнэ"],
-  ["free", "Үнэгүй"],
-  ["paid", "Төлбөртэй"],
+const CATS: { value: Cat; label: string }[] = [{ value: "all", label: "Бүгд" }, ...TEMPLATE_CATEGORIES.map((c) => ({ value: c as Cat, label: c as string }))];
+const PRICES: { value: Price; label: string }[] = [
+  { value: "all", label: "Бүх үнэ" },
+  { value: "free", label: "Үнэгүй" },
+  { value: "paid", label: "Төлбөртэй" },
 ];
 
 function pick<T extends string>(v: string | null, allowed: readonly T[], fallback: T): T {
@@ -42,7 +45,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
     setQ(urlQuery);
   }
   const [savedOnly, setSavedOnly] = useState(false);
-  const { favorites, comparison, toggleFavorite, toggleComparison, clearComparison } = useTemplateCollections();
+  const { favorites, comparison, toggleFavorite, toggleComparison } = useTemplateCollections();
   const cat = pick<Cat>(sp.get("cat"), ["all", ...TEMPLATE_CATEGORIES], "all");
   const price = pick<Price>(sp.get("price"), ["all", "free", "paid"], "all");
   const sort = pick<Sort>(sp.get("sort"), ["rec", "asc", "desc"], "rec");
@@ -92,103 +95,73 @@ export function Catalog({ templates }: { templates: Template[] }) {
     router.replace(pathname, { scroll: false });
   };
 
-  const comparisonRows: { label: string; value: (template: Template) => React.ReactNode }[] = [
-    { label: "Загвар", value: (template) => <Link className="font-bold text-brand underline-offset-4 hover:underline" href={`/templates/${template.slug}`}>{template.title}</Link> },
-    { label: "Төрөл", value: (template) => template.category },
-    { label: "Үнэ", value: (template) => formatPrice(template) },
-    { label: "Формат", value: (template) => template.format || "Тодорхойгүй" },
-  ];
+  // Nothing published is a different situation from "no match": filters could not help.
+  if (templates.length === 0) {
+    return (
+      <div className="ax-empty ax-in-sm mt-8">
+        <span aria-hidden="true" className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-brand">
+          <Icon name="layers" size={24} />
+        </span>
+        <h2 className="text-[22px] font-extrabold">Одоогоор нийтлэгдсэн загвар алга</h2>
+        <p className="max-w-[30em] text-base leading-relaxed text-muted">Загвар нийтлэгдмэгц энд харагдана. Яаралтай хэрэгтэй бол бидэнтэй холбогдоорой.</p>
+        <Link href="/contact" className={buttonStyles("primary", "mt-1")}>
+          Холбоо барих
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <>
-      <div className="ax-surface mt-8 flex flex-col gap-4 p-4 sm:p-5">
+      <div className="ax-surface mt-8 flex flex-col gap-3 p-3 sm:p-4">
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative flex flex-[999_1_320px] items-center">
             <label htmlFor="tp-search" className="sr-only">
               Нэр, тайлбараар хайх
             </label>
-            <Search className="pointer-events-none absolute left-3.5 text-muted" />
+            <Search className="pointer-events-none absolute left-3.5 z-[1] text-muted" />
             <input
               id="tp-search"
               type="search"
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder="Хайх: төсөв, контент, кофе…"
-              className="ax-control min-h-12 w-full rounded-[11px] border border-line-strong bg-sunken py-0 pr-3.5 pl-[42px] text-base text-ink"
+              className="ax-control min-h-12 w-full py-0 pr-3.5 pl-[42px] text-base"
             />
           </div>
-          <div className="flex flex-[1_1_220px] items-center gap-2.5">
-            <label htmlFor="tp-sort" className="text-sm font-bold whitespace-nowrap text-muted">
+          <div className="flex flex-[1_1_240px] items-center gap-2.5">
+            <label htmlFor="tp-sort" className="text-sm font-bold whitespace-nowrap text-muted max-[600px]:sr-only">
               Эрэмбэ
             </label>
-            <select
-              id="tp-sort"
-              value={sort}
-              onChange={(e) => setParam({ sort: e.target.value })}
-              className="ax-control min-h-12 flex-1 rounded-[11px] border border-line-strong bg-surface px-3 text-base text-ink"
-            >
+            <select id="tp-sort" value={sort} onChange={(e) => setParam({ sort: e.target.value })} className="ax-control min-h-12 flex-1 px-3 text-base">
               <option value="rec">Санал болгосон</option>
               <option value="asc">Үнэ: багаас их</option>
               <option value="desc">Үнэ: ихээс бага</option>
             </select>
           </div>
         </div>
-        <div className="flex flex-wrap items-center justify-between gap-3">
-          <div role="group" aria-label="Ангилал" className="ax-scroll max-w-full gap-1.5 rounded-xl bg-soft-2 p-1">
-            {CATS.map(([v, label]) => {
-              const on = cat === v;
-              return (
-                <button
-                  key={v}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => setParam({ cat: v })}
-                  className="ax-btn min-h-11 shrink-0 rounded-[9px] border-0 px-4 text-[15px] font-bold"
-                  style={{ background: on ? "var(--ax-elevated)" : "transparent", color: on ? "var(--ax-ink)" : "var(--ax-muted)", boxShadow: on ? "0 1px 2px var(--ax-shadow), 0 0 0 1px var(--ax-line)" : "none" }}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
-          <div role="group" aria-label="Үнэ" className="flex flex-wrap gap-1.5">
-            {PRICES.map(([v, label]) => {
-              const on = price === v;
-              return (
-                <button
-                  key={v}
-                  type="button"
-                  aria-pressed={on}
-                  onClick={() => setParam({ price: v })}
-                  className="ax-btn ax-opt min-h-11 rounded-[10px] px-3.5 text-sm font-bold text-ink"
-                  style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line-strong)", background: on ? "var(--ax-soft)" : "var(--ax-surface)" }}
-                >
-                  {label}
-                </button>
-              );
-            })}
-          </div>
+        <div className="ax-scroll -mx-3 items-center gap-2.5 px-3 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0">
+          <Segmented label="Ангилал" className="shrink-0" options={CATS} value={cat} onChange={(v) => setParam({ cat: v })} />
+          <Segmented label="Үнэ" className="shrink-0" options={PRICES} value={price} onChange={(v) => setParam({ price: v })} />
           <button
             type="button"
             aria-pressed={savedOnly}
             onClick={() => setSavedOnly((value) => !value)}
-            className="ax-btn min-h-11 rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink"
+            className="ax-btn ax-option min-h-[52px] shrink-0 items-center gap-2 px-3.5 text-sm font-bold min-[720px]:ml-auto"
           >
-            Хадгалсан ({favorites.length})
+            <Icon name={savedOnly ? "heart-filled" : "heart"} size={16} className="text-brand" />
+            Хадгалсан
+            <span className="tabular-nums text-muted">{favorites.length}</span>
           </button>
         </div>
       </div>
 
-      <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
+      <div className="mt-6 flex min-h-11 flex-wrap items-center justify-between gap-3">
         <p aria-live="polite" className="text-[15px] font-bold">
           {items.length} загвар олдлоо
         </p>
         {hasFilters && (
-          <Button
-            variant="quiet"
-            onClick={clearAll}
-            className="ax-btn ax-ghost inline-flex min-h-11 items-center gap-2 rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink"
-          >
+          <Button variant="quiet" onClick={clearAll}>
             <Close size={14} strokeWidth={2.4} />
             Шүүлтүүр цэвэрлэх
           </Button>
@@ -196,7 +169,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
       </div>
 
       {items.length > 0 ? (
-        <AnimatedGroup className="mt-5 grid gap-6 [grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))]">
+        <AnimatedGroup className="mt-4 grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(min(320px,100%),1fr))]">
           {items.map((t) => (
             <TemplateCard
               key={t.id}
@@ -210,54 +183,22 @@ export function Catalog({ templates }: { templates: Template[] }) {
           ))}
         </AnimatedGroup>
       ) : (
-        <div className="ax-in-sm mt-5 flex flex-col items-center gap-3.5 rounded-[18px] border border-dashed border-line-mid bg-surface px-6 py-[clamp(32px,6vw,72px)] text-center">
-          <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-brand">
+        <div className="ax-empty ax-in-sm mt-4">
+          <span aria-hidden="true" className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-brand">
             <SearchEmpty size={24} />
           </span>
           <h2 className="text-[22px] font-extrabold">{savedOnly && favorites.length === 0 ? "Хадгалсан загвар алга" : "Тохирох загвар олдсонгүй"}</h2>
           <p className="max-w-[26em] text-base leading-relaxed text-muted">{savedOnly && favorites.length === 0 ? "Таалагдсан загвараа зүрхэн товчоор хадгалж, эндээс дахин үзээрэй." : "Өөр түлхүүр үгээр хайх эсвэл шүүлтүүрээ цэвэрлээд дахин үзээрэй."}</p>
           {hasFilters && (
-            <button type="button" onClick={clearAll} className="ax-btn ax-primary min-h-12 rounded-xl border-0 bg-primary px-5 text-[15px] font-bold text-on-primary">
+            <Button variant="primary" onClick={clearAll} className="mt-1">
               Шүүлтүүр цэвэрлэх
-            </button>
+            </Button>
           )}
         </div>
       )}
 
-      {comparison.length > 0 && (
-        <section aria-labelledby="template-comparison-title" className="mt-8 overflow-hidden rounded-[18px] border border-line bg-surface">
-          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line px-4 py-4 sm:px-5">
-            <div>
-              <h2 id="template-comparison-title" className="text-lg font-extrabold">Загваруудыг харьцуулах</h2>
-              <p className="mt-1 text-sm text-muted">Харьцуулахад {comparison.length}/3 загвар сонгосон.</p>
-            </div>
-            <button type="button" onClick={clearComparison} className="ax-btn min-h-11 rounded-[10px] px-3 text-sm font-bold text-brand">Цэвэрлэх</button>
-          </div>
-          <div className="ax-scroll overflow-x-auto">
-            <table className="w-full min-w-[520px] border-collapse text-left text-sm">
-              <tbody>
-                {comparisonRows.map(({ label, value }) => (
-                  <tr key={label} className="border-b border-line last:border-0">
-                    <th scope="row" className="w-28 px-4 py-3 font-bold text-muted sm:px-5">{label}</th>
-                    {comparison.map((id) => {
-                      const t = templates.find((item) => item.id === id);
-                      return <td key={id} className="min-w-36 px-4 py-3 text-ink sm:px-5">{t ? value(t) : "—"}</td>;
-                    })}
-                  </tr>
-                ))}
-                <tr>
-                  <th scope="row" className="px-4 py-3 font-bold text-muted sm:px-5">Сонголт</th>
-                  {comparison.map((id) => {
-                    const t = templates.find((item) => item.id === id);
-                    return <td key={id} className="px-4 py-2 sm:px-5"><button type="button" onClick={() => toggleComparison(id)} className="ax-btn min-h-11 text-sm font-bold text-brand">{t ? `${t.title} — хасах` : "Хасах"}</button></td>;
-                  })}
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          {comparison.length === 3 && <p className="px-5 pb-4 text-xs text-muted">Дээд тал нь 3 загварыг зэрэг харьцуулна.</p>}
-        </section>
-      )}
+      {/* The tray stays in view while browsing; the full table lives on /compare. */}
+      <CompareTray templates={templates} />
     </>
   );
 }

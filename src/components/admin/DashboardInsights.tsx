@@ -28,7 +28,7 @@ export async function DashboardInsights({ db, period, adminId }: { db: SupabaseC
         <p className="text-xs text-muted">Веб захиалга / Template хүсэлт · Улаанбаатарын цагаар</p>
         {counts.map((row) => <div key={row.from} className="space-y-1.5">
           <p className="text-xs font-bold text-muted">{fmtDate(row.from)}{size > 1 ? ` – ${fmtDate(new Date(Date.parse(row.to) - 1).toISOString())}` : ""}</p>
-          {[["Веб захиалга", row.orders, "bg-primary"], ["Template хүсэлт", row.requests, "bg-brand"]].map(([label, count, color]) => <div key={label} className="flex items-center gap-2 text-xs">
+          {[["Веб захиалга", row.orders, "bg-primary"], ["Template хүсэлт", row.requests, "bg-[var(--ax-done-bar)]"]].map(([label, count, color]) => <div key={label} className="flex items-center gap-2 text-xs">
             <span className="w-28 shrink-0">{label}</span><span className="h-2 flex-1 overflow-hidden rounded bg-soft" aria-hidden="true"><span className={`block h-full rounded ${color}`} style={{ width: `${Number(count) / max * 100}%` }} /></span><strong className="w-9 text-right tabular-nums">{count}</strong>
           </div>)}
         </div>)}

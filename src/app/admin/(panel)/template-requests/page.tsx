@@ -91,7 +91,7 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
           <label htmlFor="req-q" className="sr-only">
             Нэр, утас, имэйлээр хайх
           </label>
-          <input id="req-q" name="q" type="search" enterKeyHint="search" defaultValue={one(sp, "q")} placeholder="Нэр, утас, имэйл" className={`${field.input} min-h-12 rounded-[13px] bg-surface pl-11`} />
+          <input id="req-q" name="q" type="search" enterKeyHint="search" defaultValue={one(sp, "q")} placeholder="Нэр, утас, имэйл" className={`${field.input} min-h-12 rounded-control bg-surface pl-11`} />
         </form>
         <nav aria-label="Төлөвөөр шүүх" className="ax-scroll -mx-[clamp(16px,3vw,32px)] gap-1.5 px-[clamp(16px,3vw,32px)]">
           {tabs.map((t) => {
@@ -170,7 +170,7 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
                   currency: r.currency_snapshot ?? null,
                 };
                 return (
-                  <li key={r.id} className={`flex flex-col gap-3 rounded-[18px] border bg-surface p-3.5 ${overdue ? "border-danger-line" : "border-line"}`}>
+                  <li key={r.id} className={`flex flex-col gap-3 rounded-card border bg-surface p-3.5 ${overdue ? "border-danger-line" : "border-line"}`}>
                     <div className="flex items-start gap-3">
                       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
                         <span className="text-[11px] font-extrabold tracking-[0.06em] text-muted uppercase">

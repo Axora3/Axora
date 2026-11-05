@@ -76,11 +76,11 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
               })}
             </nav>
             <div className="flex items-center gap-2">
-              <Link href="/favorites" aria-label="Хадгалсан загварууд" className="ax-btn hidden h-11 w-11 items-center justify-center rounded-xl border border-line bg-surface text-brand min-[1280px]:inline-flex"><Icon name="heart" size={20} /></Link>
+              <Link href="/favorites" aria-label="Хадгалсан загварууд" className="ax-btn hidden h-11 w-11 items-center justify-center rounded-xl border border-line bg-surface text-brand min-[1100px]:inline-flex"><Icon name="heart" size={20} /></Link>
               <ThemeToggle />
               <Link
                 href="/order"
-                className="ax-btn ax-primary hidden min-h-11 items-center rounded-[11px] bg-primary px-[18px] text-[15px] font-bold text-on-primary min-[1100px]:inline-flex"
+                className="ax-btn ax-primary hidden min-h-11 items-center rounded-control bg-primary px-[18px] text-[15px] font-bold text-on-primary min-[1100px]:inline-flex"
               >
                 Үнийн санал авах
               </Link>
@@ -90,7 +90,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
                 aria-expanded={open}
                 aria-controls="ax-mobile-menu"
                 onClick={() => setOpen(true)}
-                className="ax-btn inline-flex h-11 w-11 items-center justify-center rounded-[11px] border border-line bg-surface text-ink min-[1100px]:hidden"
+                className="ax-btn inline-flex h-11 w-11 items-center justify-center rounded-control border border-line bg-surface text-ink min-[1100px]:hidden"
               >
                 <Menu size={20} />
               </button>
@@ -128,7 +128,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
               aria-label="Цэс хаах"
               data-autofocus
               onClick={() => setOpen(false)}
-              className="ax-btn inline-flex h-11 w-11 items-center justify-center rounded-[11px] border border-line bg-surface text-ink"
+              className="ax-btn inline-flex h-11 w-11 items-center justify-center rounded-control border border-line bg-surface text-ink"
             >
               <Close size={20} />
             </button>
@@ -148,7 +148,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
           <Link
             href="/order"
             onClick={() => setOpen(false)}
-            className="ax-btn ax-primary mt-6 flex min-h-[52px] shrink-0 items-center justify-center rounded-xl bg-primary text-[17px] font-bold text-on-primary no-underline"
+            className="ax-btn ax-primary mt-6 flex min-h-13 shrink-0 items-center justify-center rounded-xl bg-primary text-[17px] font-bold text-on-primary no-underline"
           >
             Үнийн санал авах
           </Link>

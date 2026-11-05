@@ -31,9 +31,9 @@ export type RequestInfo = {
 
 const paid = (r: RequestInfo) => r.paymentStatus !== "not_required";
 const paymentOk = (r: RequestInfo) => (PAYMENT_DONE as readonly string[]).includes(r.paymentStatus);
-const sheetBtn = "ax-btn flex min-h-[54px] w-full cursor-pointer items-center gap-3 rounded-[14px] border border-line bg-surface px-3.5 text-left text-[15px] font-bold text-ink";
-const primary = "ax-btn ax-primary inline-flex min-h-12 items-center justify-center gap-2 rounded-[13px] border-0 bg-primary px-4 text-[15px] font-bold text-on-primary no-underline";
-const ghost = "ax-btn ax-ghost inline-flex min-h-12 items-center justify-center gap-2 rounded-[13px] border border-line-strong bg-surface px-4 text-[15px] font-bold text-ink no-underline";
+const sheetBtn = "ax-btn flex min-h-13 w-full cursor-pointer items-center gap-3 rounded-control border border-line bg-surface px-3.5 text-left text-[15px] font-bold text-ink";
+const primary = "ax-btn ax-primary inline-flex min-h-12 items-center justify-center gap-2 rounded-control border-0 bg-primary px-4 text-[15px] font-bold text-on-primary no-underline";
+const ghost = "ax-btn ax-ghost inline-flex min-h-12 items-center justify-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-[15px] font-bold text-ink no-underline";
 
 function useStatusChange(r: RequestInfo, onDone: () => void) {
   const router = useRouter();
@@ -97,7 +97,7 @@ export function RequestCardActions({ r, detailHref }: { r: RequestInfo; detailHr
         onClick={() => setSheet("more")}
         aria-haspopup="dialog"
         aria-label={`${r.customer} — бусад үйлдэл`}
-        className="ax-btn inline-flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-[13px] border border-line-strong bg-surface text-ink"
+        className="ax-btn inline-flex h-12 w-12 shrink-0 cursor-pointer items-center justify-center rounded-control border border-line-strong bg-surface text-ink"
       >
         <Icon name="dots" size={16} />
       </button>
@@ -116,7 +116,7 @@ export function RequestCardActions({ r, detailHref }: { r: RequestInfo; detailHr
                 type="button"
                 disabled={pending}
                 onClick={() => run("cancelled", "Хүсэлт цуцлагдлаа.")}
-                className="ax-btn inline-flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-[13px] border border-danger-line bg-danger-bg px-4 text-[15px] font-bold text-danger-ink"
+                className="ax-btn inline-flex min-h-12 flex-1 cursor-pointer items-center justify-center rounded-control border border-danger-line bg-danger-bg px-4 text-[15px] font-bold text-danger-ink"
               >
                 {pending ? "Хадгалж байна…" : "Тийм, цуцлах"}
               </button>
@@ -201,13 +201,13 @@ export function PaymentSheet({ r, open, onClose }: { r: RequestInfo; open: boole
       description="Гараар баталгаажуулалт"
       dirty={(checked || !!amount) && !pending}
       footer={
-        <button type="button" disabled={pending} onClick={submit} className={`${primary} min-h-[54px] w-full`}>
+        <button type="button" disabled={pending} onClick={submit} className={`${primary} min-h-13 w-full`}>
           {pending ? "Хадгалж байна…" : "Төлбөр баталгаажсан"}
         </button>
       }
     >
       <div className="flex flex-col gap-4">
-        <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-[14px] border border-line bg-sunken p-3.5 text-[15px]">
+        <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-4 gap-y-2 rounded-control border border-line bg-sunken p-3.5 text-[15px]">
           <dt className="font-bold text-muted">Бүтээгдэхүүн</dt>
           <dd className="m-0 font-bold">{r.product}</dd>
           <dt className="font-bold text-muted">Хэрэглэгч</dt>
@@ -216,7 +216,7 @@ export function PaymentSheet({ r, open, onClose }: { r: RequestInfo; open: boole
           <dd className="m-0 font-extrabold">{needsAmount ? "Хадгалагдаагүй" : r.priceLabel}</dd>
         </dl>
         {needsAmount && (
-          <div className="flex flex-col gap-2 rounded-[14px] border border-warn-line bg-warn-bg p-3.5">
+          <div className="flex flex-col gap-2 rounded-control border border-warn-line bg-warn-bg p-3.5">
             <p className="text-[13.5px] leading-normal font-semibold text-warn-ink">
               Энэ хүсэлт ирэх үеийн үнэ хадгалагдаагүй (хуучин хүсэлт). Одоогийн үнийг автоматаар авахгүй — хэрэглэгчтэй тохирсон дүнгээ оруулна уу.
             </p>
@@ -235,7 +235,7 @@ export function PaymentSheet({ r, open, onClose }: { r: RequestInfo; open: boole
             </div>
           </div>
         )}
-        <label className="flex cursor-pointer items-start gap-3 rounded-[14px] border border-line p-3.5">
+        <label className="flex cursor-pointer items-start gap-3 rounded-control border border-line p-3.5">
           <input type="checkbox" checked={checked} onChange={(e) => setChecked(e.target.checked)} className="mt-0.5 h-6 w-6 shrink-0" />
           <span className="text-[15px] font-bold">
             Төлбөр орж ирснийг шалгасан
@@ -245,7 +245,7 @@ export function PaymentSheet({ r, open, onClose }: { r: RequestInfo; open: boole
           </span>
         </label>
         {err && (
-          <p role="alert" className="rounded-[10px] border border-danger-line bg-danger-bg px-3 py-2.5 text-sm font-bold text-danger-ink">
+          <p role="alert" className="rounded-control border border-danger-line bg-danger-bg px-3 py-2.5 text-sm font-bold text-danger-ink">
             <Icon name="x" size={16} /> {err}
           </p>
         )}
@@ -297,7 +297,7 @@ export function DeliverySheet({ r, open, onClose }: { r: RequestInfo; open: bool
                   type="button"
                   aria-pressed={hours === h}
                   onClick={() => setHours(h as number)}
-                  className={`min-h-11 cursor-pointer rounded-[9px] border-0 text-sm font-bold ${hours === h ? "bg-elevated text-ink shadow-[0_1px_2px_var(--ax-shadow)]" : "bg-transparent text-muted"}`}
+                  className={`min-h-11 cursor-pointer rounded-inner border-0 text-sm font-bold ${hours === h ? "bg-elevated text-ink shadow-[0_1px_2px_var(--ax-shadow)]" : "bg-transparent text-muted"}`}
                 >
                   {l}
                 </button>
@@ -308,7 +308,7 @@ export function DeliverySheet({ r, open, onClose }: { r: RequestInfo; open: bool
             Хамгаалагдсан файлаас хугацаатай signed URL үүсгэнэ. Сервер төлбөр баталгаажсан эсэх, файл байгаа эсэхийг дахин шалгана. Холбоосыг та {r.channelLabel}-аар өөрөө илгээнэ.
           </p>
           {err && (
-            <p role="alert" className="rounded-[10px] border border-danger-line bg-danger-bg px-3 py-2.5 text-sm font-bold text-danger-ink">
+            <p role="alert" className="rounded-control border border-danger-line bg-danger-bg px-3 py-2.5 text-sm font-bold text-danger-ink">
               <Icon name="x" size={16} /> {err}
             </p>
           )}
@@ -325,14 +325,14 @@ export function DeliverySheet({ r, open, onClose }: { r: RequestInfo; open: bool
                 } else setErr(out.message);
               })
             }
-            className={`${primary} min-h-[54px] w-full`}
+            className={`${primary} min-h-13 w-full`}
           >
             {pending ? "Шалгаж байна…" : "Холбоос үүсгэх"}
           </button>
         </div>
       ) : (
         <div role="status" className="flex flex-col gap-3">
-          <p className="rounded-[12px] bg-soft px-3 py-2.5 text-[13.5px] font-bold">
+          <p className="rounded-control bg-soft px-3 py-2.5 text-[13.5px] font-bold">
             {res.external ? "Хүргэх холбоос (гадаад, хугацаагүй)" : `Холбоос үүслээ · ${new Date(res.expiresAt!).toLocaleString("mn-MN", { timeZone: "Asia/Ulaanbaatar" })} хүртэл хүчинтэй`}
           </p>
           <input readOnly value={res.url} aria-label="Үүсгэсэн холбоос" onFocus={(e) => e.currentTarget.select()} className="min-h-12 w-full rounded-xl border border-line-strong bg-sunken px-3 font-mono text-[13px] text-ink" />
@@ -353,7 +353,7 @@ export function DeliverySheet({ r, open, onClose }: { r: RequestInfo; open: bool
           </button>
           <p className="text-[13px] leading-normal text-muted">Холбоос үүссэн эсвэл хуулсан нь хэрэглэгчид илгээсэн, татаж авсан гэсэн үг биш. Илгээсний дараа доорх товчоор тэмдэглэнэ.</p>
           {r.status === "contacted" ? (
-            <button type="button" disabled={marking} onClick={() => run("fulfilled", "“Хүргэж дууссан” гэж тэмдэглэлээ.")} className={`${primary} min-h-[54px] w-full`}>
+            <button type="button" disabled={marking} onClick={() => run("fulfilled", "“Хүргэж дууссан” гэж тэмдэглэлээ.")} className={`${primary} min-h-13 w-full`}>
               {marking ? "Хадгалж байна…" : "Илгээсэн — “Хүргэж дууссан” болгох"}
             </button>
           ) : r.status === "new" ? (
@@ -372,7 +372,7 @@ export function RequestPaymentPanel({ r, confirmedBy, confirmedAt, confirmedAmou
   return (
     <div className="flex flex-col gap-3">
       {r.paymentStatus === "confirmed_manual" ? (
-        <div className="flex flex-col gap-1 rounded-[12px] border border-line bg-sunken p-3 text-sm">
+        <div className="flex flex-col gap-1 rounded-control border border-line bg-sunken p-3 text-sm">
           <strong><Icon name="check" size={16} /> Гараар баталгаажсан · {confirmedAmount}</strong>
           <span className="text-muted">
             {confirmedBy} · {confirmedAt}

@@ -184,3 +184,11 @@ Every reference is assigned to an existing route/component or a documented excep
 - Reference #77 and #79 are roadmap/audit documents, not app screens.
 
 
+
+## UI upgrade pass (2026-11-06)
+
+- The "`npx tsc --noEmit` passed" entry above was out of date: `src/app/admin/(panel)/page.tsx` referenced a `calendar` icon missing from the sprite, which also failed `npm run build`. Fixed by adding the real Regen asset.
+- Design system: radius, shadow, motion and type scales are defined once in `src/app/globals.css`, and all component recipes now sit in `@layer components` so utilities can refine them.
+- Dependencies are unchanged. shadcn registry components import `lucide-react`, which the icon rule forbids, so their recipes are adapted natively (see `THIRD_PARTY_NOTICES.md`).
+- `.claude/launch.json` adds `axora-demo`, which blanks the Supabase variables. The site then uses demo templates and test-mode forms, so populated states can be checked with no chance of writing to the real database.
+- Not verified: data-backed admin pages with a real session. `/dev/admin-preview` covers the shared admin parts with synthetic values only.

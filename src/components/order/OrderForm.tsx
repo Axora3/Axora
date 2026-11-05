@@ -419,7 +419,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
   return (
     <>
       {!backendEnabled && (
-        <div role="note" className="ax-in-sm mt-5 flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-[14px] border border-warn-line bg-warn-bg px-4 py-3 text-sm font-bold text-warn-ink">
+        <div role="note" className="ax-in-sm mt-5 flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-control border border-warn-line bg-warn-bg px-4 py-3 text-sm font-bold text-warn-ink">
           <span className="inline-flex items-center gap-2">
             <Info size={18} />
             Туршилтын горим — мэдээлэл илгээгдэхгүй.
@@ -429,13 +429,13 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
       )}
 
       {storedDraft && !resultView && (
-        <div role="status" className="mt-3 flex flex-wrap items-center justify-between gap-2.5 rounded-[14px] border border-line bg-surface px-4 py-3 text-sm font-bold">
+        <div role="status" className="mt-3 flex flex-wrap items-center justify-between gap-2.5 rounded-control border border-line bg-surface px-4 py-3 text-sm font-bold">
           <span>Энэ төхөөрөмж дээр хадгалсан ноорог олдлоо.</span>
           <span className="flex gap-2">
-            <button type="button" onClick={restoreDraft} className="ax-btn ax-primary min-h-11 rounded-[10px] border-0 bg-primary px-3.5 text-sm font-bold text-on-primary">
+            <button type="button" onClick={restoreDraft} className="ax-btn ax-primary min-h-11 rounded-control border-0 bg-primary px-3.5 text-sm font-bold text-on-primary">
               Сэргээх
             </button>
-            <button type="button" onClick={deleteDraft} className="ax-btn ax-ghost min-h-11 rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink">
+            <button type="button" onClick={deleteDraft} className="ax-btn ax-ghost min-h-11 rounded-control border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink">
               Устгах
             </button>
           </span>
@@ -443,7 +443,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
       )}
 
       {lostFiles.length > 0 && !resultView && (
-        <div role="note" className="mt-3 rounded-[14px] border border-line bg-surface px-4 py-3 text-sm leading-normal">
+        <div role="note" className="mt-3 rounded-control border border-line bg-surface px-4 py-3 text-sm leading-normal">
           <strong>Өмнө сонгосон файлууд сэргээгдээгүй:</strong> {lostFiles.join(", ")}. Хөтөч аюулгүй байдлын үүднээс сонгосон файлыг хадгалдаггүй тул 3, 4-р алхамд дахин сонгоно уу.
         </div>
       )}
@@ -456,32 +456,33 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
               <button key={title} type="button" disabled={index > maxStep || phase === "submitting"}
                 aria-current={index === step ? "step" : undefined}
                 onClick={() => go(index)}
-                className={`min-h-11 rounded-xl px-3 text-left text-sm font-semibold disabled:opacity-40 ${index === step ? "bg-soft text-brand" : "text-muted"}`}>
+                className={`min-h-11 cursor-pointer rounded-control border-0 bg-transparent px-3 text-left text-sm font-semibold disabled:cursor-not-allowed disabled:opacity-40 ${index === step ? "!bg-soft text-brand" : "text-muted"}`}>
                 {index + 1}. {title}
               </button>
             ))}
           </nav>
         </details>
       )}
-      <div className="mt-6 flex flex-wrap items-start gap-6">
-        <aside aria-label="Алхмууд" className="sticky top-[92px] hidden max-w-[290px] flex-[1_1_240px] flex-col gap-3.5 min-[900px]:flex">
+      <div className="mt-6 grid items-start gap-6 min-[900px]:grid-cols-[260px_minmax(0,1fr)]">
+        <aside aria-label="Алхмууд" className="sticky top-[92px] hidden flex-col gap-3.5 min-[900px]:flex">
           <ol className="m-0 flex list-none flex-col gap-0.5 p-0">
             {[...STEPS.map((s) => s.title), "Шалгах"].map((title, i) => {
               const cur = !resultView && i === step;
               const done = resultView || i < maxStep || (i < REVIEW && step === REVIEW);
               const locked = resultView || phase === "submitting" || i > maxStep;
               return (
-                <li key={title}>
+                <li key={title} className="relative">
+                  {i < REVIEW && <span aria-hidden="true" className="absolute top-[42px] bottom-[-8px] left-[23.5px] w-px" style={{ background: done && i < maxStep ? "var(--ax-brand)" : "var(--ax-line)" }} />}
                   <button
                     type="button"
                     disabled={locked}
                     aria-current={cur ? "step" : undefined}
                     onClick={() => go(i, { fromReview: step === REVIEW || fromReview })}
-                    className="ax-btn flex min-h-12 w-full items-center gap-3 rounded-xl border-0 px-2.5 py-1.5 text-left text-[15px] font-bold disabled:opacity-100"
-                    style={{ background: cur ? "var(--ax-elevated)" : "transparent", color: locked && !done ? "var(--ax-faint)" : "var(--ax-ink)", cursor: locked ? "not-allowed" : "pointer" }}
+                    className="relative flex min-h-12 w-full items-center gap-3 rounded-control border-0 px-2.5 py-1.5 text-left text-[15px] font-bold transition-colors disabled:opacity-100"
+                    style={{ background: cur ? "var(--ax-surface)" : "transparent", boxShadow: cur ? "var(--ax-shadow-card)" : undefined, color: locked && !done ? "var(--ax-faint)" : "var(--ax-ink)", cursor: locked ? "not-allowed" : "pointer" }}
                   >
                     <span
-                      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-lg text-[13px] font-extrabold"
+                      className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-inner text-[13px] font-extrabold"
                       style={{
                         background: cur ? "var(--ax-primary)" : done && i < REVIEW ? "var(--ax-lime)" : "var(--ax-surface)",
                         color: cur ? "var(--ax-on-primary)" : done && i < REVIEW ? "var(--ax-on-lime)" : "var(--ax-ink)",
@@ -500,23 +501,23 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
           {!resultView && (
             <div className="flex flex-col gap-2.5 border-t border-line pt-3.5">
               <label className="flex cursor-pointer items-start gap-2.5 text-sm leading-snug font-bold">
-                <input type="checkbox" checked={saveDraft} onChange={(e) => toggleDraft(e.target.checked)} className="m-0 h-5 w-5 shrink-0" />
+                <input type="checkbox" checked={saveDraft} onChange={(e) => toggleDraft(e.target.checked)} className="ax-check" />
                 Энэ төхөөрөмж дээр ноорог хадгалах
               </label>
               <span className="text-[13px] leading-normal text-muted">
                 Идэвхжүүлбэл хариулт энэ хөтөч дээр хадгалагдана. Сонгосон файл сэргээгдэхгүй — дахин сонгоно. Нийтийн компьютер дээр бүү идэвхжүүл.
               </span>
-              <button type="button" onClick={deleteDraft} className="ax-btn ax-ghost min-h-11 self-start rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink">
+              <button type="button" onClick={deleteDraft} className="ax-btn ax-ghost min-h-11 self-start rounded-control border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink">
                 Ноорог устгах
               </button>
             </div>
           )}
         </aside>
 
-        <section aria-labelledby={resultView ? "ox-result-title" : "ox-step-title"} className="ax-surface min-w-0 flex-[999_1_560px] overflow-hidden">
+        <section aria-labelledby={resultView ? "ox-result-title" : "ox-step-title"} className="ax-surface min-w-0">
           <div className="flex flex-col gap-3 px-[clamp(18px,3vw,36px)] pt-[clamp(18px,3vw,32px)]">
             <div className="flex items-center justify-between gap-3 text-sm font-extrabold">
-              <span className="text-brand">{progressLabel}</span>
+              <span className="text-brand">{inForm && !resultView ? `Алхам ${step + 1} / 7` : progressLabel}</span>
               <span className="text-muted">{pct}%</span>
             </div>
             <div role="progressbar" aria-valuemin={0} aria-valuemax={7} aria-valuenow={progressNow} aria-label="Анкетын явц" className="h-2 overflow-hidden rounded-lg bg-soft">
@@ -526,7 +527,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
 
           {inForm && !resultView && (
             <form noValidate onSubmit={onNext} className="px-[clamp(18px,3vw,36px)] pt-[22px] pb-[clamp(20px,3vw,36px)]">
-              <div key={anim} className="ax-slide flex flex-col gap-6">
+              <div key={anim} className="ax-slide grid grid-cols-[minmax(0,1fr)] items-start gap-x-5 gap-y-6 min-[720px]:grid-cols-[repeat(2,minmax(0,1fr))] [&>*]:col-span-full [&>[data-short]]:min-[720px]:col-span-1">
                 <div className="flex flex-col gap-1.5">
                   <h2 id="ox-step-title" tabIndex={-1} className="text-[clamp(24px,2.6vw,32px)] leading-[1.15] font-extrabold tracking-[-0.02em] outline-none">
                     {STEPS[step].title}
@@ -572,40 +573,41 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                     );
                   }
                   return (
-                    <FieldRenderer
-                      key={f.id}
-                      f={f}
-                      a={answers}
-                      set={set}
-                      error={errMap[f.id]}
-                      linksOpen={linksOpen}
-                      domainHelp={domainHelp}
-                      onToggle={(id) => (id === "tLinks" ? setShowLinks((x) => !x) : setDomainHelp((x) => !x))}
-                      builder={usedBuilder}
-                    />
+                    <div key={f.id} data-short={f.kind === "input" ? "" : undefined} className="min-w-0">
+                      <FieldRenderer
+                        f={f}
+                        a={answers}
+                        set={set}
+                        error={errMap[f.id]}
+                        linksOpen={linksOpen}
+                        domainHelp={domainHelp}
+                        onToggle={(id) => (id === "tLinks" ? setShowLinks((x) => !x) : setDomainHelp((x) => !x))}
+                        builder={usedBuilder}
+                      />
+                    </div>
                   );
                 })}
 
-                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5">
+                <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line pt-5 max-[899px]:sticky max-[899px]:bottom-0 max-[899px]:z-10 max-[899px]:-mx-[clamp(18px,3vw,36px)] max-[899px]:-mb-[clamp(20px,3vw,36px)] max-[899px]:rounded-b-card max-[899px]:bg-surface max-[899px]:px-[clamp(18px,3vw,36px)] max-[899px]:pt-3 max-[899px]:pb-[calc(12px+env(safe-area-inset-bottom))]">
                   {step > 0 && (
-                    <button type="button" onClick={() => go(step - 1)} className="ax-btn ax-ghost inline-flex min-h-[52px] items-center gap-2 rounded-xl border border-line-strong bg-surface px-5 text-base font-bold text-ink">
+                    <button type="button" onClick={() => go(step - 1)} className="ax-btn ax-ghost inline-flex min-h-13 items-center gap-2 rounded-xl border border-line-strong bg-surface px-5 text-base font-bold text-ink">
                       <ArrowLeft size={16} />
                       Өмнөх
                     </button>
                   )}
-                  <span className="flex-1" />
+                  <span className="flex-1 max-[480px]:hidden" />
                   {fromReview && step < 6 && (
                     <button
                       type="button"
                       onClick={() => {
                         if (validateStep(step)) go(REVIEW);
                       }}
-                      className="ax-btn ax-ghost min-h-[52px] rounded-xl border border-line-strong bg-surface px-[18px] text-[15px] font-bold text-ink"
+                      className="ax-btn ax-ghost min-h-13 rounded-xl border border-line-strong bg-surface px-[18px] text-[15px] font-bold text-ink"
                     >
                       Шалгах руу буцах
                     </button>
                   )}
-                  <button type="submit" className="ax-btn ax-primary inline-flex min-h-[52px] items-center gap-2 rounded-xl border-0 bg-primary px-6 text-base font-bold text-on-primary max-[480px]:w-full max-[480px]:justify-center">
+                  <button type="submit" className="ax-btn ax-primary inline-flex min-h-13 items-center gap-2 rounded-control border-0 bg-primary px-6 text-base font-bold text-on-primary max-[480px]:flex-1 max-[480px]:justify-center">
                     {step === 6 || fromReview ? "Шалгах" : "Үргэлжлүүлэх"}
                     <ArrowRight size={16} />
                   </button>
@@ -632,7 +634,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                       type="button"
                       onClick={() => go(i, { fromReview: true })}
                       aria-label={`${st.title} — засах`}
-                      className="ax-btn ax-ghost min-h-11 rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink"
+                      className="ax-btn ax-ghost min-h-11 rounded-control border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink"
                     >
                       Засах
                     </button>
@@ -696,7 +698,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
               <input ref={honeypot} type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
 
               <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
-                <button type="button" onClick={() => go(6)} className="ax-btn ax-ghost inline-flex min-h-[52px] items-center gap-2 rounded-xl border border-line-strong bg-surface px-5 text-base font-bold text-ink">
+                <button type="button" onClick={() => go(6)} className="ax-btn ax-ghost inline-flex min-h-13 items-center gap-2 rounded-xl border border-line-strong bg-surface px-5 text-base font-bold text-ink">
                   <ArrowLeft size={16} />
                   Өмнөх
                 </button>
@@ -705,7 +707,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                   onClick={submitAll}
                   disabled={phase === "submitting"}
                   aria-busy={phase === "submitting"}
-                  className="ax-btn ax-primary min-h-[52px] rounded-xl border-0 bg-primary px-[26px] text-base font-bold text-on-primary max-[480px]:w-full"
+                  className="ax-btn ax-primary min-h-13 rounded-xl border-0 bg-primary px-[26px] text-base font-bold text-on-primary max-[480px]:w-full"
                 >
                   {phase === "submitting" ? "Илгээж байна…" : !backendEnabled ? "Илгээх (туршилт)" : serverErr ? "Дахин илгээх" : "Илгээх"}
                 </button>
@@ -715,7 +717,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
 
           {resultView && (
             <div role="status" className="ax-in-sm flex flex-col items-start gap-[18px] px-[clamp(18px,3vw,36px)] py-[clamp(28px,5vw,56px)]">
-              <span className={`inline-flex h-16 w-16 items-center justify-center rounded-[18px] ${phase === "test-done" ? "bg-warn-bg text-warn" : "bg-soft text-brand"}`}>
+              <span className={`inline-flex h-16 w-16 items-center justify-center rounded-card ${phase === "test-done" ? "bg-warn-bg text-warn" : "bg-soft text-brand"}`}>
                 <Check size={30} strokeWidth={2.4} className="ax-draw" />
               </span>
               <h2 id="ox-result-title" tabIndex={-1} className="text-[clamp(26px,3vw,36px)] leading-[1.15] font-extrabold tracking-[-0.02em] outline-none">
@@ -723,12 +725,12 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
               </h2>
 
               {phase === "test-done" ? (
-                <p className="max-w-[34em] text-[17px] leading-relaxed text-muted">
+                <p className="max-w-[34em] ax-lead">
                   Мэдээлэл илгээгдээгүй — энэ бол backend холбогдоогүй үзүүлэн. Бодит захиалга хүлээн аваагүй. Хариултаа хадгалж авах бол доорх товчийг ашиглана уу.
                 </p>
               ) : (
                 <>
-                  <p className="max-w-[34em] text-[17px] leading-relaxed text-muted">{SUCCESS_TEXT}</p>
+                  <p className="max-w-[34em] ax-lead">{SUCCESS_TEXT}</p>
                   {receipt && (
                     <p className="text-[15px]">
                       Захиалгын дугаар: <strong className="font-mono">{receipt.reference}</strong>
@@ -783,7 +785,7 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                 <button
                   type="button"
                   onClick={downloadJson}
-                  className={`ax-btn inline-flex min-h-[52px] items-center gap-2 rounded-xl px-[22px] text-base font-bold ${phase === "test-done" ? "ax-primary border-0 bg-primary text-on-primary" : "ax-ghost border border-line-strong bg-surface text-ink"}`}
+                  className={`ax-btn inline-flex min-h-13 items-center gap-2 rounded-xl px-[22px] text-base font-bold ${phase === "test-done" ? "ax-primary border-0 bg-primary text-on-primary" : "ax-ghost border border-line-strong bg-surface text-ink"}`}
                 >
                   <Download size={18} />
                   Хариултаа JSON-оор татах
@@ -795,12 +797,12 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
                       setPhase("form");
                       go(REVIEW);
                     }}
-                    className="ax-btn ax-ghost min-h-[52px] rounded-xl border border-line-strong bg-surface px-5 text-base font-bold text-ink"
+                    className="ax-btn ax-ghost min-h-13 rounded-xl border border-line-strong bg-surface px-5 text-base font-bold text-ink"
                   >
                     Хариултаа харах
                   </button>
                 ) : (
-                  <Link href="/" className="ax-btn ax-ghost inline-flex min-h-[52px] items-center rounded-xl border border-line-strong bg-surface px-5 text-base font-bold text-ink no-underline">
+                  <Link href="/" className="ax-btn ax-ghost inline-flex min-h-13 items-center rounded-xl border border-line-strong bg-surface px-5 text-base font-bold text-ink no-underline">
                     Нүүр хуудас руу
                   </Link>
                 )}
@@ -812,13 +814,13 @@ export function OrderForm({ backendEnabled }: { backendEnabled: boolean }) {
 
       {/* Mobile: draft controls live under the form (the step list is desktop-only). */}
       {!resultView && (
-        <div className="mt-4 flex flex-col gap-2.5 rounded-[18px] border border-line bg-surface p-4 min-[900px]:hidden">
+        <div className="mt-4 flex flex-col gap-2.5 rounded-card border border-line bg-surface p-4 min-[900px]:hidden">
           <label className="flex cursor-pointer items-start gap-2.5 text-sm leading-snug font-bold">
-            <input type="checkbox" checked={saveDraft} onChange={(e) => toggleDraft(e.target.checked)} className="m-0 h-5 w-5 shrink-0" />
+            <input type="checkbox" checked={saveDraft} onChange={(e) => toggleDraft(e.target.checked)} className="ax-check" />
             Энэ төхөөрөмж дээр ноорог хадгалах
           </label>
           <span className="text-[13px] leading-normal text-muted">Идэвхжүүлбэл хариулт энэ хөтөч дээр хадгалагдана. Сонгосон файл сэргээгдэхгүй — дахин сонгоно.</span>
-          <button type="button" onClick={deleteDraft} className="ax-btn ax-ghost min-h-11 self-start rounded-[10px] border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink">
+          <button type="button" onClick={deleteDraft} className="ax-btn ax-ghost min-h-11 self-start rounded-control border border-line-strong bg-surface px-3.5 text-sm font-bold text-ink">
             Ноорог устгах
           </button>
         </div>

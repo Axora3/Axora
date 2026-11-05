@@ -57,7 +57,7 @@ export function DetailInfo({ t }: { t: Template }) {
         <p className="border-t border-line pt-3.5 text-sm leading-normal text-muted">Лиценз: {LICENSE}</p>
       </div>
 
-      <section aria-label="Дэлгэрэнгүй мэдээлэл" className="rounded-[18px] border border-line bg-surface px-4 min-[900px]:hidden">
+      <section aria-label="Дэлгэрэнгүй мэдээлэл" className="rounded-card border border-line bg-surface px-4 min-[900px]:hidden">
         {sections.map((s, i) => {
           const on = open === i;
           return (

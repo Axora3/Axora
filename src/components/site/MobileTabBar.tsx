@@ -14,11 +14,11 @@ const TABS = [
 
 /**
  * Bottom navigation for phones and small tablets (<900px), as in the mobile
- * design. Hidden on pages with their own sticky action bar (template detail).
+ * design. Hidden on pages with their own sticky action bar (template detail, order).
  */
 export function MobileTabBar() {
   const pathname = usePathname();
-  const hidden = /^\/templates\/[^/]+/.test(pathname) || /^\/learn\/[^/]+/.test(pathname) || pathname.startsWith("/admin") || pathname.startsWith("/dev");
+  const hidden = /^\/templates\/[^/]+/.test(pathname) || /^\/learn\/[^/]+/.test(pathname) || pathname.startsWith("/order") || pathname.startsWith("/admin") || pathname.startsWith("/dev");
 
   useEffect(() => {
     document.body.classList.toggle("has-tabbar", !hidden);
@@ -38,9 +38,9 @@ export function MobileTabBar() {
             key={href}
             href={href}
             aria-current={on ? "page" : undefined}
-            className={`ax-btn flex min-h-[54px] flex-col items-center justify-center gap-[3px] text-[11px] no-underline ${on ? "font-extrabold text-ink" : "font-bold text-muted"}`}
+            className={`ax-btn flex min-h-13 flex-col items-center justify-center gap-[3px] text-[11px] no-underline ${on ? "font-extrabold text-ink" : "font-bold text-muted"}`}
           >
-            <span className={`inline-flex h-7 w-[52px] items-center justify-center rounded-[14px] ${on ? "bg-lime" : ""}`}>
+            <span className={`inline-flex h-7 w-[52px] items-center justify-center rounded-control ${on ? "bg-lime" : ""}`}>
               <Icon size={20} />
             </span>
             {label}

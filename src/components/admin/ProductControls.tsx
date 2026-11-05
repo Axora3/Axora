@@ -82,10 +82,10 @@ export function PublishSwitch({ id, title, published, editHref }: { id: string; 
         description={title}
         footer={
           <div className="flex gap-2.5">
-            <button type="button" onClick={() => setSheet(null)} className="ax-btn min-h-12 flex-1 cursor-pointer rounded-[13px] border border-line-strong bg-surface text-[15px] font-bold text-ink">
+            <button type="button" onClick={() => setSheet(null)} className="ax-btn min-h-12 flex-1 cursor-pointer rounded-control border border-line-strong bg-surface text-[15px] font-bold text-ink">
               Үгүй
             </button>
-            <button type="button" disabled={pending} onClick={() => commit(false)} className="ax-btn min-h-12 flex-[2] cursor-pointer rounded-[13px] border border-danger-line bg-danger-bg text-[15px] font-bold text-danger-ink">
+            <button type="button" disabled={pending} onClick={() => commit(false)} className="ax-btn min-h-12 flex-[2] cursor-pointer rounded-control border border-danger-line bg-danger-bg text-[15px] font-bold text-danger-ink">
               {pending ? "Хадгалж байна…" : "Тийм, ноорог болгох"}
             </button>
           </div>
@@ -100,7 +100,7 @@ export function PublishSwitch({ id, title, published, editHref }: { id: string; 
         title="Нийтлэх боломжгүй"
         description={title}
         footer={
-          <Link href={editHref} className="ax-btn ax-primary flex min-h-[54px] w-full items-center justify-center rounded-[15px] bg-primary text-base font-bold text-on-primary no-underline">
+          <Link href={editHref} className="ax-btn ax-primary flex min-h-13 w-full items-center justify-center rounded-control bg-primary text-base font-bold text-on-primary no-underline">
             Засах
           </Link>
         }
@@ -110,7 +110,7 @@ export function PublishSwitch({ id, title, published, editHref }: { id: string; 
           {reasons.length > 0 && (
             <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
               {reasons.map((x) => (
-                <li key={x} className="flex gap-2 rounded-[10px] bg-danger-bg px-3 py-2 text-sm font-semibold text-danger-ink">
+                <li key={x} className="flex gap-2 rounded-control bg-danger-bg px-3 py-2 text-sm font-semibold text-danger-ink">
                   <span aria-hidden="true"><Icon name="x" size={16} /></span>
                   {x}
                 </li>

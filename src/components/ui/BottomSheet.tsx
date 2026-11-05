@@ -79,7 +79,7 @@ export function BottomSheet({ open, onClose, title, description, children, foote
         aria-modal="true"
         aria-labelledby={titleId}
         aria-describedby={description ? descId : undefined}
-        className={`relative flex w-full flex-col overflow-hidden rounded-t-[24px] border border-line bg-elevated text-ink shadow-[0_-20px_60px_-30px_var(--ax-shadow)] md:rounded-[24px] ${
+        className={`relative flex w-full flex-col overflow-hidden rounded-t-panel border border-line bg-elevated text-ink shadow-[0_-20px_60px_-30px_var(--ax-shadow)] md:rounded-panel ${
           size === "tall" ? "h-[min(94dvh,100%)] md:h-auto md:max-h-[88dvh] md:max-w-[720px]" : "max-h-[min(92dvh,100%)] md:max-h-[85dvh] md:max-w-[520px]"
         }`}
       >
@@ -117,11 +117,11 @@ export function BottomSheet({ open, onClose, title, description, children, foote
                     ref={keepRef}
                     type="button"
                     onClick={() => setConfirming(false)}
-                    className="ax-btn ax-primary min-h-12 flex-[2] rounded-[14px] border-0 bg-primary px-4 text-[15px] font-bold text-on-primary"
+                    className="ax-btn ax-primary min-h-12 flex-[2] rounded-control border-0 bg-primary px-4 text-[15px] font-bold text-on-primary"
                   >
                     Үргэлжлүүлэх
                   </button>
-                  <button type="button" onClick={requestClose} className="ax-btn min-h-12 flex-1 rounded-[14px] border border-danger-line bg-surface px-4 text-[15px] font-bold text-danger">
+                  <button type="button" onClick={requestClose} className="ax-btn min-h-12 flex-1 rounded-control border border-danger-line bg-surface px-4 text-[15px] font-bold text-danger">
                     Хаах
                   </button>
                 </div>

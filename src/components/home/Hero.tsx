@@ -11,7 +11,7 @@ export function Hero({ c }: { c: SiteContent }) {
     >
       <div className="relative z-10 flex flex-col gap-7">
         <div className="ax-in d1 inline-flex items-center gap-2.5 self-start rounded-full border border-line bg-surface py-2 pr-3.5 pl-2.5 text-sm font-bold text-brand">
-          <Icon name="circle-record" size={8} className="ax-live text-primary" />
+          <Icon name="circle-record" size={8} className="text-primary" />
           Бэлэн загвар • Захиалгат веб
         </div>
         <h1
@@ -24,13 +24,13 @@ export function Hero({ c }: { c: SiteContent }) {
           {c.heroLead}
         </p>
         <div className="ax-in d4 flex flex-wrap gap-3">
-          <Link href={c.heroPrimary.href} className="ax-btn ax-primary inline-flex min-h-14 items-center gap-2.5 rounded-xl bg-primary px-[26px] text-base font-extrabold text-on-primary no-underline shadow-[0_14px_28px_-16px_rgba(36,92,69,.7)] max-[480px]:w-full max-[480px]:justify-center">
+          <Link href={c.heroPrimary.href} className="ax-btn ax-primary inline-flex min-h-14 items-center gap-2.5 rounded-control bg-primary px-[26px] text-base font-extrabold text-on-primary no-underline max-[480px]:w-full max-[480px]:justify-center">
             {c.heroPrimary.label}
             <span className="ax-arrow">
               <ArrowRight />
             </span>
           </Link>
-          <Link href={c.heroSecondary.href} className="ax-btn ax-ghost inline-flex min-h-14 items-center gap-2.5 rounded-xl border border-line-strong bg-surface px-6 text-base font-bold text-ink no-underline max-[480px]:w-full max-[480px]:justify-center">
+          <Link href={c.heroSecondary.href} className="ax-btn ax-ghost inline-flex min-h-14 items-center gap-2.5 rounded-control border border-line-strong bg-surface px-6 text-base font-bold text-ink no-underline max-[480px]:w-full max-[480px]:justify-center">
             {c.heroSecondary.label}
           </Link>
         </div>
@@ -76,7 +76,7 @@ export function Hero({ c }: { c: SiteContent }) {
                 <span className="mt-1 self-start rounded-lg bg-[#8A4B2E] px-3.5 py-[9px] text-xs font-bold text-white">Меню үзэх</span>
               </div>
               <div className="relative flex aspect-[1/0.86] items-center justify-center overflow-hidden rounded-2xl bg-[#E9D3B5]">
-                <div className="ax-spin flex aspect-square w-[62%] items-center justify-center rounded-full bg-[#F7EEE2] shadow-[0_14px_30px_-14px_rgba(59,42,32,.5)]">
+                <div className="flex aspect-square w-[62%] items-center justify-center rounded-full bg-[#F7EEE2] shadow-[0_14px_30px_-14px_rgba(59,42,32,.5)]">
                   <div className="flex aspect-square w-[70%] items-center justify-center rounded-full bg-[#6B3E25]">
                     <div className="aspect-square w-[58%] bg-[#C89A6A] opacity-85" style={{ borderRadius: "50% 50% 46% 54%" }} />
                   </div>

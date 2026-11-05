@@ -13,7 +13,7 @@ export const aliases = {
   Moon: "moon", Dashboard: "layout-grid", Inbox: "inbox", Box: "cube", More: "dots",
   Pencil: "pencil", Filter: "filter", Copy: "copy", Lock: "lock", Monitor: "monitor",
 };
-const names = [...new Set([...Object.values(aliases), "heart", "credit-card", "swap", "letter-a", "external-link", "minus", "table", "circle-record", "diamond", "arrow-up", "arrow-down", "bell", "activity", "circle-check", "circle-x", "eye", "eye-off", "chevron-right"])].sort();
+const names = [...new Set([...Object.values(aliases), "heart", "credit-card", "swap", "letter-a", "external-link", "minus", "table", "circle-record", "diamond", "arrow-up", "arrow-down", "bell", "activity", "circle-check", "circle-x", "eye", "eye-off", "chevron-right", "calendar", "layers", "list-check", "send", "tag", "trash", "users", "arrow-up-right", "shield-check", "clipboard"])].sort();
 const symbols = [];
 for (const name of names) {
   const svg = readFileSync(`vendor/regen-icons/svg/outline/${name}.svg`, "utf8").trim();

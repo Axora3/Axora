@@ -67,7 +67,7 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
           <label htmlFor="ord-q" className="sr-only">
             Нэр, бизнес, ID, утсаар хайх
           </label>
-          <input id="ord-q" name="q" type="search" enterKeyHint="search" defaultValue={one(sp, "q")} placeholder="Нэр, бизнес, AX-…, утас" className={`${field.input} min-h-12 rounded-[13px] bg-surface pl-11`} />
+          <input id="ord-q" name="q" type="search" enterKeyHint="search" defaultValue={one(sp, "q")} placeholder="Нэр, бизнес, AX-…, утас" className={`${field.input} min-h-12 bg-surface pl-11`} />
         </form>
         <nav aria-label="Төлөвөөр шүүх" className="ax-scroll -mx-[clamp(16px,3vw,32px)] gap-1.5 px-[clamp(16px,3vw,32px)]">
           {tabs.map((t) => {
@@ -100,7 +100,7 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
             )}
           </p>
           <FilterSheet active={extra} title="Нэмэлт шүүлтүүр">
-            <form method="get" className="flex flex-wrap items-end gap-3 rounded-[18px] border border-line bg-surface p-4 max-md:border-0 max-md:p-0" aria-label="Нэмэлт шүүлтүүр">
+            <form method="get" className="flex flex-wrap items-end gap-3 rounded-card border border-line bg-surface p-4 max-md:border-0 max-md:p-0" aria-label="Нэмэлт шүүлтүүр">
               {q && <input type="hidden" name="q" value={q} />}
               {status && <input type="hidden" name="status" value={status} />}
               <label className="flex flex-[1_1_180px] flex-col gap-1.5">
@@ -151,7 +151,7 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
             {/* Phones/tablets: cards. Whole card opens the detail; the status pill opens the sheet. */}
             <ul className="m-0 flex list-none flex-col gap-2.5 p-0 min-[1100px]:hidden">
               {data.map((o) => (
-                <li key={o.id} className="relative flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-3.5">
+                <li key={o.id} className="relative flex flex-col gap-3 rounded-card border border-line bg-surface p-3.5">
                   <div className="flex items-center gap-3">
                     <span aria-hidden="true" className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-soft text-base font-extrabold text-brand">
                       {o.business_name.trim().charAt(0).toUpperCase()}
@@ -167,8 +167,8 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
                     <span className="self-start text-xs whitespace-nowrap text-muted">{fmtDateTime(o.created_at).split(" ")[0]}</span>
                   </div>
                   <div className="flex flex-wrap gap-1.5 text-[12.5px] font-bold">
-                    <span className="rounded-[7px] bg-soft-2 px-2 py-1">{o.website_type ?? "Төрөл —"}</span>
-                    {o.budget && <span className="rounded-[7px] bg-soft-2 px-2 py-1">{o.budget}</span>}
+                    <span className="rounded-inner bg-soft-2 px-2 py-1">{o.website_type ?? "Төрөл —"}</span>
+                    {o.budget && <span className="rounded-inner bg-soft-2 px-2 py-1">{o.budget}</span>}
                   </div>
                   <div className="flex items-center justify-between gap-2.5">
                     <OrderStatusControl id={o.id} updatedAt={o.updated_at} status={o.status} title={o.business_name} reference={o.reference} />
@@ -182,32 +182,32 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
 
             <Panel className="hidden min-[1100px]:block">
               <div className="overflow-x-auto">
-                <table className="w-full min-w-[900px] border-collapse text-sm">
+                <table className="ax-table min-w-[900px]">
                   <thead>
-                    <tr className="text-left text-xs tracking-[0.06em] text-muted uppercase">
+                    <tr>
                       {["ID", "Бизнес", "Захиалагч", "Төрөл", "Төсөв", "Төлөв", "Ирсэн"].map((h) => (
-                        <th key={h} scope="col" className="px-3 py-2.5 font-extrabold first:pl-[18px]">
+                        <th key={h} scope="col">
                           {h}
                         </th>
                       ))}
-                      <th scope="col" className="px-[18px] py-2.5">
+                      <th scope="col">
                         <span className="sr-only">Үйлдэл</span>
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {data.map((o) => (
-                      <tr key={o.id} className="border-t border-soft hover:bg-sunken">
-                        <td className="py-3 pr-3 pl-[18px] font-mono text-[13px] whitespace-nowrap">{o.reference}</td>
-                        <td className="px-3 py-3 font-bold">{o.business_name}</td>
-                        <td className="px-3 py-3">{o.full_name}</td>
-                        <td className="px-3 py-3">{o.website_type ?? "—"}</td>
-                        <td className="px-3 py-3 text-muted">{o.budget ?? "—"}</td>
-                        <td className="px-3 py-2">
+                      <tr key={o.id}>
+                        <td className="font-mono text-[13px] whitespace-nowrap">{o.reference}</td>
+                        <td className="font-bold">{o.business_name}</td>
+                        <td>{o.full_name}</td>
+                        <td>{o.website_type ?? "—"}</td>
+                        <td className="text-muted">{o.budget ?? "—"}</td>
+                        <td className="!py-2">
                           <OrderStatusControl id={o.id} updatedAt={o.updated_at} status={o.status} title={o.business_name} reference={o.reference} />
                         </td>
-                        <td className="px-3 py-3 whitespace-nowrap text-muted">{fmtDateTime(o.created_at)}</td>
-                        <td className="px-[18px] py-3 text-right">
+                        <td className="whitespace-nowrap text-muted">{fmtDateTime(o.created_at)}</td>
+                        <td className="text-right">
                           <Link href={`/admin/orders/${o.id}`} className="inline-flex min-h-11 items-center font-bold" aria-label={`${o.business_name} — дэлгэрэнгүй`}>
                             Дэлгэрэнгүй
                           </Link>

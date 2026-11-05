@@ -33,7 +33,7 @@ async function ProjectsContent({ searchParams }: { searchParams: Promise<Search>
       <form method="get" role="search" className="flex flex-wrap gap-2" aria-label="Төсөл хайх">
         {status && <input type="hidden" name="status" value={status}/>}
         <label className="sr-only" htmlFor="project-q">Захиалгын дугаар, бизнес эсвэл захиалагч хайх</label>
-        <input id="project-q" name="q" type="search" defaultValue={one(sp,"q")} placeholder="Захиалга, бизнес, тайлбар…" className={`${field.input} min-h-12 rounded-[13px] bg-surface`}/>
+        <input id="project-q" name="q" type="search" defaultValue={one(sp,"q")} placeholder="Захиалга, бизнес, тайлбар…" className={`${field.input} min-h-12 rounded-control bg-surface`}/>
         <button className={btn.primary}>Хайх</button>
       </form>
       <nav aria-label="Төслийн төлөв" className="ax-scroll gap-1.5">
@@ -46,7 +46,7 @@ async function ProjectsContent({ searchParams }: { searchParams: Promise<Search>
       {error && !missing ? <LoadFailed what="төслүүдийг"/> : !rows.length ? <Panel><EmptyState title={filtered ? "Тохирох төсөл олдсонгүй" : missing ? "Төслийн migration шаардлагатай" : "Одоогоор төсөл алга"} text={missing ? undefined : filtered ? undefined : "Захиалгын дэлгэрэнгүйгээс төслийг нэг бүрчлэн үүсгэнэ."} action={missing ? undefined : <Link href="/admin/orders" className={btn.ghost}>Захиалга харах</Link>}/></Panel> : <>
         <p className="text-sm font-bold text-muted">Нийт {count ?? 0} төсөл{filtered && <> · <Link href="/admin/projects">Цэвэрлэх</Link></>}</p>
         <ul className="m-0 grid list-none gap-3 p-0 min-[800px]:grid-cols-2 min-[1300px]:grid-cols-3">
-          {rows.map((project) => { const order = project.website_orders; const stage = PROJECT_STATUS[project.status]; return <li key={project.id} className="flex min-w-0 flex-col gap-3 rounded-[18px] border border-line bg-surface p-4">
+          {rows.map((project) => { const order = project.website_orders; const stage = PROJECT_STATUS[project.status]; return <li key={project.id} className="flex min-w-0 flex-col gap-3 rounded-card border border-line bg-surface p-4">
             <div className="flex items-start justify-between gap-2"><Link href={`/admin/projects/${project.id}`} className="text-base font-extrabold text-ink no-underline">{order?.business_name ?? "Захиалга"}</Link><span className="rounded-full bg-soft px-2.5 py-1 text-xs font-bold" style={{ color: stage.tone }}>{stage.label}</span></div>
             <p className="m-0 text-sm text-muted">{order?.reference ?? "—"} · {order?.full_name ?? "—"}</p>
             <div className="flex items-center justify-between text-sm"><span>Явц</span><strong>{project.progress_percent}%</strong></div><div role="progressbar" aria-valuenow={project.progress_percent} aria-valuemin={0} aria-valuemax={100} aria-label={`Төслийн явц ${project.progress_percent}%`} className="h-2 overflow-hidden rounded bg-soft"><span className="block h-full rounded bg-primary" style={{ width: `${project.progress_percent}%` }}/></div>

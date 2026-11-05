@@ -39,16 +39,16 @@ async function ContactPageContent({ searchParams }: Pick<PageProps<"/contact">, 
   return (
     <>
       <SiteHeader mobileBack={{ href: "/", label: "Нүүр рүү буцах", title: "Холбоо барих" }} />
-      <main id="main" className="mx-auto grid max-w-[1240px] gap-[22px] px-5 pt-6 pb-8 min-[900px]:grid-cols-[1fr_1.1fr] min-[900px]:gap-x-16 min-[900px]:px-[clamp(16px,4vw,40px)] min-[900px]:pt-16 min-[900px]:pb-24">
+      <main id="main" className="ax-container grid gap-[22px] pt-6 pb-8 min-[900px]:grid-cols-[1fr_1.1fr] min-[900px]:gap-x-16 min-[900px]:px-[clamp(16px,4vw,40px)] min-[900px]:pt-16 min-[900px]:pb-24">
         <div className="flex flex-col gap-[22px]">
           <div className="ax-in d1 flex flex-col gap-2.5">
-            <h1 className="text-[34px] leading-[1.06] font-extrabold tracking-[-0.03em] min-[900px]:text-[clamp(36px,4.4vw,56px)]">
+            <h1 className="ax-h1">
               Бидэнтэй <span className="serif">холбогдох</span>
             </h1>
             <p className="text-base leading-relaxed text-muted min-[900px]:text-[17px]">Асуулт байвал доорх сувгаар эсвэл богино зурвас үлдээгээрэй.</p>
           </div>
 
-          <ul aria-label="Холбоо барих сувгууд" className="ax-in d2 m-0 list-none rounded-[20px] border border-line bg-surface px-4 py-1">
+          <ul aria-label="Холбоо барих сувгууд" className="ax-in d2 m-0 list-none rounded-card border border-line bg-surface px-4 py-1">
             {CHANNELS.map(({ Icon, label, value, href }, i) => (
               <li key={label} className={`flex min-h-16 items-center gap-3.5 ${i < CHANNELS.length - 1 ? "border-b border-soft" : ""}`}>
                 <span className="inline-flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl bg-soft text-brand">
@@ -63,22 +63,22 @@ async function ContactPageContent({ searchParams }: Pick<PageProps<"/contact">, 
           </ul>
 
           <div className="ax-in d3 grid grid-cols-2 gap-2.5">
-            <Link href="/order" className="ax-btn flex min-h-[104px] flex-col justify-between rounded-[18px] bg-band p-3.5 text-on-band no-underline">
+            <Link href="/order" className="ax-btn flex min-h-[104px] flex-col justify-between rounded-card bg-band p-3.5 text-on-band no-underline">
               <span className="text-[15px] leading-[1.3] font-extrabold">Үнийн санал авах</span>
-              <span className="inline-flex h-[34px] w-[34px] items-center justify-center self-end rounded-[10px] bg-lime text-on-lime">
+              <span className="inline-flex h-[34px] w-[34px] items-center justify-center self-end rounded-control bg-lime text-on-lime">
                 <ArrowRight size={16} strokeWidth={2.2} />
               </span>
             </Link>
-            <Link href="/#faq" className="ax-btn flex min-h-[104px] flex-col justify-between rounded-[18px] border border-line bg-surface p-3.5 text-ink no-underline">
+            <Link href="/#faq" className="ax-btn flex min-h-[104px] flex-col justify-between rounded-card border border-line bg-surface p-3.5 text-ink no-underline">
               <span className="text-[15px] leading-[1.3] font-extrabold">Түгээмэл асуулт</span>
-              <span className="inline-flex h-[34px] w-[34px] items-center justify-center self-end rounded-[10px] bg-soft text-brand">
+              <span className="inline-flex h-[34px] w-[34px] items-center justify-center self-end rounded-control bg-soft text-brand">
                 <ArrowRight size={16} strokeWidth={2.2} />
               </span>
             </Link>
           </div>
         </div>
 
-        <section aria-labelledby="ct-form-t" className="ax-in d4 flex flex-col gap-3.5 self-start rounded-[20px] border border-line bg-surface px-4 py-5 min-[900px]:p-8">
+        <section aria-labelledby="ct-form-t" className="ax-in d4 flex flex-col gap-3.5 self-start rounded-card border border-line bg-surface px-4 py-5 min-[900px]:p-8">
           <h2 id="ct-form-t" className="text-xl font-extrabold">
             Зурвас үлдээх
           </h2>

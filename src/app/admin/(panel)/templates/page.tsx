@@ -70,7 +70,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
           <label htmlFor="tpl-q" className="sr-only">
             Бүтээгдэхүүн хайх
           </label>
-          <input id="tpl-q" name="q" type="search" enterKeyHint="search" defaultValue={one(sp, "q")} placeholder="Бүтээгдэхүүн хайх…" className={`${field.input} min-h-12 rounded-[13px] bg-surface pl-11`} />
+          <input id="tpl-q" name="q" type="search" enterKeyHint="search" defaultValue={one(sp, "q")} placeholder="Бүтээгдэхүүн хайх…" className={`${field.input} min-h-12 rounded-control bg-surface pl-11`} />
         </form>
         <nav aria-label="Төлөв" className="grid grid-cols-3 gap-1 rounded-xl bg-soft-3 p-1 md:max-w-[460px]">
           {segs.map((s) => {
@@ -80,7 +80,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
                 key={s.id || "all"}
                 href={hrefWith("/admin/templates", sp, { status: s.id || null, page: null })}
                 aria-current={on ? "page" : undefined}
-                className={`inline-flex min-h-10 items-center justify-center gap-1 rounded-[9px] text-sm font-bold no-underline ${on ? "bg-elevated text-ink shadow-[0_1px_2px_var(--ax-shadow)]" : "text-muted"}`}
+                className={`inline-flex min-h-10 items-center justify-center gap-1 rounded-inner text-sm font-bold no-underline ${on ? "bg-elevated text-ink shadow-[0_1px_2px_var(--ax-shadow)]" : "text-muted"}`}
               >
                 {s.label} <span className="opacity-60 tabular-nums">{s.n ?? ""}</span>
               </Link>
@@ -140,7 +140,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
                 const edit = `/admin/templates/${t.id}/edit`;
                 const fileOk = t.is_free || hasFile.has(t.id);
                 return (
-                  <li key={t.id} className="flex flex-col gap-3 rounded-[18px] border border-line bg-surface p-3.5">
+                  <li key={t.id} className="flex flex-col gap-3 rounded-card border border-line bg-surface p-3.5">
                     <div className="flex items-center gap-3">
                       {/* Product cover keeps its own colours in both themes. */}
                       {img ? (
@@ -189,7 +189,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
       {/* Floating “+ Шинэ”: sits above the tab bar; the list has bottom padding so it never covers the last card. */}
       <Link
         href="/admin/templates/new"
-        className="ax-btn ax-primary fixed right-4 bottom-[calc(88px+env(safe-area-inset-bottom))] z-[35] inline-flex h-14 items-center gap-2 rounded-[18px] bg-primary pr-5 pl-4 text-base font-extrabold text-on-primary no-underline shadow-[0_18px_36px_-14px_rgba(0,0,0,.45)] min-[1024px]:hidden"
+        className="ax-btn ax-primary fixed right-4 bottom-[calc(88px+env(safe-area-inset-bottom))] z-[35] inline-flex h-14 items-center gap-2 rounded-card bg-primary pr-5 pl-4 text-base font-extrabold text-on-primary no-underline shadow-[0_18px_36px_-14px_rgba(0,0,0,.45)] min-[1024px]:hidden"
       >
         <Icon name="plus" size={20} /> Шинэ
       </Link>

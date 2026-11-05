@@ -17,7 +17,7 @@ export default function PrivacyPage() {
       <main id="main" className="mx-auto max-w-[860px] px-5 pt-8 pb-16 min-[900px]:px-10 min-[900px]:pt-14 min-[900px]:pb-24">
         <header>
           <p className="text-sm font-extrabold tracking-[0.08em] text-brand uppercase">AXORA</p>
-          <h1 className="mt-2 text-[34px] leading-tight font-extrabold tracking-[-0.03em] min-[900px]:text-5xl">Нууцлал ба мэдээлэл ашиглалт</h1>
+          <h1 className="ax-h1 mt-2">Нууцлал ба мэдээлэл ашиглалт</h1>
           <p className={P}>Энэ хуудсанд AXORA-д хүсэлт илгээх үед таны мэдээллийг хэрхэн ашигладгийг энгийнээр тайлбарлав.</p>
         </header>
 

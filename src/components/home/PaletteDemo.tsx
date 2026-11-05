@@ -30,14 +30,14 @@ export function PaletteDemo() {
   return (
     <section
       aria-labelledby="demo-title"
-      className="mx-auto grid max-w-[1240px] items-center gap-[clamp(32px,5vw,72px)] px-[clamp(16px,4vw,40px)] py-14 [grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr))] min-[900px]:py-28"
+      className="ax-container grid items-center gap-[clamp(32px,5vw,72px)] pb-[var(--ax-space-section)] [grid-template-columns:repeat(auto-fit,minmax(min(380px,100%),1fr))]"
     >
       <div className="ax-reveal flex flex-col gap-[22px]">
-        <span className="text-[13px] font-extrabold tracking-[0.08em] text-brand uppercase">Live demo</span>
-        <h2 id="demo-title" className="text-[clamp(28px,3.4vw,44px)] leading-[1.12] font-extrabold tracking-[-0.025em]">
+        <span className="ax-eyebrow">Live demo</span>
+        <h2 id="demo-title" className="ax-h2">
           Өнгөө сонго — вэб <span className="serif">шууд</span> өөрчлөгдөнө.
         </h2>
-        <p className="text-[17px] leading-relaxed text-muted">
+        <p className="ax-lead">
           Palette дээр дарахад товч, badge, холбоос, суурь өнгө зэрэг жишээ вебийн бодит элементүүд солигдоно.
         </p>
         <div role="group" aria-label="Өнгөний palette" className="grid grid-cols-2 gap-2.5 min-[480px]:grid-cols-3">
@@ -49,8 +49,7 @@ export function PaletteDemo() {
                 type="button"
                 aria-pressed={on}
                 onClick={() => setPalette(p.id)}
-                className="ax-btn flex min-h-14 items-center gap-2.5 rounded-xl bg-surface px-3 py-2 text-left text-sm font-bold text-ink"
-                style={{ border: on ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line)" }}
+                className="ax-btn ax-option min-h-14 items-center gap-2.5 px-3 py-2 text-left text-sm font-bold"
               >
                 <span className="flex shrink-0">
                   <span className="h-[22px] w-[22px] rounded-full border-2 border-surface shadow-[0_0_0_1px_var(--ax-line)]" style={{ background: p.primary }} />
@@ -63,7 +62,7 @@ export function PaletteDemo() {
         </div>
         <Link
           href="/builder"
-          className="ax-btn ax-primary inline-flex min-h-[52px] items-center gap-2.5 self-start rounded-xl bg-primary px-[22px] text-base font-bold text-on-primary no-underline"
+          className="ax-btn ax-primary inline-flex min-h-13 items-center gap-2.5 self-start rounded-control bg-primary px-[22px] text-base font-bold text-on-primary no-underline"
         >
           Бүрэн туршиж үзэх
           <span className="ax-arrow">
@@ -73,7 +72,7 @@ export function PaletteDemo() {
       </div>
 
       <div
-        className="ax-reveal ax-tr ax-light overflow-hidden rounded-3xl border border-line bg-surface shadow-[0_40px_80px_-50px_rgba(23,37,30,.45)]"
+        className="ax-reveal ax-light overflow-hidden rounded-panel border border-line bg-surface shadow-raised"
         style={vars}
         aria-live="polite"
       >

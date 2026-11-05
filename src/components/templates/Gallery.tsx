@@ -34,7 +34,7 @@ export function Gallery({ category, style, images, title }: { category: Template
         go(i + (event.key === "ArrowRight" ? 1 : -1));
       }}>
       <div
-        className="relative aspect-[4/3] overflow-hidden rounded-[18px] max-[899px]:aspect-auto max-[899px]:h-[290px] max-[899px]:rounded-[22px]"
+        className="relative aspect-[4/3] overflow-hidden rounded-card max-[899px]:aspect-auto max-[899px]:h-[290px] max-[899px]:rounded-card"
         style={{ background: style.tint }}
         onTouchStart={(e) => (touchX.current = e.touches[0]?.clientX ?? null)}
         onTouchEnd={(e) => {
@@ -55,7 +55,7 @@ export function Gallery({ category, style, images, title }: { category: Template
             <TemplatePreview category={category} s={style} size="lg" />
           </div>
         )}
-        <span aria-live="polite" className="absolute bottom-3 left-3 rounded-[7px] bg-tabbar px-[9px] py-[5px] text-xs font-bold text-ink max-[899px]:top-3 max-[899px]:bottom-auto">
+        <span aria-live="polite" className="absolute bottom-3 left-3 rounded-inner bg-tabbar px-[9px] py-[5px] text-xs font-bold text-ink max-[899px]:top-3 max-[899px]:bottom-auto">
           <span className="min-[900px]:hidden">
             {i + 1} / {count} ·{" "}
           </span>
@@ -72,8 +72,7 @@ export function Gallery({ category, style, images, title }: { category: Template
                 type="button"
                 aria-pressed={i === n}
                 onClick={() => go(n)}
-                className="ax-btn min-h-14 rounded-xl p-2 text-[13px] font-bold text-ink"
-                style={{ background: style.tint, border: i === n ? "2px solid var(--ax-brand)" : "1px solid var(--ax-line)" }}
+                className="ax-btn ax-option min-h-14 items-center justify-center p-2 text-[13px] font-bold"
               >
                 {s.label}
               </button>

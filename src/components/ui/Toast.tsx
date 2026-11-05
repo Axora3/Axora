@@ -47,7 +47,7 @@ function ToastItem({ t, onDone }: { t: Toast; onDone: () => void }) {
   return (
     <div
       role={t.kind === "err" ? "alert" : "status"}
-      className={`pointer-events-auto flex w-full max-w-[440px] items-start gap-2.5 rounded-[14px] px-4 py-3 text-sm leading-snug font-semibold shadow-[0_20px_40px_-20px_rgba(0,0,0,.5)] [animation:axUpSm_.25s_ease_both] ${
+      className={`pointer-events-auto flex w-full max-w-[440px] items-start gap-2.5 rounded-control px-4 py-3 text-sm leading-snug font-semibold shadow-[0_20px_40px_-20px_rgba(0,0,0,.5)] [animation:axUpSm_.25s_ease_both] ${
         t.kind === "ok" ? "bg-band text-on-band" : "border border-danger-line bg-danger-bg text-danger-ink"
       }`}
     >
@@ -62,7 +62,7 @@ function ToastItem({ t, onDone }: { t: Toast; onDone: () => void }) {
             t.action!.onClick();
             onDone();
           }}
-          className={`min-h-9 shrink-0 cursor-pointer rounded-[9px] border-0 px-2.5 text-[13px] font-extrabold ${t.kind === "ok" ? "bg-band-chip text-on-band" : "bg-surface text-danger"}`}
+          className={`min-h-9 shrink-0 cursor-pointer rounded-inner border-0 px-2.5 text-[13px] font-extrabold ${t.kind === "ok" ? "bg-band-chip text-on-band" : "bg-surface text-danger"}`}
         >
           {t.action.label}
         </button>

@@ -139,7 +139,7 @@ async function RequestDetailContent({ params }: PageProps<"/admin/template-reque
                     <span className="font-bold [overflow-wrap:anywhere]">{r.contact_value}</span>
                     <CopyButton value={r.contact_value} label="Холбоо барих" />
                     {contactHref && (
-                      <a href={contactHref} className="inline-flex min-h-11 items-center rounded-[10px] border border-line-strong px-3 text-[13px] font-bold text-ink no-underline">
+                      <a href={contactHref} className="inline-flex min-h-11 items-center rounded-control border border-line-strong px-3 text-[13px] font-bold text-ink no-underline">
                         {r.contact_channel === "email" ? "Имэйл нээх" : "Залгах"}
                       </a>
                     )}
