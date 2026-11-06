@@ -5,6 +5,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { DENIED, requireAdminAction, type AdminContext, type ActionResult } from "@/lib/admin/auth";
 import { FILE_MAX, PREVIEW_EXT, PREVIEW_MAX, templateForm, validateTemplate, type FormErrors, type TemplateForm } from "@/lib/admin/template-schema";
+import { TEMPLATE_DELETE_MIGRATION_HINT } from "@/lib/admin/db-errors";
 import { BUCKETS } from "@/lib/supabase/server";
 import { TEMPLATE_CATEGORIES, type TemplateCategory } from "@/lib/templates/types";
 
@@ -17,6 +18,8 @@ const saveInput = z.object({
   mode: z.enum(["draft", "publish", "unpublish"]),
   form: templateForm,
 });
+
+const deleteInput = z.object({ id: z.uuid() });
 
 const PUBLISH_FIELD: Record<string, keyof FormErrors> = { title: "title", slug: "slug", short_description: "shortDescription", price: "price", file: "file" };
 const PUBLISH_TEXT: Partial<Record<keyof FormErrors, string>> = {
@@ -215,6 +218,49 @@ export async function setTemplatePublishedAction(input: z.input<typeof publishIn
 }
 
 /** Server-side duplicate check for the slug field (the product being edited is excluded). */
+const PUBLISHED_FIRST = "Нийтлэгдсэн бүтээгдэхүүнийг устгах боломжгүй. Эхлээд нийтлэлээс буулгана уу.";
+const HAS_REQUESTS = "Энэ бүтээгдэхүүнд хүсэлт бүртгэгдсэн тул устгах боломжгүй: худалдан авалтын түүх хадгалагдах ёстой. Оронд нь нийтлэлээс буулгана уу.";
+
+/**
+ * Permanently removes a product. The checks here give clear messages, and the
+ * database enforces them again: is_admin() RLS, the published guard, and the
+ * ON DELETE RESTRICT on template_requests.
+ */
+export async function deleteTemplateAction(input: z.input<typeof deleteInput>): Promise<ActionResult> {
+  const ctx = await requireAdminAction();
+  if (!ctx) return DENIED;
+  const p = deleteInput.safeParse(input);
+  if (!p.success) return { ok: false, code: "invalid", message: "Утга буруу байна." };
+  const { db } = ctx;
+  const [{ data: t, error: readError }, requests, { data: files }] = await Promise.all([
+    db.from("templates").select("id, slug, status, preview_images").eq("id", p.data.id).maybeSingle(),
+    db.from("template_requests").select("id", { count: "exact", head: true }).eq("template_id", p.data.id),
+    db.from("template_files").select("storage_path").eq("template_id", p.data.id),
+  ]);
+  if (readError || requests.error || requests.count === null) return { ok: false, code: "server", message: "Бүтээгдэхүүнийг шалгаж чадсангүй. Дахин оролдоно уу." };
+  if (!t) return { ok: false, code: "not_found", message: "Бүтээгдэхүүн олдсонгүй." };
+  if (t.status === "published") return { ok: false, code: "published", message: PUBLISHED_FIRST };
+  if (requests.count > 0) return { ok: false, code: "has_requests", message: HAS_REQUESTS };
+
+  const { data: removed, error } = await db.from("templates").delete().eq("id", t.id).select("id");
+  if (error?.code === "42501") return { ok: false, code: "migration", message: TEMPLATE_DELETE_MIGRATION_HINT };
+  // A RESTRICT violation is 23503 before Postgres 18 and 23001 from then on.
+  if (error?.code === "23503" || error?.code === "23001") return { ok: false, code: "has_requests", message: HAS_REQUESTS };
+  if (error?.code === "P0001") return { ok: false, code: "published", message: PUBLISHED_FIRST };
+  if (error || !removed?.length) {
+    if (error) console.error("[admin] template delete failed:", error.code);
+    return { ok: false, code: "server", message: "Бүтээгдэхүүнийг устгаж чадсангүй. Дахин оролдоно уу." };
+  }
+
+  await Promise.all([
+    cleanupObjects(ctx, BUCKETS.previews, ((t.preview_images ?? []) as { path: string }[]).map((image) => image.path)),
+    cleanupObjects(ctx, BUCKETS.templateFiles, (files ?? []).map((file) => file.storage_path).filter((path): path is string => !!path)),
+  ]);
+  revalidatePath("/admin/templates");
+  revalidatePublic(t.slug);
+  return { ok: true };
+}
+
 export async function checkSlugAction(slug: string, excludeId: string | null): Promise<ActionResult<{ available: boolean }>> {
   const ctx = await requireAdminAction();
   if (!ctx) return DENIED;

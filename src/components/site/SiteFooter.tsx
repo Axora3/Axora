@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/icons";
-import { emailHref, phoneHref } from "@/lib/contact-links";
+import { emailHref, isConfigured, phoneHref } from "@/lib/contact-links";
 import { getSiteContent } from "@/lib/content/service";
 
 const COLUMNS: { title: string; links: [string, string][] }[] = [
   { title: "Загварууд", links: [["/templates", "Бэлэн загварууд"], ["/bundles", "Багцууд"], ["/favorites", "Хадгалсан"], ["/compare", "Харьцуулах"]] },
-  { title: "Веб", links: [["/services", "Веб хөгжүүлэлт"], ["/builder", "Вебээ загварчлах"], ["/order", "Анкет"], ["/portfolio", "Портфолио"]] },
+  { title: "Веб", links: [["/services", "Үйлчилгээ"], ["/builder", "Website Builder"], ["/order", "Анкет"], ["/portfolio", "Портфолио"]] },
   { title: "Мэдлэг", links: [["/learn", "Сургалт"], ["/blog", "Нийтлэл"], ["/#faq", "Түгээмэл асуулт"], ["/privacy", "Нууцлал"]] },
 ];
 
@@ -38,9 +38,9 @@ export async function SiteFooter() {
         </nav>
         <div className="flex min-w-0 flex-col gap-1.5 text-sm break-words text-band-muted">
           <h2 className={heading}>Холбоо барих</h2>
-          <Link href="/contact" className={link}>Тусламж</Link>
-          {phoneHref(c.contact.phone) ? <a href={phoneHref(c.contact.phone)!} className="text-band-muted no-underline hover:text-lime">{c.contact.phone}</a> : <span>{c.contact.phone}</span>}
-          {emailHref(c.contact.email) ? <a href={emailHref(c.contact.email)!} className="text-band-muted no-underline hover:text-lime">{c.contact.email}</a> : <span>{c.contact.email}</span>}
+          <Link href="/contact" className={link}>Бидэнтэй холбогдох</Link>
+          {isConfigured(c.contact.phone) && (phoneHref(c.contact.phone) ? <a href={phoneHref(c.contact.phone)!} className="text-band-muted no-underline hover:text-lime">{c.contact.phone}</a> : <span>{c.contact.phone}</span>)}
+          {isConfigured(c.contact.email) && (emailHref(c.contact.email) ? <a href={emailHref(c.contact.email)!} className="text-band-muted no-underline hover:text-lime">{c.contact.email}</a> : <span>{c.contact.email}</span>)}
           {c.social.map((s) => (
             <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center text-band-muted no-underline hover:text-lime">
               {s.label}
@@ -48,8 +48,9 @@ export async function SiteFooter() {
           ))}
         </div>
       </div>
-      <div className="ax-container border-t border-band-line pt-5 pb-6">
+      <div className="ax-container flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-band-line pt-5 pb-6">
         <p className="text-xs text-band-faint">AXORA · Бүтээх ажлыг хялбарчилъя.</p>
+        <Link href="/privacy" className="inline-flex min-h-11 items-center text-xs font-semibold text-band-faint no-underline transition-colors hover:text-lime">Нууцлалын бодлого</Link>
       </div>
       <div aria-hidden="true" className="ax-container -mb-[0.1em] pt-4">
         <span className="ax-wordmark">AXORA</span>

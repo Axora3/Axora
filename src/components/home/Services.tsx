@@ -2,7 +2,6 @@ import Link from "next/link";
 import { ArrowRight, Check } from "@/components/icons";
 import { buttonStyles } from "@/components/ui/button";
 import { SpotlightGroup } from "@/components/ui/spotlight";
-import { HERO_OVERLAP } from "./HomeHero";
 
 const SERVICES = [
   {
@@ -28,11 +27,15 @@ const SERVICES = [
 
 export function Services() {
   return (
-    <section id="services" aria-labelledby="cmp-title" className={`ax-container pb-[var(--ax-space-section)] ${HERO_OVERLAP}`}>
+    <section id="services" aria-labelledby="cmp-title" className="ax-container pb-section">
       <div className="ax-reveal flex flex-wrap items-end justify-between gap-4">
         <h2 id="cmp-title" className="ax-h2 max-w-[16em]">
           Танд <span className="serif">аль нь</span> тохирох вэ?
         </h2>
+        <Link href="/services" className="ax-link inline-flex min-h-11 items-center gap-2 font-bold text-ink no-underline">
+          Бүх үйлчилгээ
+          <span className="ax-arrow"><ArrowRight /></span>
+        </Link>
       </div>
       <SpotlightGroup className="ax-reveal mt-10 grid overflow-hidden rounded-panel border border-line bg-surface min-[900px]:grid-cols-2">
         {SERVICES.map((s, i) => (

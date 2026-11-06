@@ -28,7 +28,9 @@ for (const file of walk("src").filter(f=>f.endsWith(".tsx"))) {
 const adminFiles = [...walk("src/app/admin"), ...walk("src/components/admin"), "src/lib/admin/labels.ts"];
 for (const file of adminFiles.filter(f => /\.tsx?$/.test(f))) {
   const source = readFileSync(file, "utf8");
-  assert.doesNotMatch(source, /from ["'](?:@\/components\/icons|lucide-react|react-icons|@heroicons|@iconify)/, `Legacy admin icon import: ${file}`);
+  // The sidebar's navigation config is the one admin file that uses Lucide, as specified for the admin navigation.
+  const banned = file === "src/components/admin/nav.ts" ? /from ["'](?:@\/components\/icons|react-icons|@heroicons|@iconify)/ : /from ["'](?:@\/components\/icons|lucide-react|react-icons|@heroicons|@iconify)/;
+  assert.doesNotMatch(source, banned, `Legacy admin icon import: ${file}`);
   const ast = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
   const visit = node => {
     if (ts.isPropertyAssignment(node) && node.name.getText(ast) === "icon" && ts.isStringLiteral(node.initializer)) {

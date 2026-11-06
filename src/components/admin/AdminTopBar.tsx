@@ -7,6 +7,7 @@ import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Icon } from "@/components/ui/icon";
 import { Menu } from "@/components/ui/menu";
 import { AdminBell, SignOutButton } from "./AdminShell";
+import { ADMIN_NAV, isActive } from "./nav";
 
 /** Every scope is an existing list page that already filters by `q`. */
 const SCOPES = [
@@ -17,7 +18,37 @@ const SCOPES = [
   { href: "/admin/payments", label: "Төлбөр" },
 ];
 
-/** Desktop header: scoped search, notifications, theme and the profile menu. */
+/** Where you are, from the URL and the navigation config, so every admin page gets it. */
+function Crumbs({ path }: { path: string }) {
+  const item = ADMIN_NAV.find((n) => isActive(n, path));
+  const rest = item ? path.slice(item.href.length) : "";
+  const leaf = !rest ? null : rest.endsWith("/new") ? "Шинэ" : rest.endsWith("/edit") ? "Засах" : "Дэлгэрэнгүй";
+  return (
+    <nav aria-label="Байршил" className="hidden min-w-0 shrink-0 items-center gap-1.5 text-sm font-semibold text-muted min-[1200px]:flex">
+      <Link href="/admin" className="ax-link no-underline text-muted">Админ</Link>
+      {item && !item.exact && (
+        <>
+          <Icon name="chevron-right" size={14} />
+          {leaf ? <Link href={item.href} className="ax-link truncate no-underline text-muted">{item.label}</Link> : <span aria-current="page" className="truncate font-bold text-ink">{item.label}</span>}
+        </>
+      )}
+      {item?.exact && (
+        <>
+          <Icon name="chevron-right" size={14} />
+          <span aria-current="page" className="truncate font-bold text-ink">{item.label}</span>
+        </>
+      )}
+      {leaf && (
+        <>
+          <Icon name="chevron-right" size={14} />
+          <span aria-current="page" className="font-bold text-ink">{leaf}</span>
+        </>
+      )}
+    </nav>
+  );
+}
+
+/** Desktop header: breadcrumbs, scoped search, notifications, theme and the profile menu. */
 export function AdminTopBar({ email }: { email: string }) {
   const router = useRouter();
   const path = usePathname();
@@ -28,10 +59,11 @@ export function AdminTopBar({ email }: { email: string }) {
 
   return (
     <div className="sticky top-0 z-30 hidden h-16 shrink-0 items-center gap-3 border-b border-line bg-header-admin px-[clamp(16px,3vw,32px)] backdrop-blur-[10px] min-[1024px]:flex">
+      <Crumbs path={path} />
       <form
         role="search"
         aria-label="Админ хайлт"
-        className="flex w-full max-w-[520px] items-center overflow-hidden rounded-control border border-line-strong bg-surface focus-within:border-focus focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--ax-focus)_24%,transparent)]"
+        className="ml-auto flex w-full max-w-[420px] items-center overflow-hidden rounded-control border border-line-strong bg-surface focus-within:border-focus focus-within:shadow-[0_0_0_3px_color-mix(in_srgb,var(--ax-focus)_24%,transparent)]"
         onSubmit={(e) => {
           e.preventDefault();
           const term = q.trim();
@@ -47,7 +79,7 @@ export function AdminTopBar({ email }: { email: string }) {
         <input id="admin-q" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Хайх…" className="min-h-10 w-full min-w-0 border-0 bg-transparent px-2.5 text-[15px] text-ink outline-none" />
       </form>
 
-      <span className="ml-auto flex items-center gap-2">
+      <span className="flex shrink-0 items-center gap-2">
         <AdminBell />
         <ThemeToggle size={20} />
         <Menu

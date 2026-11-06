@@ -43,8 +43,8 @@ export const DEFAULT_CONTENT: SiteContent = {
   heroTitle: "Бэлэн загвар ба",
   heroAccent: "веб сайт — нэг дор.",
   heroLead: "Excel, Notion, Canva загварыг аваад шууд ашигла. Эсвэл бизнестээ зориулсан веб сайтаа бидэнд захиал.",
-  heroPrimary: { label: "Загварууд үзэх", href: "/templates" },
-  heroSecondary: { label: "Веб сайт захиалах", href: "/order" },
+  heroPrimary: { label: "Вебсайт бүтээх", href: "/builder" },
+  heroSecondary: { label: "Загварууд үзэх", href: "/templates" },
   contact: { phone: CONTACT.phone, email: CONTACT.email, messenger: CONTACT.messenger, hours: CONTACT.hours },
   bank: { name: "", account: "", holder: "" },
   social: [],
@@ -60,10 +60,14 @@ export function parseContent(raw: unknown): SiteContent {
     const cta = value as { href?: unknown };
     return cta.href === "/services/estimate" ? { ...cta, href: "/order" } : value;
   };
+  // Copy saved before the Phase 2 homepage still holds the old button pair. Only that
+  // exact pair moves to the new defaults; anything an admin chose since is left alone.
+  const stored = merged as { heroPrimary?: { label?: unknown }; heroSecondary?: { label?: unknown } };
+  const legacyCtas = stored.heroPrimary?.label === "Загварууд үзэх" && stored.heroSecondary?.label === "Веб сайт захиалах";
   const content = {
     ...merged,
-    heroPrimary: normalizeCta(merged.heroPrimary),
-    heroSecondary: normalizeCta(merged.heroSecondary),
+    heroPrimary: legacyCtas ? DEFAULT_CONTENT.heroPrimary : normalizeCta(merged.heroPrimary),
+    heroSecondary: legacyCtas ? DEFAULT_CONTENT.heroSecondary : normalizeCta(merged.heroSecondary),
   };
   const r = siteContentSchema.safeParse(content);
   return r.success ? r.data : DEFAULT_CONTENT;

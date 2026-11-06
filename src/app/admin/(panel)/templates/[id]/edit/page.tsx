@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import { notFound } from "next/navigation";
+import { DeleteProductButton } from "@/components/admin/ProductControls";
 import { TemplateEditor } from "@/components/admin/TemplateEditor";
 import { Body, LoadFailed, PageHeader } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/admin/auth";
@@ -24,7 +25,7 @@ async function EditTemplateContent({ params }: PageProps<"/admin/templates/[id]/
 
   return (
     <>
-      <PageHeader crumbs={[{ href: "/admin/templates", label: "Загварууд" }]} title={t.title} description={`/templates/${t.slug}`} />
+      <PageHeader crumbs={[{ href: "/admin/templates", label: "Загварууд" }]} title={t.title} description={`/templates/${t.slug}`} actions={<DeleteProductButton id={t.id} title={t.title} published={t.status === "published"} labelled />} />
       <Body>
         <TemplateEditor
           id={t.id}

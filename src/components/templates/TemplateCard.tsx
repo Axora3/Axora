@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight } from "@/components/icons";
+import { Badge } from "@/components/ui/badge";
 import { Icon } from "@/components/ui/icon";
 import { formatPrice, type Template } from "@/lib/templates/types";
 import { TemplatePreview } from "./TemplatePreview";
@@ -79,8 +80,11 @@ export function TemplateCard({
       <div className={`flex flex-1 flex-col gap-2 p-5 ${feature ? "min-[640px]:justify-end min-[640px]:p-7" : ""}`}>
         <H className={`leading-[1.25] font-extrabold tracking-[-0.012em] ${feature ? "text-[clamp(22px,2.2vw,30px)]" : "text-[18px]"}`}>{t.title}</H>
         <p className={`text-[15px] leading-[1.5] text-muted ${feature ? "" : "line-clamp-2"}`}>{t.shortDescription}</p>
-        <div className="mt-auto flex items-center justify-between gap-3 pt-3">
-          {t.isFree ? <span className="ax-badge ax-badge-lime text-[13px]">{formatPrice(t)}</span> : <span className="text-[17px] font-extrabold tabular-nums">{formatPrice(t)}</span>}
+        <div className="mt-auto flex flex-wrap items-center justify-between gap-x-3 gap-y-1 pt-3">
+          <span className="flex items-center gap-2">
+            {!t.isFree && <span className="text-[17px] font-extrabold tabular-nums">{formatPrice(t)}</span>}
+            <Badge tone={t.isFree ? "lime" : "neutral"}>{t.isFree ? "Үнэгүй" : "Төлбөртэй"}</Badge>
+          </span>
           <Link href={`/templates/${t.slug}`} className="ax-stretch inline-flex min-h-11 items-center gap-1.5 px-0.5 text-sm font-bold text-brand no-underline" aria-label={`${t.title} — дэлгэрэнгүй`}>
             Дэлгэрэнгүй
             <span className="ax-arrow">

@@ -2,6 +2,8 @@ import { Icon, type IconName } from "@/components/ui/icon";
 import Link from "next/link";
 import { Card, CardHeader } from "@/components/ui/card";
 import { buttonStyles } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { EmptyState as BaseEmptyState } from "@/components/ui/empty-state";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ORDER_STATUS, PAYMENT_STATUS, REQUEST_STATUS, type OrderStatus, type PaymentStatus, type RequestStatus } from "@/lib/admin/labels";
 import { AdminBell, AdminMenuButton } from "./AdminShell";
@@ -43,7 +45,7 @@ export function PageHeader({
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           {crumbs && crumbs.length > 0 && (
-            <nav aria-label="Байршил" className={`flex flex-wrap items-center gap-1.5 text-[13px] font-semibold ${band ? "text-band-faint" : "text-muted"}`}>
+            <nav aria-label="Байршил" className={`flex flex-wrap items-center gap-1.5 text-[13px] font-semibold min-[1200px]:hidden ${band ? "text-band-faint" : "text-muted"}`}>
               {crumbs.map((c) => (
                 <span key={c.href} className="inline-flex items-center gap-1.5">
                   <Link href={c.href} className={`ax-link inline-flex min-h-8 items-center no-underline ${band ? "text-band-faint" : "text-muted"}`}>
@@ -75,10 +77,10 @@ export function PaymentPill({ status }: { status: string }) {
   const s = PAYMENT_STATUS[status as PaymentStatus];
   if (!s) return null;
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12px] font-extrabold whitespace-nowrap" style={{ background: s.bg, color: s.fg }}>
+    <Badge style={{ background: s.bg, color: s.fg }}>
       <Icon name={s.icon} size={16} />
       {s.label}
-    </span>
+    </Badge>
   );
 }
 
@@ -106,22 +108,19 @@ export function StatusPill({ kind, status }: { kind: "order" | "request"; status
   const s = kind === "order" ? ORDER_STATUS[status as OrderStatus] : REQUEST_STATUS[status as RequestStatus];
   if (!s) return <span>{status}</span>;
   return (
-    <span className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12.5px] font-extrabold whitespace-nowrap" style={{ background: s.bg, color: s.fg }}>
+    <Badge style={{ background: s.bg, color: s.fg }}>
       <Icon name={s.icon} size={16} />
       {s.label}
-    </span>
+    </Badge>
   );
 }
 
 export function PubPill({ published }: { published: boolean }) {
   return (
-    <span
-      className="inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[12.5px] font-extrabold whitespace-nowrap"
-      style={published ? { background: "var(--ax-success-bg)", color: "var(--ax-success)" } : { background: "var(--ax-warn-bg)", color: "var(--ax-warn)" }}
-    >
+    <Badge tone={published ? "success" : "warn"}>
       <Icon name={published ? "eye" : "eye-off"} size={16} />
       {published ? "Нийтлэгдсэн" : "Ноорог"}
-    </span>
+    </Badge>
   );
 }
 
@@ -161,14 +160,7 @@ export function OrderPrompt({ text }: { text: string }) {
 }
 
 export function EmptyState({ title, text, action, icon = "inbox" }: { title: string; text?: string; action?: React.ReactNode; icon?: IconName }) {
-  return (
-    <div className="flex flex-col items-center gap-3 px-6 py-12 text-center">
-      <span className="flex h-14 w-14 items-center justify-center rounded-2xl border border-line bg-soft text-brand"><Icon name={icon} size={24} /></span>
-      <h3 className="text-lg font-extrabold">{title}</h3>
-      {text && <p className="max-w-[30em] text-[15px] leading-relaxed text-muted">{text}</p>}
-      {action}
-    </div>
-  );
+  return <BaseEmptyState title={title} description={text} action={action} icon={<Icon name={icon} size={24} />} />;
 }
 
 /** A real read failure — never presented as "no data". */

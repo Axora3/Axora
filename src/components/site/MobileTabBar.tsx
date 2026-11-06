@@ -8,7 +8,7 @@ import { Form, Grid, Home, Sliders } from "@/components/icons";
 const TABS = [
   { href: "/", label: "Нүүр", Icon: Home, match: (p: string) => p === "/" },
   { href: "/templates", label: "Загварууд", Icon: Grid, match: (p: string) => p.startsWith("/templates") },
-  { href: "/builder", label: "Live demo", Icon: Sliders, match: (p: string) => p.startsWith("/builder") || p.startsWith("/services") },
+  { href: "/builder", label: "Builder", Icon: Sliders, match: (p: string) => p.startsWith("/builder") || p.startsWith("/services") },
   { href: "/order", label: "Анкет", Icon: Form, match: (p: string) => p.startsWith("/order") },
 ];
 

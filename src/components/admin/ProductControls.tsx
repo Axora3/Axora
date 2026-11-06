@@ -7,9 +7,69 @@ import { runAdminAction } from "@/lib/admin/action-client";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
-import { setTemplatePublishedAction } from "@/app/admin/template-actions";
+import { deleteTemplateAction, setTemplatePublishedAction } from "@/app/admin/template-actions";
 import { BottomSheet } from "@/components/ui/BottomSheet";
+import { Button, buttonStyles } from "@/components/ui/button";
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ErrorBox } from "@/components/ui/Notice";
 import { useToast } from "@/components/ui/Toast";
+
+/**
+ * Permanent delete, always behind a confirmation. A published product cannot be
+ * deleted, so the dialog explains that instead of offering an action that would fail.
+ */
+export function DeleteProductButton({ id, title, published, labelled = false }: { id: string; title: string; published: boolean; labelled?: boolean }) {
+  const router = useRouter();
+  const toast = useToast();
+  const [open, setOpen] = useState(false);
+  const [error, setError] = useState("");
+  const [pending, start] = useTransition();
+
+  function remove() {
+    setError("");
+    start(async () => {
+      const r = await runAdminAction(() => deleteTemplateAction({ id }));
+      if (!r.ok) {
+        setError(r.message);
+        return;
+      }
+      setOpen(false);
+      toast({ kind: "ok", text: `“${title}” устгагдлаа.` });
+      router.push("/admin/templates");
+      router.refresh();
+    });
+  }
+
+  return (
+    <Dialog
+      open={open}
+      onOpenChange={(next) => {
+        setOpen(next);
+        if (next) setError("");
+      }}
+    >
+      <DialogTrigger aria-label={`${title} — устгах`} title="Устгах" className={buttonStyles(labelled ? "danger" : "quiet", labelled ? "" : "w-11 px-0 text-danger")}>
+        <Icon name="trash" size={labelled ? 16 : 18} />
+        {labelled && "Устгах"}
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>{published ? "Эхлээд нийтлэлээс буулгана уу" : "Бүтээгдэхүүнийг устгах уу?"}</DialogTitle>
+          <DialogDescription>
+            {published
+              ? `“${title}” сайтад нийтлэгдсэн байна. Устгахын өмнө нийтлэлээс буулгаж ноорог болгоно уу.`
+              : `“${title}” болон түүний зураг, хамгаалагдсан файл бүрмөсөн устана. Энэ үйлдлийг буцаах боломжгүй.`}
+          </DialogDescription>
+        </DialogHeader>
+        {error && <ErrorBox>{error}</ErrorBox>}
+        <DialogFooter>
+          <DialogClose className={buttonStyles("secondary")}>{published ? "Ойлголоо" : "Болих"}</DialogClose>
+          {!published && <Button variant="danger" loading={pending} onClick={remove}>{pending ? "Устгаж байна…" : "Тийм, устгах"}</Button>}
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 /**
  * Publish switch on a product card. While saving it is disabled and shows

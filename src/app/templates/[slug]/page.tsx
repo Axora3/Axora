@@ -9,6 +9,7 @@ import { Gallery } from "@/components/templates/Gallery";
 import { TemplateCard } from "@/components/templates/TemplateCard";
 import { TemplateCollectionActions } from "@/components/templates/TemplateCollectionActions";
 import { TemplateRequest } from "@/components/templates/TemplateRequest";
+import { Badge } from "@/components/ui/badge";
 import { Icon } from "@/components/ui/icon";
 import { LoadError } from "@/components/ui/RetryButton";
 import { getSiteContent } from "@/lib/content/service";
@@ -20,7 +21,13 @@ export async function generateMetadata({ params }: PageProps<"/templates/[slug]"
   const { slug } = await params;
   const res = await getTemplateBySlug(slug);
   if (!res.ok || !res.template) return { title: "Загвар олдсонгүй", robots: { index: false } };
-  return { title: res.template.title, description: res.template.shortDescription };
+  const { title, shortDescription, previewImages } = res.template;
+  return {
+    title,
+    description: shortDescription,
+    alternates: { canonical: `/templates/${slug}` },
+    openGraph: { title, description: shortDescription, ...(previewImages[0] ? { images: [{ url: previewImages[0].url, alt: previewImages[0].alt }] } : {}) },
+  };
 }
 
 /** Same category first, then anything else that is published. Real catalogue data only. */
@@ -32,7 +39,7 @@ async function Related({ current }: { current: Template }) {
   if (list.length === 0) return null;
   return (
     <section aria-labelledby="related-title" className="mt-[var(--ax-space-section)] border-t border-line pt-10">
-      <h2 id="related-title" className="ax-h3">Бусад загвар</h2>
+      <h2 id="related-title" className="ax-h3">Төстэй загварууд</h2>
       <div className="mt-6 grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr))]">
         {list.map((t) => <TemplateCard key={t.id} t={t} headingLevel="h3" />)}
       </div>
@@ -58,39 +65,25 @@ async function Detail({ params }: { params: PageProps<"/templates/[slug]">["para
         <Icon name="chevron-right" size={16} />
         <span aria-current="page" className="truncate text-ink">{t.title}</span>
       </nav>
-      <div className="grid items-start gap-x-[clamp(24px,4vw,56px)] gap-y-6 min-[1000px]:grid-cols-[minmax(0,1.3fr)_minmax(340px,1fr)]">
-        <div className="ax-in-sm flex min-w-0 flex-col gap-8">
+      <div className="grid items-start gap-x-[clamp(24px,4vw,56px)] gap-y-8 min-[1000px]:grid-cols-[minmax(0,1.6fr)_minmax(320px,1fr)]">
+        <div className="ax-in-sm min-w-0">
           <Gallery category={t.category} style={t.previewStyle} images={t.previewImages} title={t.title} />
-          <div className="hidden flex-col gap-6 min-[1000px]:flex">
-            <p className="text-[17px] leading-[1.7] text-muted">{t.longDescription}</p>
-            <DetailInfo t={t} />
-          </div>
         </div>
-        <div className="ax-in-sm flex flex-col gap-4 [animation-delay:.06s] min-[1000px]:sticky min-[1000px]:top-[92px]">
-          <span className="ax-eyebrow">{t.category} загвар</span>
-          <h1 className="ax-h2">{t.title}</h1>
+        <aside aria-label="Үнэ ба худалдан авах" className="ax-in-sm flex flex-col gap-4 [animation-delay:.06s] min-[1000px]:sticky min-[1000px]:top-[92px] min-[1000px]:row-span-2 min-[1000px]:-m-1 min-[1000px]:max-h-[calc(100dvh-108px)] min-[1000px]:overflow-y-auto min-[1000px]:p-1">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge tone="solid">{t.category}</Badge>
+            <Badge tone={t.isFree ? "lime" : "neutral"}>{t.isFree ? "Үнэгүй" : "Төлбөртэй"}</Badge>
+            {t.isDemo && <Badge tone="warn">Жишээ үнэ</Badge>}
+          </div>
+          <h1 className="ax-h2 [overflow-wrap:anywhere]">{t.title}</h1>
           <p className="text-[15px] leading-relaxed text-muted">{t.shortDescription}</p>
           <div className="ax-surface flex flex-col gap-4 p-5">
-            <div className="flex flex-wrap items-baseline gap-2.5">
-              {t.isFree ? <span className="ax-badge ax-badge-lime px-3 py-1.5 text-base">{price}</span> : <span className="text-[32px] leading-none font-extrabold tracking-[-0.02em] tabular-nums max-[899px]:text-2xl">{price}</span>}
-              {t.isDemo && <span className="ax-badge ax-badge-warn">Жишээ үнэ</span>}
-            </div>
+            <span className="text-[32px] leading-none font-extrabold tracking-[-0.02em] tabular-nums max-[899px]:text-2xl">{price}</span>
             <TemplateRequest slug={t.slug} title={t.title} category={t.category} priceLabel={price} tint={t.previewStyle.tint} isDemo={t.isDemo} backendEnabled={isBackendConfigured()} isFree={t.isFree} bank={bank} />
             <TemplateCollectionActions template={{ id: t.id, title: t.title }} />
           </div>
-          <dl className="m-0 grid grid-cols-2 gap-px overflow-hidden rounded-control border border-line bg-line">
-            <div className="bg-surface px-3.5 py-3">
-              <dt className="text-xs font-extrabold text-muted">Шаардлагатай</dt>
-              <dd className="m-0 mt-1 text-[14.5px] leading-snug font-semibold">{t.requirements}</dd>
-            </div>
-            <div className="bg-surface px-3.5 py-3">
-              <dt className="text-xs font-extrabold text-muted">Формат</dt>
-              <dd className="m-0 mt-1 text-[14.5px] leading-snug font-semibold">{t.format}</dd>
-            </div>
-          </dl>
-        </div>
-        <div className="flex flex-col gap-5 min-[1000px]:hidden">
-          <p className="text-base leading-[1.65] text-muted">{t.longDescription}</p>
+        </aside>
+        <div className="min-w-0">
           <DetailInfo t={t} />
         </div>
       </div>

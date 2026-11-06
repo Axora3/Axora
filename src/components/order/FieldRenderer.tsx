@@ -76,9 +76,9 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
       if (!builder) {
         return (
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-control border border-dashed border-line-dashed px-4 py-3.5 text-sm leading-normal text-muted">
-            <span>Live demo дээр өнгө, хэв маягаа туршвал энд автоматаар бөглөгдөнө.</span>
+            <span>Website Builder дээр өнгө, хэв маягаа туршвал энд автоматаар бөглөгдөнө.</span>
             <Link href="/builder" className="inline-flex min-h-11 items-center font-bold">
-              Вебээ загварчлах
+              Вебсайт бүтээх
             </Link>
           </div>
         );
@@ -94,7 +94,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
             </span>
           </div>
           <div className="flex flex-col gap-1.5 text-sm leading-normal">
-            <span className="font-extrabold text-brand">Live demo-оос дамжсан тохиргоо</span>
+            <span className="font-extrabold text-brand">Website Builder-ээс дамжсан тохиргоо</span>
             <span>
               Төрөл: <strong>{TYPES[builder.type].label}</strong>
             </span>
@@ -108,7 +108,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
               ))}
             </span>
             <Link href="/builder" className="inline-flex min-h-11 items-center font-bold">
-              Demo дээр өөрчлөх
+              Builder дээр өөрчлөх
             </Link>
           </div>
         </div>

@@ -3,6 +3,9 @@ export function isMissingMigration(error: { code?: string } | null | undefined):
   return !!error && ["42703", "42883", "42P01", "PGRST202", "PGRST204", "PGRST205"].includes(error.code ?? "");
 }
 
+export const TEMPLATE_DELETE_MIGRATION_HINT =
+  "Supabase дээр 20261107000000_template_delete.sql migration ажиллаагүй тул бүтээгдэхүүн устгах боломжгүй байна. Migration-ийг ажиллуулаад дахин оролдоно уу.";
+
 export const MIGRATION_HINT =
   "Supabase дээр 20261029000000_payments_delivery_guards.sql migration ажиллаагүй байна. Төлбөр, хүргэлтийн төлөв түүнийг ажиллуулсны дараа харагдана (README → Админ тохируулах).";
 

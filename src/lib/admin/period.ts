@@ -51,6 +51,20 @@ export function ubToday(nowMs: number = Date.now()): { day: string; from: string
   return { day, from: new Date(start).toISOString(), to: new Date(start + DAY).toISOString(), label: `${day.replaceAll("-", ".")} · ${weekday}` };
 }
 
+/** The last `count` calendar months in Ulaanbaatar, oldest first, as UTC [from, to) ranges. */
+export function ubMonths(count: number, nowMs: number = Date.now()): { label: string; from: string; to: string }[] {
+  const [year, month] = ubDateString(nowMs).split("-").map(Number);
+  const start = (offset: number) => new Date(Date.UTC(year, month - 1 + offset, 1)).toISOString().slice(0, 10);
+  return Array.from({ length: count }, (_, i) => {
+    const offset = i - count + 1;
+    return {
+      label: `${Number(start(offset).slice(5, 7))}-р сар`,
+      from: new Date(ubStart(start(offset))).toISOString(),
+      to: new Date(ubStart(start(offset + 1))).toISOString(),
+    };
+  });
+}
+
 /** Request-time clock for server-rendered admin pages (dynamic: they run per request after connection()). */
 export function serverNow(): number {
   return Date.now();

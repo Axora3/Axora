@@ -1,4 +1,4 @@
-import type { IconName } from "@/components/ui/icon";
+import { Activity, Bell, ClipboardList, CreditCard, FolderKanban, Inbox, Layers, LayoutDashboard, LifeBuoy, Megaphone, Package, Settings, type LucideIcon } from "lucide-react";
 
 /**
  * One navigation config for both the desktop sidebar and the mobile bottom
@@ -6,10 +6,11 @@ import type { IconName } from "@/components/ui/icon";
  * the rest are reachable from the mobile menu.
  */
 export type NavCount = "orders" | "requests" | "support" | "notifications";
+export const NAV_GROUPS = ["ҮНДСЭН", "ЗАХИАЛГУУД", "УДИРДЛАГА", "БУСАД"] as const;
 export type NavItem = {
   href: string;
   label: string;
-  group: "Үндсэн" | "Удирдлага" | "Систем";
+  group: (typeof NAV_GROUPS)[number];
   /** Short label for the bottom tab bar. */
   tabLabel?: string;
   exact?: boolean;
@@ -17,22 +18,23 @@ export type NavItem = {
   /** What the badge counts, for screen readers. */
   countLabel?: string;
   tab?: boolean;
-  icon: IconName;
+  Icon: LucideIcon;
 };
 
 export const ADMIN_NAV: NavItem[] = [
-  { href: "/admin", label: "Хяналтын самбар", group: "Үндсэн", tabLabel: "Самбар", exact: true, tab: true, icon: "layout-grid" },
-  { href: "/admin/orders", label: "Веб захиалгууд", group: "Үндсэн", tabLabel: "Захиалга", count: "orders", countLabel: "шинэ захиалга", tab: true, icon: "file-text" },
-  { href: "/admin/template-requests", label: "Template хүсэлтүүд", group: "Үндсэн", tabLabel: "Хүсэлт", count: "requests", countLabel: "хариу өгөөгүй шинэ хүсэлт", tab: true, icon: "inbox" },
-  { href: "/admin/templates", label: "Бүтээгдэхүүн", group: "Удирдлага", tabLabel: "Бүтээгдэхүүн", tab: true, icon: "cube" },
-  { href: "/admin/projects", label: "Веб төслүүд", group: "Удирдлага", icon: "globe" },
-  { href: "/admin/payments", label: "Төлбөрүүд", group: "Удирдлага", icon: "credit-card" },
-  { href: "/admin/support", label: "Тусламжийн хүсэлтүүд", group: "Удирдлага", count: "support", countLabel: "шинэ тусламжийн хүсэлт", icon: "message" },
-  { href: "/admin/marketing", label: "Маркетинг", group: "Удирдлага", icon: "send" },
-  { href: "/admin/notifications", label: "Мэдэгдэл", group: "Систем", count: "notifications", countLabel: "уншаагүй мэдэгдэл", icon: "bell" },
-  { href: "/admin/content", label: "Сайтын агуулга", group: "Систем", icon: "layers" },
-  { href: "/admin/activity", label: "Үйлдлийн түүх", group: "Систем", icon: "activity" },
-  { href: "/admin/settings", label: "Тохиргоо", group: "Систем", icon: "settings" },
+  { href: "/admin", label: "Хяналтын самбар", group: "ҮНДСЭН", tabLabel: "Самбар", exact: true, tab: true, Icon: LayoutDashboard },
+  { href: "/admin/orders", label: "Веб захиалгууд", group: "ЗАХИАЛГУУД", tabLabel: "Захиалга", count: "orders", countLabel: "шинэ захиалга", tab: true, Icon: ClipboardList },
+  { href: "/admin/template-requests", label: "Template хүсэлтүүд", group: "ЗАХИАЛГУУД", tabLabel: "Хүсэлт", count: "requests", countLabel: "хариу хүлээж буй хүсэлт", tab: true, Icon: Inbox },
+  { href: "/admin/templates", label: "Бүтээгдэхүүн", group: "УДИРДЛАГА", tabLabel: "Бүтээгдэхүүн", tab: true, Icon: Package },
+  { href: "/admin/projects", label: "Веб төслүүд", group: "УДИРДЛАГА", Icon: FolderKanban },
+  // Existing modules beyond the main navigation, kept so nothing becomes unreachable.
+  { href: "/admin/payments", label: "Төлбөрүүд", group: "БУСАД", Icon: CreditCard },
+  { href: "/admin/support", label: "Тусламжийн хүсэлтүүд", group: "БУСАД", count: "support", countLabel: "шинэ тусламжийн хүсэлт", Icon: LifeBuoy },
+  { href: "/admin/marketing", label: "Маркетинг", group: "БУСАД", Icon: Megaphone },
+  { href: "/admin/notifications", label: "Мэдэгдэл", group: "БУСАД", count: "notifications", countLabel: "уншаагүй мэдэгдэл", Icon: Bell },
+  { href: "/admin/content", label: "Сайтын агуулга", group: "БУСАД", Icon: Layers },
+  { href: "/admin/activity", label: "Үйлдлийн түүх", group: "БУСАД", Icon: Activity },
+  { href: "/admin/settings", label: "Тохиргоо", group: "БУСАД", Icon: Settings },
 ];
 
 export const isActive = (n: NavItem, path: string) => (n.exact ? path === n.href : path === n.href || path.startsWith(n.href + "/"));

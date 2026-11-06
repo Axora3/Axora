@@ -1,7 +1,7 @@
 import { Icon } from "@/components/ui/icon";
 import { Suspense } from "react";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
-import { DashboardInsights } from "@/components/admin/DashboardInsights";
+import { DashboardInsights, MonthlyTrends } from "@/components/admin/DashboardInsights";
 import { formatPrice } from "@/lib/templates/types";
 import { connection } from "next/server";
 import Link from "next/link";
@@ -34,10 +34,9 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
   const overdueBefore = new Date(nowMs - REQUEST_OVERDUE_HOURS * 3600 * 1000).toISOString();
 
   const head = { count: "exact" as const, head: true };
-  const [todayOrders, newNow, progressNow, reqNew, reqOverdue, ordersIn, requestsIn, recent, attnFiles, audit, payments, activeProjects, newSupport, unreadNotifications, confirmed, paidOrders, ...byStatus] = await Promise.all([
+  const [todayOrders, reqAll, reqNew, reqOverdue, ordersIn, requestsIn, recent, attnFiles, audit, payments, activeProjects, completedProjects, newSupport, unreadNotifications, confirmed, paidOrders, ...byStatus] = await Promise.all([
     db.from("website_orders").select("id", head).gte("created_at", today.from).lt("created_at", today.to),
-    db.from("website_orders").select("id", head).eq("status", "new"),
-    db.from("website_orders").select("id", head).eq("status", "in_progress"),
+    db.from("template_requests").select("id", head),
     db.from("template_requests").select("id", head).eq("status", "new"),
     db.from("template_requests").select("id", head).eq("status", "new").lt("created_at", overdueBefore),
     db.from("website_orders").select("id", head).gte("created_at", p.from).lt("created_at", p.to),
@@ -47,6 +46,7 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
     db.from("admin_audit_log").select("id, action, entity_type, entity_id, details, created_at").order("created_at", { ascending: false }).limit(6),
     db.from("template_requests").select("id", head).in("payment_status", ["pending", "needs_review"]).neq("status", "cancelled"),
     db.from("website_projects").select("id", head).eq("status", "in_progress"),
+    db.from("website_projects").select("id", head).eq("status", "completed"),
     db.from("contact_messages").select("id", head).eq("status", "new"),
     db.from("admin_notifications").select("id", head).eq("admin_id", user.id).is("read_at", null),
     // Revenue means amounts an admin confirmed by hand; no gateway reports payments here.
@@ -57,7 +57,7 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
 
   const paymentsMissing = isMissingMigration(payments.error);
   const newModulesMissing = isMissingMigration(activeProjects.error) || isMissingMigration(unreadNotifications.error);
-  const failed = [todayOrders, newNow, progressNow, reqNew, reqOverdue, ordersIn, requestsIn, recent, attnFiles, audit, newSupport, ...byStatus].some((r) => r.error) || (!!payments.error && !paymentsMissing) || (!!activeProjects.error && !isMissingMigration(activeProjects.error)) || (!!unreadNotifications.error && !isMissingMigration(unreadNotifications.error));
+  const failed = [todayOrders, reqAll, reqNew, reqOverdue, ordersIn, requestsIn, recent, attnFiles, audit, newSupport, ...byStatus].some((r) => r.error) || (!!payments.error && !paymentsMissing) || (!!activeProjects.error && !isMissingMigration(activeProjects.error)) || (!!unreadNotifications.error && !isMissingMigration(unreadNotifications.error));
   const statusCounts = ORDER_STATUSES.map((s, i) => ({ s, n: byStatus[i].count ?? 0 }));
   const total = statusCounts.reduce((a, b) => a + b.n, 0);
   const missingOrders = Array.from(
@@ -84,11 +84,15 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
     return `${ORDER_STATUS[x.s].bar} ${start}% ${donutAt}%`;
   }).join(", ");
 
+  const count = (i: number) => byStatus[i].count;
+  const statusesKnown = byStatus.every((r) => r.count !== null);
+  // Every value comes from the queries above; a failed read shows "—", never a made-up number.
   const kpis = [
-    { icon: "calendar" as const, label: "Өнөөдөр ирсэн захиалга", value: todayOrders.count ?? "—", note: "Улаанбаатарын цагаар", href: `/admin/orders?from=${today.day}&to=${today.day}`, band: true },
-    { icon: "inbox" as const, label: "Шинэ захиалга", value: newNow.count ?? "—", note: "Холбогдоогүй, одоогийн байдлаар", href: "/admin/orders?status=new" },
-    { icon: "clock" as const, label: "Хариу хүлээж буй хүсэлт", value: reqNew.count ?? "—", note: n(reqOverdue) ? `${n(reqOverdue)} нь ${REQUEST_OVERDUE_HOURS}+ цаг хүлээсэн` : "Шинэ төлөвтэй", href: "/admin/template-requests?status=new", warn: n(reqOverdue) > 0 },
-    { icon: "activity" as const, label: "Хийгдэж буй ажил", value: progressNow.count ?? "—", note: "“Хийгдэж байгаа” захиалга", href: "/admin/orders?status=in_progress" },
+    { icon: "file-text" as const, label: "Нийт веб захиалга", value: statusesKnown ? total : "—", note: "Бүх төлөвөөр", href: "/admin/orders", band: true },
+    { icon: "inbox" as const, label: "Шинэ захиалга", value: count(ORDER_STATUSES.indexOf("new")) ?? "—", note: "Холбогдоогүй, одоогийн байдлаар", href: "/admin/orders?status=new" },
+    { icon: "clock" as const, label: "Хийгдэж буй төсөл", value: activeProjects.count ?? "—", note: "Веб төслийн төлөвөөр", href: "/admin/projects?status=in_progress" },
+    { icon: "circle-check" as const, label: "Дууссан төсөл", value: completedProjects.count ?? "—", note: "Веб төслийн төлөвөөр", href: "/admin/projects?status=completed" },
+    { icon: "activity" as const, label: "Template хүсэлт", value: reqAll.count ?? "—", note: n(reqOverdue) ? `${n(reqOverdue)} нь ${REQUEST_OVERDUE_HOURS}+ цаг хүлээсэн` : `${n(reqNew)} нь шинэ`, href: "/admin/template-requests", warn: n(reqOverdue) > 0 },
   ];
 
   const alerts = [
@@ -133,9 +137,9 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
 
         <section aria-labelledby="db-today" className="flex flex-col gap-2.5">
           <h2 id="db-today" className="text-lg font-extrabold">
-            Өнөөдрийн тойм
+            Ерөнхий тойм
           </h2>
-          <div className="grid grid-cols-2 gap-2.5 min-[900px]:grid-cols-4 min-[900px]:gap-3.5">
+          <div className="grid grid-cols-2 gap-2.5 min-[900px]:grid-cols-3 min-[900px]:gap-3.5 min-[1280px]:grid-cols-5 [&>*:first-child]:max-[899px]:col-span-2">
             {kpis.map((k) => (
               <StatCard key={k.label} label={k.label} value={k.value} note={k.note} icon={k.icon} href={k.href} band={k.band} warn={k.warn} />
             ))}
@@ -198,6 +202,8 @@ async function DashboardContent({ searchParams }: PageProps<"/admin">) {
         <div className="grid items-start gap-5 min-[1280px]:grid-cols-[minmax(0,1fr)_340px]">
           <div className="flex min-w-0 flex-col gap-5">
             <Suspense fallback={<div className="ax-sk h-[320px] rounded-card" role="status" aria-label="График ачаалж байна" />}><DashboardInsights db={db} period={p} adminId={user.id} /></Suspense>
+
+            <Suspense fallback={<div className="ax-sk h-[320px] rounded-card" role="status" aria-label="Сарын график ачаалж байна" />}><MonthlyTrends db={db} /></Suspense>
 
             <Panel title="Сүүлийн захиалга" id="db-recent" action={<Link href="/admin/orders" className="inline-flex min-h-11 items-center text-sm font-bold">Бүгд</Link>}>
               {recent.error ? (

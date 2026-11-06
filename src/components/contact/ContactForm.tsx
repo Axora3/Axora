@@ -2,12 +2,11 @@
 
 import { useRef, useState } from "react";
 import { Check } from "@/components/icons";
-import { ErrorBox, FieldError, TestModeNotice } from "@/components/ui/Notice";
+import { Button } from "@/components/ui/button";
+import { Field, Input, Textarea, fieldDescribedBy } from "@/components/ui/input";
+import { ErrorBox, TestModeNotice } from "@/components/ui/Notice";
 import { newIdempotencyKey, postJson } from "@/lib/client/submit";
 import { phoneOrEmailError } from "@/lib/requests/validation";
-
-const box = "w-full rounded-xl bg-sunken px-3.5 text-base text-ink";
-const border = (bad: boolean) => ({ border: bad ? "2px solid var(--ax-danger)" : "1px solid var(--ax-line-strong)" });
 
 export function ContactForm({ backendEnabled, initialMessage = "" }: { backendEnabled: boolean; initialMessage?: string }) {
   const [name, setName] = useState("");
@@ -23,9 +22,9 @@ export function ContactForm({ backendEnabled, initialMessage = "" }: { backendEn
   const hp = useRef<HTMLInputElement>(null);
 
   const cErr = phoneOrEmailError(contact);
-  const nE = tried && !name.trim();
-  const cE = tried && !!cErr;
-  const mE = tried && !msg.trim();
+  const nameError = tried && !name.trim() ? "Нэрээ оруулна уу." : "";
+  const contactError = tried ? cErr : "";
+  const messageError = tried && !msg.trim() ? "Зурвасаа бичнэ үү." : "";
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -62,49 +61,30 @@ export function ContactForm({ backendEnabled, initialMessage = "" }: { backendEn
         </span>
         <strong className="text-[17px]">{done === "saved" ? "Зурвас илгээгдлээ" : "Туршилтын зурвас бөглөгдлөө"}</strong>
         <p className="text-[15px] leading-[1.55] text-muted">
-          {done === "saved" ? "Баярлалаа. Бид удахгүй таны үлдээсэн утас эсвэл имэйлээр холбогдоно." : "Зурвас илгээгдээгүй — backend холбогдоогүй үзүүлэн."}
+          {done === "saved" ? "Баярлалаа. Бид удахгүй таны үлдээсэн утас эсвэл имэйлээр холбогдоно." : "Зурвас илгээгдээгүй — backend холбогдоогүй туршилтын горим."}
         </p>
-        {done === "test" && (
-          <button type="button" onClick={() => setDone(null)} className="ax-btn ax-ghost min-h-12 rounded-xl border border-line-strong bg-surface px-[18px] text-[15px] font-bold text-ink">
-            Засах
-          </button>
-        )}
+        {done === "test" && <Button onClick={() => setDone(null)}>Засах</Button>}
       </div>
     );
   }
 
   return (
-    <form noValidate onSubmit={submit} onFocus={() => (startedAt.current ||= Date.now())} className="flex flex-col gap-3.5" aria-busy={busy}>
+    <form noValidate onSubmit={submit} onFocus={() => (startedAt.current ||= Date.now())} className="flex flex-col gap-4" aria-busy={busy}>
       {!backendEnabled && <TestModeNotice>Туршилтын горим — зурвас илгээгдэхгүй.</TestModeNotice>}
       <input ref={hp} type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute -left-[9999px] h-px w-px opacity-0" />
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="ct-name" className="text-sm font-bold">
-          Нэр<span aria-hidden="true" className="text-danger"> *</span>
-          <span className="sr-only"> (заавал)</span>
-        </label>
-        <input id="ct-name" type="text" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} aria-invalid={nE} aria-describedby={nE ? "ct-name-e" : undefined} className={`min-h-13 ${box}`} style={border(nE)} />
-        {nE && <FieldError id="ct-name-e">Нэрээ оруулна уу.</FieldError>}
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="ct-contact" className="text-sm font-bold">
-          Утас эсвэл имэйл<span aria-hidden="true" className="text-danger"> *</span>
-          <span className="sr-only"> (заавал)</span>
-        </label>
-        <input id="ct-contact" type="text" autoComplete="email" value={contact} onChange={(e) => setContact(e.target.value)} aria-invalid={cE} aria-describedby={cE ? "ct-contact-e" : undefined} className={`min-h-13 ${box}`} style={border(cE)} />
-        {cE && <FieldError id="ct-contact-e">{cErr}</FieldError>}
-      </div>
-      <div className="flex flex-col gap-1.5">
-        <label htmlFor="ct-msg" className="text-sm font-bold">
-          Зурвас<span aria-hidden="true" className="text-danger"> *</span>
-          <span className="sr-only"> (заавал)</span>
-        </label>
-        <textarea id="ct-msg" rows={4} maxLength={3000} value={msg} onChange={(e) => setMsg(e.target.value)} aria-invalid={mE} aria-describedby={mE ? "ct-msg-e" : undefined} className={`resize-y py-3 ${box}`} style={border(mE)} />
-        {mE && <FieldError id="ct-msg-e">Зурвасаа бичнэ үү.</FieldError>}
-      </div>
+      <Field htmlFor="ct-name" label="Нэр" required error={nameError}>
+        <Input id="ct-name" autoComplete="name" maxLength={120} value={name} onChange={(e) => setName(e.target.value)} aria-required="true" aria-invalid={!!nameError} aria-describedby={fieldDescribedBy("ct-name", { error: nameError })} />
+      </Field>
+      <Field htmlFor="ct-contact" label="Утас эсвэл имэйл" required error={contactError}>
+        <Input id="ct-contact" autoComplete="email" maxLength={200} value={contact} onChange={(e) => setContact(e.target.value)} aria-required="true" aria-invalid={!!contactError} aria-describedby={fieldDescribedBy("ct-contact", { error: contactError })} />
+      </Field>
+      <Field htmlFor="ct-msg" label="Зурвас" required error={messageError}>
+        <Textarea id="ct-msg" rows={5} maxLength={3000} value={msg} onChange={(e) => setMsg(e.target.value)} aria-required="true" aria-invalid={!!messageError} aria-describedby={fieldDescribedBy("ct-msg", { error: messageError })} />
+      </Field>
       {err && <ErrorBox>{err}</ErrorBox>}
-      <button type="submit" disabled={busy} className="ax-btn ax-primary min-h-13 rounded-control border-0 bg-primary text-base font-bold text-on-primary">
-        {busy ? "Илгээж байна…" : backendEnabled ? (err ? "Дахин илгээх" : "Илгээх") : "Илгээх (туршилт)"}
-      </button>
+      <Button type="submit" variant="primary" size="lg" loading={busy} className="w-full">
+        {busy ? "Илгээж байна…" : backendEnabled ? (err ? "Дахин илгээх" : "Зурвас илгээх") : "Илгээх (туршилт)"}
+      </Button>
     </form>
   );
 }

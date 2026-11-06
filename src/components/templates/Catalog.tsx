@@ -1,12 +1,15 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { Close, Search, SearchEmpty } from "@/components/icons";
 import { AnimatedGroup } from "@/components/ui/animated-group";
 import { Button, buttonStyles } from "@/components/ui/button";
+import { EmptyState } from "@/components/ui/empty-state";
 import { Icon } from "@/components/ui/icon";
+import { Input } from "@/components/ui/input";
+import { NativeSelect } from "@/components/ui/native-select";
 import { TEMPLATE_CATEGORIES, type Template } from "@/lib/templates/types";
 import { useTemplateCollections } from "@/lib/templates/use-template-collections";
 import { CompareTray } from "./Collections";
@@ -14,10 +17,13 @@ import { TemplateCard } from "./TemplateCard";
 
 type Cat = "all" | (typeof TEMPLATE_CATEGORIES)[number];
 type Price = "all" | "free" | "paid";
-type Sort = "rec" | "asc" | "desc";
+type Sort = "rec" | "asc" | "desc" | "name";
 
 const filterHeading = "mb-1.5 hidden px-3.5 text-xs font-extrabold text-muted min-[1024px]:block";
 const filterGroup = "flex shrink-0 gap-1.5 min-[1024px]:flex-col min-[1024px]:gap-0.5";
+
+/** The catalogue is already in the browser, so filters update the URL without a server request. Next.js keeps useSearchParams in sync. */
+const writeUrl = (url: string) => window.history.replaceState(null, "", url);
 
 function pick<T extends string>(v: string | null, allowed: readonly T[], fallback: T): T {
   return v && (allowed as readonly string[]).includes(v) ? (v as T) : fallback;
@@ -32,13 +38,23 @@ function Filter({ on, onClick, label, count }: { on: boolean; onClick: () => voi
   );
 }
 
+function ActiveChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+  return (
+    <li>
+      <button type="button" onClick={onRemove} aria-label={`${label} шүүлтүүрийг хасах`} className="ax-btn inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-soft px-3 text-[13px] font-bold text-ink">
+        {label}
+        <Close size={14} strokeWidth={2.4} />
+      </button>
+    </li>
+  );
+}
+
 /**
  * Search / filter / sort over the published list. Filters live in the URL
  * (no personal data), so back/forward and shared links keep them.
  * Sidebar from 1024px; a single scrolling row of filters below that.
  */
 export function Catalog({ templates }: { templates: Template[] }) {
-  const router = useRouter();
   const pathname = usePathname();
   const sp = useSearchParams();
   const urlQuery = sp.get("q") ?? "";
@@ -53,16 +69,17 @@ export function Catalog({ templates }: { templates: Template[] }) {
   const { favorites, comparison, toggleFavorite, toggleComparison } = useTemplateCollections();
   const cat = pick<Cat>(sp.get("cat"), ["all", ...TEMPLATE_CATEGORIES], "all");
   const price = pick<Price>(sp.get("price"), ["all", "free", "paid"], "all");
-  const sort = pick<Sort>(sp.get("sort"), ["rec", "asc", "desc"], "rec");
+  const sort = pick<Sort>(sp.get("sort"), ["rec", "asc", "desc", "name"], "rec");
 
   function setParam(next: Record<string, string>) {
-    const p = new URLSearchParams(sp.toString());
+    // The live URL, not `sp`: two quick clicks must not overwrite each other.
+    const p = new URLSearchParams(window.location.search);
     for (const [k, v] of Object.entries(next)) {
       if (!v || v === "all" || v === "rec") p.delete(k);
       else p.set(k, v);
     }
     const s = p.toString();
-    router.replace(s ? `${pathname}?${s}` : pathname, { scroll: false });
+    writeUrl(s ? `${pathname}?${s}` : pathname);
   }
 
   // Keep the search box responsive; write it to the URL after a short pause.
@@ -73,10 +90,10 @@ export function Catalog({ templates }: { templates: Template[] }) {
       if (q.trim()) params.set("q", q.trim());
       else params.delete("q");
       const query = params.toString();
-      router.replace(query ? `${pathname}?${query}` : pathname, { scroll: false });
+      writeUrl(query ? `${pathname}?${query}` : pathname);
     }, 250);
     return () => clearTimeout(id);
-  }, [q, sp, pathname, router]);
+  }, [q, sp, pathname]);
 
   const items = useMemo(() => {
     const needle = q.trim().toLowerCase();
@@ -90,6 +107,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
     });
     if (sort === "asc") list = [...list].sort((a, b) => a.price - b.price);
     if (sort === "desc") list = [...list].sort((a, b) => b.price - a.price);
+    if (sort === "name") list = [...list].sort((a, b) => a.title.localeCompare(b.title, "mn"));
     return list;
   }, [templates, q, cat, price, sort, savedOnly, favorites]);
 
@@ -97,22 +115,21 @@ export function Catalog({ templates }: { templates: Template[] }) {
   const clearAll = () => {
     setQ("");
     setSavedOnly(false);
-    router.replace(pathname, { scroll: false });
+    writeUrl(pathname);
   };
 
   // Nothing published is a different situation from "no match": filters could not help.
   if (templates.length === 0) {
     return (
-      <div className="ax-empty ax-in-sm mt-8">
-        <span aria-hidden="true" className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-brand">
-          <Icon name="layers" size={24} />
-        </span>
-        <h2 className="text-[22px] font-extrabold">Одоогоор нийтлэгдсэн загвар алга</h2>
-        <p className="max-w-[30em] text-base leading-relaxed text-muted">Загвар нийтлэгдмэгц энд харагдана. Яаралтай хэрэгтэй бол бидэнтэй холбогдоорой.</p>
-        <Link href="/contact" className={buttonStyles("primary", "mt-1")}>
-          Холбоо барих
-        </Link>
-      </div>
+      <EmptyState
+        frame
+        headingLevel={2}
+        className="ax-in-sm mt-8"
+        icon={<Icon name="layers" size={24} />}
+        title="Одоогоор нийтлэгдсэн загвар алга"
+        description="Загвар нийтлэгдмэгц энд харагдана. Яаралтай хэрэгтэй бол бидэнтэй холбогдоорой."
+        action={<Link href="/contact" className={buttonStyles("primary")}>Холбоо барих</Link>}
+      />
     );
   }
 
@@ -125,7 +142,7 @@ export function Catalog({ templates }: { templates: Template[] }) {
         <div className="relative flex items-center">
           <label htmlFor="tp-search" className="sr-only">Нэр, тайлбараар хайх</label>
           <Search className="pointer-events-none absolute left-3.5 z-[1] text-muted" />
-          <input id="tp-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Төсөв, контент, кофе…" className="ax-control min-h-12 w-full py-0 pr-3.5 pl-[42px] text-base" />
+          <Input id="tp-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Төсөв, контент, кофе…" className="min-h-12 py-0 pr-3.5 pl-[42px] text-base" />
         </div>
 
         <div className="ax-scroll -mx-[clamp(16px,4vw,40px)] items-start gap-3 px-[clamp(16px,4vw,40px)] pb-1 min-[1024px]:mx-0 min-[1024px]:flex-col min-[1024px]:gap-6 min-[1024px]:overflow-visible min-[1024px]:px-0 min-[1024px]:pb-0">
@@ -171,13 +188,22 @@ export function Catalog({ templates }: { templates: Template[] }) {
               </Button>
             )}
             <label htmlFor="tp-sort" className="sr-only">Эрэмбэ</label>
-            <select id="tp-sort" value={sort} onChange={(e) => setParam({ sort: e.target.value })} className="ax-control min-h-11 w-auto bg-surface px-3 text-[15px]">
+            <NativeSelect id="tp-sort" value={sort} onChange={(e) => setParam({ sort: e.target.value })} className="w-auto bg-surface text-[15px]">
               <option value="rec">Санал болгосон</option>
               <option value="asc">Үнэ: багаас их</option>
               <option value="desc">Үнэ: ихээс бага</option>
-            </select>
+              <option value="name">Нэрээр: А–Я</option>
+            </NativeSelect>
           </div>
         </div>
+
+        {(cat !== "all" || price !== "all" || !!q.trim()) && (
+          <ul aria-label="Идэвхтэй шүүлтүүр" className="m-0 mt-2 flex list-none flex-wrap gap-2 p-0">
+            {cat !== "all" && <ActiveChip label={cat} onRemove={() => setParam({ cat: "all" })} />}
+            {price !== "all" && <ActiveChip label={price === "free" ? "Үнэгүй" : "Төлбөртэй"} onRemove={() => setParam({ price: "all" })} />}
+            {!!q.trim() && <ActiveChip label={`“${q.trim()}”`} onRemove={() => setQ("")} />}
+          </ul>
+        )}
 
         {items.length > 0 ? (
           <AnimatedGroup className="mt-4 grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr))]">
@@ -194,18 +220,15 @@ export function Catalog({ templates }: { templates: Template[] }) {
             ))}
           </AnimatedGroup>
         ) : (
-          <div className="ax-empty ax-in-sm mt-4">
-            <span aria-hidden="true" className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-brand">
-              <SearchEmpty size={24} />
-            </span>
-            <h2 className="text-[22px] font-extrabold">{savedOnly && favorites.length === 0 ? "Хадгалсан загвар алга" : "Тохирох загвар олдсонгүй"}</h2>
-            <p className="max-w-[26em] text-base leading-relaxed text-muted">{savedOnly && favorites.length === 0 ? "Таалагдсан загвараа зүрхэн товчоор хадгалж, эндээс дахин үзээрэй." : "Өөр түлхүүр үгээр хайх эсвэл шүүлтүүрээ цэвэрлээд дахин үзээрэй."}</p>
-            {hasFilters && (
-              <Button variant="primary" onClick={clearAll} className="mt-1">
-                Шүүлтүүр цэвэрлэх
-              </Button>
-            )}
-          </div>
+          <EmptyState
+            frame
+            headingLevel={2}
+            className="ax-in-sm mt-4"
+            icon={<SearchEmpty size={24} />}
+            title={savedOnly && favorites.length === 0 ? "Хадгалсан загвар алга" : "Тохирох загвар олдсонгүй"}
+            description={savedOnly && favorites.length === 0 ? "Таалагдсан загвараа зүрхэн товчоор хадгалж, эндээс дахин үзээрэй." : "Өөр түлхүүр үгээр хайх эсвэл шүүлтүүрээ цэвэрлээд дахин үзээрэй."}
+            action={hasFilters ? <Button variant="primary" onClick={clearAll}>Шүүлтүүр цэвэрлэх</Button> : undefined}
+          />
         )}
       </div>
 
