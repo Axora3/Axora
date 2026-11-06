@@ -6,6 +6,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { createContext, useContext, useEffect, useState } from "react";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
+import { Sidebar, SidebarGroup, SidebarLink, sidebarItemStyles } from "@/components/ui/sidebar";
 import { ToastProvider } from "@/components/ui/Toast";
 import { useDialog } from "@/components/ui/use-dialog";
 import { browserAuthClient } from "@/lib/admin/browser-auth";
@@ -120,31 +121,28 @@ function Badge({ n, label, on }: { n: number | null; label?: string; on?: boolea
 /** Sidebar links. `collapsed` keeps icons with native tooltips; `drawer` adds what the phone header has no room for. */
 function SideContent({ counts, email, onNavigate, collapsed = false, drawer = false }: { counts: Counts; email: string; onNavigate?: () => void; collapsed?: boolean; drawer?: boolean }) {
   const path = usePathname();
-  const link = "flex min-h-11 items-center gap-3 rounded-control px-3 text-[14px] font-semibold no-underline transition-colors";
+  const link = sidebarItemStyles;
   return (
     <>
       <nav aria-label="Админ цэс" className="flex flex-col gap-5">
         {(["Үндсэн", "Удирдлага", "Систем"] as const).map((group) => (
-          <div key={group} className="flex flex-col gap-0.5">
-            {collapsed ? <span aria-hidden="true" className="mx-3 my-1 h-px bg-band-line" /> : <span className="mx-3 my-1 text-xs font-bold text-band-faint">{group}</span>}
+          <SidebarGroup key={group} label={group} collapsed={collapsed}>
             {ADMIN_NAV.filter((item) => item.group === group).map((n) => {
               const on = isActive(n, path);
               return (
-                <Link
+                <SidebarLink
                   key={n.href}
                   href={n.href}
                   onClick={onNavigate}
-                  aria-current={on ? "page" : undefined}
-                  title={collapsed ? n.label : undefined}
-                  className={`${link} ${collapsed ? "relative justify-center px-0" : ""} ${on ? "bg-lime font-extrabold text-on-lime shadow-[inset_0_1px_0_rgb(255_255_255_/_0.25)]" : "text-band-muted hover:bg-band-hover hover:text-on-band"}`}
-                >
-                  <Icon name={n.icon} size={20} />
-                  <span className={collapsed ? "sr-only" : "min-w-0 flex-1 truncate"}>{n.label}</span>
-                  {n.count && (collapsed ? !!counts[n.count] && <span aria-hidden="true" className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-lime ring-2 ring-band" /> : <Badge n={counts[n.count]} label={n.countLabel} on={on} />)}
-                </Link>
+                  active={on}
+                  collapsed={collapsed}
+                  icon={<Icon name={n.icon} size={20} />}
+                  label={n.label}
+                  adornment={n.count && (collapsed ? !!counts[n.count] && <span aria-hidden="true" className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-lime ring-2 ring-band" /> : <Badge n={counts[n.count]} label={n.countLabel} on={on} />)}
+                />
               );
             })}
-          </div>
+          </SidebarGroup>
         ))}
       </nav>
       {drawer && <div className="mt-auto flex flex-col gap-1 border-t border-band-line pt-3">
@@ -259,7 +257,7 @@ export function AdminShell({ counts, email, children }: { counts: Counts; email:
     <ChromeCtx.Provider value={{ openMenu: () => setOpen(true), email, unread: counts.notifications }}>
       <ToastProvider>
         <div className="flex min-h-dvh bg-bg-admin">
-          <aside className={`ax-admin-side sticky top-0 hidden h-dvh shrink-0 flex-col gap-5 overflow-x-hidden overflow-y-auto bg-band px-3 py-4 text-on-band min-[1024px]:flex ${collapsed ? "w-[72px]" : "w-[264px]"}`}>
+          <Sidebar collapsed={collapsed} className="sticky top-0 hidden h-dvh min-[1024px]:flex">
             <Link href="/admin" aria-label="AXORA Admin нүүр" className={`flex min-h-10 items-center py-1 text-on-band no-underline ${collapsed ? "justify-center" : "px-2"}`}>
               {collapsed ? <span className="inline-flex h-8 w-8 items-center justify-center rounded-inner bg-lime text-on-lime"><Icon name="letter-a" size={18} /></span> : <LogoBadge />}
             </Link>
@@ -275,7 +273,7 @@ export function AdminShell({ counts, email, children }: { counts: Counts; email:
               <Icon name={collapsed ? "chevron-right" : "chevron-left"} size={18} />
               {!collapsed && "Цэс хураах"}
             </button>
-          </aside>
+          </Sidebar>
 
           {/* Bottom padding keeps the last card and primary buttons clear of the tab bar. */}
           <div className="flex min-w-0 flex-1 flex-col pb-[calc(84px+env(safe-area-inset-bottom))] min-[1024px]:pb-0">
