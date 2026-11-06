@@ -1,7 +1,7 @@
 import { Icon } from "@/components/ui/icon";
 import Link from "next/link";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import type { Period } from "@/lib/admin/period";
+import { serverNow, ubMonths, type Period } from "@/lib/admin/period";
 import { fmtDate, fmtDateTime } from "@/lib/admin/labels";
 import { LoadFailed, Panel } from "./ui";
 
@@ -48,6 +48,19 @@ export function RequestsChart({ rows, title }: { rows: ChartRow[]; title: string
       </div>
     </Panel>
   );
+}
+
+/** Six months of exact counts. A failed count shows an error instead of a misleading zero. */
+export async function MonthlyTrends({ db }: { db: SupabaseClient }) {
+  const title = "Сарын хандлага · сүүлийн 6 сар";
+  const counts = await Promise.all(
+    ubMonths(6, serverNow()).map(async (month) => {
+      const [orders, requests] = await Promise.all(["website_orders", "template_requests"].map((table) => db.from(table).select("id", { count: "exact", head: true }).gte("created_at", month.from).lt("created_at", month.to)));
+      return { label: month.label, orders: orders.count ?? 0, requests: requests.count ?? 0, failed: orders.count === null || requests.count === null };
+    }),
+  );
+  if (counts.some((row) => row.failed)) return <Panel title={title}><LoadFailed what="сарын хандлагыг" /></Panel>;
+  return <RequestsChart rows={counts} title={title} />;
 }
 
 /** Exact database counts in at most seven disjoint time buckets; no row-limit truncation. */

@@ -1,9 +1,10 @@
 import { Icon } from "@/components/ui/icon";
 import { Suspense } from "react";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
+import Image from "next/image";
 import Link from "next/link";
 import { FilterSheet } from "@/components/admin/FilterSheet";
-import { PublishSwitch } from "@/components/admin/ProductControls";
+import { DeleteProductButton, PublishSwitch } from "@/components/admin/ProductControls";
 import { Body, EmptyState, LoadFailed, PageHeader, Pagination, Panel, PubPill, btn, field } from "@/components/admin/ui";
 import { requireAdminPage } from "@/lib/admin/auth";
 import { fmtDate } from "@/lib/admin/labels";
@@ -102,7 +103,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
             )}
           </p>
           <FilterSheet active={(cat ? 1 : 0) + (sort !== "updated_at" ? 1 : 0)} title="Ангилал, эрэмбэ">
-            <form method="get" className="flex flex-wrap items-end gap-2" aria-label="Ангиллаар шүүх">
+            <form method="get" className="flex flex-wrap items-end gap-2 md:flex-nowrap" aria-label="Ангиллаар шүүх">
               {q && <input type="hidden" name="q" value={q} />}
               {status && <input type="hidden" name="status" value={status} />}
               <label className="flex flex-[1_1_180px] flex-col gap-1.5"><span className={field.label}>Эрэмбэ</span><select name="sort" defaultValue={sort} className={field.input}><option value="updated_at">Сүүлд шинэчилсэн</option><option value="sort_order">Сайтын эрэмбэ</option><option value="title">Нэрээр</option><option value="price">Үнэ өсөхөөр (валют тусдаа)</option></select></label>
@@ -144,8 +145,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
                     {/* Product cover keeps its own colours in both themes. */}
                     <div className="ax-light relative aspect-[16/9]" style={{ background: t.preview_style?.tint ?? "#EEF1E6" }}>
                       {img ? (
-                        // eslint-disable-next-line @next/next/no-img-element -- admin thumbnail from the public bucket
-                        <img src={previewPublicUrl(img)} alt="" className="h-full w-full object-cover" />
+                        <Image src={previewPublicUrl(img)} alt="" fill sizes="(max-width: 699px) 100vw, (max-width: 1279px) 50vw, 33vw" className="object-cover" />
                       ) : (
                         <span aria-hidden="true" className="flex h-full items-center justify-center">
                           <Icon name={t.category === "Excel" ? "table" : t.category === "Canva" ? "photo" : "file-text"} size={36} color={t.preview_style?.accent ?? "#245C45"} />
@@ -172,7 +172,7 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
                       </Link>
                     </div>
                     <div className="mt-auto flex items-center justify-between gap-2.5 border-t border-line-soft pt-2">
-                      <span className={`inline-flex items-center gap-1.5 text-[12.5px] font-bold ${fileOk ? "text-muted" : "text-danger"}`}>
+                      <span className={`inline-flex min-w-0 items-center gap-1.5 text-[12.5px] font-bold ${fileOk ? "text-muted" : "text-danger"}`}>
                         {t.is_free ? (
                           "Үнэгүй — файл заавал биш"
                         ) : fileOk ? (
@@ -183,7 +183,10 @@ async function AdminTemplatesContent({ searchParams }: PageProps<"/admin/templat
                           <><Icon name="circle-alert" size={16} /> Хамгаалагдсан файлгүй</>
                         )}
                       </span>
-                      <PublishSwitch id={t.id} title={t.title} published={t.status === "published"} editHref={edit} />
+                      <span className="flex shrink-0 items-center gap-1">
+                        <PublishSwitch id={t.id} title={t.title} published={t.status === "published"} editHref={edit} />
+                        <DeleteProductButton id={t.id} title={t.title} published={t.status === "published"} />
+                      </span>
                     </div>
                     </div>
                   </li>

@@ -22,7 +22,7 @@ export function Sidebar({ collapsed = false, className, ...props }: ComponentPro
 export function SidebarGroup({ label, collapsed = false, className, children }: { label: string; collapsed?: boolean; className?: string; children: ReactNode }) {
   return (
     <div data-slot="sidebar-group" className={cn("flex flex-col gap-0.5", className)}>
-      {collapsed ? <span aria-hidden="true" className="mx-3 my-1 h-px bg-band-line" /> : <span className="mx-3 my-1 text-xs font-bold text-band-faint">{label}</span>}
+      {collapsed ? <span aria-hidden="true" className="mx-3 my-1 h-px bg-band-line" /> : <span className="mx-3 my-1 text-2xs font-extrabold tracking-[0.08em] text-band-faint">{label}</span>}
       {children}
     </div>
   );

@@ -81,7 +81,7 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
       <Suspense>
         <RememberListUrl storageKey="admin-requests-list" />
       </Suspense>
-      <PageHeader title="Хүсэлтүүд" description={<span className="max-md:hidden">“Авах хүсэлт”-ээр ирсэн template хүсэлт. Хүсэлт ирсэн нь төлбөр төлөгдсөн гэсэн үг биш.</span>}>
+      <PageHeader title="Template хүсэлтүүд" description={<span className="max-md:hidden">“Авах хүсэлт”-ээр ирсэн template хүсэлт. Хүсэлт ирсэн нь төлбөр төлөгдсөн гэсэн үг биш.</span>}>
         <form method="get" role="search" className="relative flex items-center" aria-label="Хүсэлт хайх">
           {status && <input type="hidden" name="status" value={status} />}
           {["pay", "delivery", "from", "to"].map((key) => one(sp,key) && <input key={key} type="hidden" name={key} value={one(sp,key)} />)}

@@ -61,6 +61,7 @@ export const AUDIT_ACTION: Record<string, string> = {
   note_added: "Тэмдэглэл нэмсэн",
   created: "Үүсгэсэн",
   updated: "Засварласан",
+  deleted: "Устгасан",
   published: "Нийтэлсэн",
   unpublished: "Нийтлэлээс буулгасан",
   draft_saved: "Ноорог хадгалсан",

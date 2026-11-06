@@ -45,7 +45,7 @@ export function PageHeader({
       <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
         <div className="flex min-w-0 flex-1 flex-col gap-0.5">
           {crumbs && crumbs.length > 0 && (
-            <nav aria-label="Байршил" className={`flex flex-wrap items-center gap-1.5 text-[13px] font-semibold ${band ? "text-band-faint" : "text-muted"}`}>
+            <nav aria-label="Байршил" className={`flex flex-wrap items-center gap-1.5 text-[13px] font-semibold min-[1200px]:hidden ${band ? "text-band-faint" : "text-muted"}`}>
               {crumbs.map((c) => (
                 <span key={c.href} className="inline-flex items-center gap-1.5">
                   <Link href={c.href} className={`ax-link inline-flex min-h-8 items-center no-underline ${band ? "text-band-faint" : "text-muted"}`}>

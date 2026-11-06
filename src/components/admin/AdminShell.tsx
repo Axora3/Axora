@@ -11,7 +11,7 @@ import { ToastProvider } from "@/components/ui/Toast";
 import { useDialog } from "@/components/ui/use-dialog";
 import { browserAuthClient } from "@/lib/admin/browser-auth";
 import { AdminTopBar } from "./AdminTopBar";
-import { ADMIN_NAV, isActive, type NavItem } from "./nav";
+import { ADMIN_NAV, NAV_GROUPS, isActive, type NavItem } from "./nav";
 
 type Counts = { orders: number | null; requests: number | null; support: number | null; notifications: number | null };
 
@@ -125,7 +125,7 @@ function SideContent({ counts, email, onNavigate, collapsed = false, drawer = fa
   return (
     <>
       <nav aria-label="Админ цэс" className="flex flex-col gap-5">
-        {(["Үндсэн", "Удирдлага", "Систем"] as const).map((group) => (
+        {NAV_GROUPS.map((group) => (
           <SidebarGroup key={group} label={group} collapsed={collapsed}>
             {ADMIN_NAV.filter((item) => item.group === group).map((n) => {
               const on = isActive(n, path);
@@ -136,7 +136,7 @@ function SideContent({ counts, email, onNavigate, collapsed = false, drawer = fa
                   onClick={onNavigate}
                   active={on}
                   collapsed={collapsed}
-                  icon={<Icon name={n.icon} size={20} />}
+                  icon={<n.Icon aria-hidden="true" size={20} className="shrink-0" />}
                   label={n.label}
                   adornment={n.count && (collapsed ? !!counts[n.count] && <span aria-hidden="true" className="absolute top-2 right-2.5 h-2 w-2 rounded-full bg-lime ring-2 ring-band" /> : <Badge n={counts[n.count]} label={n.countLabel} on={on} />)}
                 />
@@ -207,7 +207,7 @@ function BottomNav({ counts }: { counts: Counts }) {
             className={`ax-btn flex min-h-13 flex-col items-center justify-center gap-[3px] text-[11px] no-underline ${on ? "font-extrabold text-on-band" : "font-bold text-band-muted"}`}
           >
             <span className={`relative inline-flex h-7 w-[52px] items-center justify-center rounded-control ${on ? "bg-lime" : ""}`}>
-              <Icon name={n.icon} size={20} />
+              <n.Icon aria-hidden="true" size={20} />
               {c > 0 && (
                 <span className="absolute -top-1 right-1 inline-flex h-[18px] min-w-[18px] items-center justify-center rounded-inner bg-lime px-[5px] text-[10.5px] font-extrabold tabular-nums ring-2 ring-band">
                   {c > 99 ? "99+" : c}

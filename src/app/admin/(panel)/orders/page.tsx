@@ -59,7 +59,7 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
       <Suspense>
         <RememberListUrl storageKey="admin-orders-list" />
       </Suspense>
-      <PageHeader title="Захиалгууд" description={<span className="max-md:hidden">Анкетаар ирсэн веб захиалгууд. Төлөвийг жагсаалтаас шууд солино.</span>}>
+      <PageHeader title="Веб захиалгууд" description={<span className="max-md:hidden">Анкетаар ирсэн веб захиалгууд. Төлөвийг жагсаалтаас шууд солино.</span>}>
         <form method="get" role="search" className="relative flex items-center" aria-label="Захиалга хайх">
           {status && <input type="hidden" name="status" value={status} />}
           <span aria-hidden="true" className="pointer-events-none absolute left-3.5 text-muted">

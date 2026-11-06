@@ -103,7 +103,7 @@ There are two sets for now:
 - **Regen** (`<Icon name="…" />`) is used across the existing application. The sprite comes from `vendor/regen-icons`, and `scripts/check-regen-icons.mjs` guards it.
 - **Lucide** (`lucide-react`) is used inside the new `src/components/ui/` primitives.
 
-Both use a 24px grid with a 2px round stroke, so they sit together well. Admin source must keep using Regen, because the check script rejects `lucide-react` imports under `src/app/admin` and `src/components/admin`.
+Both use a 24px grid with a 2px round stroke, so they sit together well. The admin sidebar's navigation config (`src/components/admin/nav.ts`) uses Lucide. All other admin source must keep using Regen, because the check script rejects `lucide-react` imports there.
 
 ## Adding a shadcn/ui component
 
