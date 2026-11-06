@@ -21,12 +21,12 @@ const TRACKS: Record<"ready" | "custom", Step[]> = {
 };
 
 const OPTIONS = [
-  { value: "ready", label: "Бэлэн загвар" },
   { value: "custom", label: "Захиалгат веб" },
+  { value: "ready", label: "Бэлэн загвар" },
 ] as const;
 
 export function Process() {
-  const [track, setTrack] = useState<keyof typeof TRACKS>("ready");
+  const [track, setTrack] = useState<keyof typeof TRACKS>("custom");
   return (
     <section aria-labelledby="how-title" className="border-y border-line bg-surface">
       <div className="ax-container ax-section">

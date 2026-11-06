@@ -1036,6 +1036,32 @@ option {
   .ax-ring { display: inline-grid; width: 56px; height: 56px; flex-shrink: 0; place-items: center; border-radius: 50%; background: conic-gradient(var(--ax-lime) calc(var(--p) * 1%), var(--ax-band-line) 0); }
   .ax-ring > span { display: grid; width: 44px; height: 44px; place-items: center; border-radius: 50%; background: var(--ax-band); color: var(--ax-on-band); font-size: 13px; font-weight: 800; font-variant-numeric: tabular-nums; }
 
+  /* Public site: slow aurora behind dark bands. Purely decorative; reduced motion freezes it. */
+  .ax-aurora { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+  .ax-aurora::before, .ax-aurora::after { content: ""; position: absolute; border-radius: 50%; filter: blur(72px); animation: axDrift 22s ease-in-out infinite alternate; }
+  .ax-aurora::before { top: -22%; left: 8%; width: min(720px, 90vw); aspect-ratio: 1.5; background: color-mix(in srgb, var(--ax-citron-300) 16%, transparent); }
+  .ax-aurora::after { top: 8%; right: -6%; width: min(640px, 80vw); aspect-ratio: 1.2; background: color-mix(in srgb, var(--ax-forest-400) 42%, transparent); animation-delay: -9s; animation-direction: alternate-reverse; }
+  @keyframes axDrift { from { transform: translate3d(-4%, 0, 0) scale(1); } to { transform: translate3d(6%, 8%, 0) scale(1.12); } }
+
+  .ax-pill-band { display: inline-flex; min-height: 32px; align-items: center; gap: 8px; padding: 4px 14px; border: 1px solid var(--ax-band-ring); border-radius: 999px; background: color-mix(in srgb, var(--ax-band-hover) 70%, transparent); color: var(--ax-on-band); font-size: 13px; font-weight: 700; }
+  .ax-stage-glow { position: relative; }
+  .ax-stage-glow::before { content: ""; position: absolute; inset: 8% 6% auto; z-index: 0; height: 70%; border-radius: 50%; background: color-mix(in srgb, var(--ax-citron-300) 22%, transparent); filter: blur(64px); pointer-events: none; }
+
+  /* Light page header: a quiet colour wash, so inner pages share the hero's character. */
+  .ax-page-hero { position: relative; isolation: isolate; overflow: hidden; border: 1px solid var(--ax-line); border-radius: var(--radius-panel); background: var(--ax-surface); padding: clamp(28px, 5vw, 64px); }
+  .ax-page-hero::before { content: ""; position: absolute; inset: 0; z-index: -1; background: radial-gradient(60% 120% at 92% 0%, color-mix(in srgb, var(--ax-lime) 34%, transparent), transparent 70%), radial-gradient(50% 100% at 60% 110%, color-mix(in srgb, var(--ax-brand) 14%, transparent), transparent 70%); }
+
+  /* Native accordion: <details name="…"> gives exclusive opening with no JavaScript. */
+  .ax-details > summary { display: flex; min-height: 64px; cursor: pointer; align-items: center; justify-content: space-between; gap: 16px; padding-block: 18px; list-style: none; font-size: 18px; font-weight: 700; }
+  .ax-details > summary::-webkit-details-marker { display: none; }
+  .ax-details > summary:focus-visible { outline: 2px solid var(--ax-focus); outline-offset: 2px; border-radius: var(--radius-inner); }
+  .ax-details-icon { display: inline-flex; width: 36px; height: 36px; flex-shrink: 0; align-items: center; justify-content: center; border: 1px solid var(--ax-line); border-radius: var(--radius-control); background: var(--ax-surface); transition: transform var(--ax-duration-enter) var(--ax-ease), background-color var(--ax-duration-fast); }
+  .ax-details[open] .ax-details-icon { transform: rotate(45deg); background: var(--ax-lime); color: var(--ax-on-lime); }
+
+  /* Editorial rows on the dark band. */
+  .ax-why-row { display: grid; gap: 8px 32px; padding-block: 24px; border-top: 1px solid var(--ax-band-line); }
+  @media (min-width: 700px) { .ax-why-row { grid-template-columns: 64px minmax(0, 1fr); } }
+
   /* Admin */
   .ax-admin-side { transition: width var(--ax-duration-enter) var(--ax-ease); }
   .ax-button[aria-current="page"] { border-color: var(--ax-band); background: var(--ax-band); color: var(--ax-on-band); }

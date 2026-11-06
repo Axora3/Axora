@@ -1,86 +1,74 @@
-"use client";
-
-import { useState } from "react";
-import { Check, ChevronDown } from "@/components/icons";
+import type { ReactNode } from "react";
+import { Icon, type IconName } from "@/components/ui/icon";
 import type { Template } from "@/lib/templates/types";
 
 const LICENSE = "[Лицензийн нөхцөлийг энд оруулна — хувийн/арилжааны хэрэглээ, дахин борлуулах эсэх]";
 
-function Included({ items }: { items: string[] }) {
+function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <ul className="m-0 flex list-none flex-col gap-1.5 p-0">
-      {items.map((x) => (
-        <li key={x} className="flex gap-2.5 text-[15px] leading-normal">
-          <Check size={18} strokeWidth={2.4} className="mt-0.5 shrink-0 text-brand" />
-          {x}
-        </li>
-      ))}
-    </ul>
+    <section className="flex flex-col gap-4 border-t border-line pt-6">
+      <h2 className="ax-h4">{title}</h2>
+      {children}
+    </section>
   );
 }
 
-/**
- * Who it's for / what's included / how to use / licence.
- * Desktop shows all sections; phones get the accordion from the mobile design.
- */
+/** Product information, all from the template's own record. Empty fields are left out rather than filled in. */
 export function DetailInfo({ t }: { t: Template }) {
-  const [open, setOpen] = useState(0);
-  const sections = [
-    { title: "Хэнд тохирох", body: <p className="text-[15px] leading-relaxed text-muted">{t.forWhom || "—"}</p> },
-    { title: "Юу багтсан", body: <Included items={t.included} /> },
-    {
-      title: "Яаж ашиглах",
-      body: (
-        <ol className="m-0 flex list-none flex-col gap-2.5 p-0">
-          {t.howTo.map((h, i) => (
-            <li key={h} className="flex gap-3 text-[15px] leading-normal">
-              <span className="inline-flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-soft text-[13px] font-extrabold text-brand">{i + 1}</span>
-              {h}
-            </li>
-          ))}
-        </ol>
-      ),
-    },
-    { title: "Лиценз", body: <p className="text-[15px] leading-relaxed text-muted">{LICENSE}</p> },
-  ];
+  const features: { icon: IconName; label: string; value: string }[] = [
+    { icon: "layers", label: "Ангилал", value: `${t.category} загвар` },
+    { icon: "file-text", label: "Формат", value: t.format },
+    { icon: "lock", label: "Шаардлагатай", value: t.requirements },
+    { icon: "users", label: "Хэнд тохирох", value: t.forWhom },
+  ].filter((feature): feature is { icon: IconName; label: string; value: string } => !!feature.value);
 
   return (
-    <>
-      <div className="hidden flex-col min-[900px]:flex">
-        {sections.slice(0, 3).map((s) => (
-          <div key={s.title} className="grid gap-3 border-t border-line py-6 min-[1200px]:grid-cols-[160px_minmax(0,1fr)]">
-            <h2 className="text-[15px] font-extrabold">{s.title}</h2>
-            {s.body}
-          </div>
-        ))}
-        <p className="border-t border-line pt-4 text-sm leading-normal text-muted">Лиценз: {LICENSE}</p>
-      </div>
+    <div className="flex flex-col gap-8">
+      {t.longDescription && <p className="text-[17px] leading-[1.7] text-muted">{t.longDescription}</p>}
 
-      <section aria-label="Дэлгэрэнгүй мэдээлэл" className="rounded-card border border-line bg-surface px-4 min-[900px]:hidden">
-        {sections.map((s, i) => {
-          const on = open === i;
-          return (
-            <div key={s.title} className={i < sections.length - 1 ? "border-b border-soft" : ""}>
-              <h2>
-                <button
-                  type="button"
-                  id={`acc-b-${i}`}
-                  aria-expanded={on}
-                  aria-controls={`acc-p-${i}`}
-                  onClick={() => setOpen(on ? -1 : i)}
-                  className="flex min-h-[58px] w-full cursor-pointer items-center justify-between gap-3 border-0 bg-transparent p-0 text-left text-base font-extrabold text-ink"
-                >
-                  {s.title}
-                  <ChevronDown size={18} strokeWidth={2.2} className="transition-transform duration-[250ms]" style={{ transform: on ? "rotate(180deg)" : "none" }} />
-                </button>
-              </h2>
-              <div id={`acc-p-${i}`} role="region" aria-labelledby={`acc-b-${i}`} hidden={!on} className="ax-in-sm pb-4">
-                {s.body}
+      <Section title="Онцлог">
+        <dl className="m-0 grid gap-3 sm:grid-cols-2">
+          {features.map((feature) => (
+            <div key={feature.label} className="flex gap-3 rounded-control border border-line bg-surface p-4">
+              <span aria-hidden="true" className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-inner bg-soft text-brand">
+                <Icon name={feature.icon} size={18} />
+              </span>
+              <div className="min-w-0">
+                <dt className="text-xs font-extrabold text-muted">{feature.label}</dt>
+                <dd className="m-0 mt-0.5 text-[14.5px] leading-snug font-semibold [overflow-wrap:anywhere]">{feature.value}</dd>
               </div>
             </div>
-          );
-        })}
-      </section>
-    </>
+          ))}
+        </dl>
+      </Section>
+
+      {t.included.length > 0 && (
+        <Section title="Багтсан файлууд">
+          <ul className="m-0 flex list-none flex-col overflow-hidden rounded-control border border-line bg-surface p-0">
+            {t.included.map((item, index) => (
+              <li key={`${item}-${index}`} className={`flex min-h-12 items-center gap-3 px-4 py-2.5 text-[15px] leading-normal ${index ? "border-t border-line-soft" : ""}`}>
+                <Icon name="circle-check" size={18} className="shrink-0 text-brand" />
+                <span className="[overflow-wrap:anywhere]">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
+
+      {t.howTo.length > 0 && (
+        <Section title="Яаж ашиглах">
+          <ol className="m-0 flex list-none flex-col gap-2.5 p-0">
+            {t.howTo.map((step, index) => (
+              <li key={`${step}-${index}`} className="flex gap-3 text-[15px] leading-normal">
+                <span aria-hidden="true" className="inline-flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-lg bg-soft text-[13px] font-extrabold text-brand">{index + 1}</span>
+                <span className="[overflow-wrap:anywhere]">{step}</span>
+              </li>
+            ))}
+          </ol>
+        </Section>
+      )}
+
+      <p className="border-t border-line pt-4 text-sm leading-normal text-muted">Лиценз: {LICENSE}</p>
+    </div>
   );
 }

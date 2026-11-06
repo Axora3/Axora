@@ -2,20 +2,30 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { createPortal } from "react-dom";
-import { ArrowLeft, ChevronLeft, Close, LogoMark, Menu } from "@/components/icons";
+import { ArrowLeft, ChevronDown, ChevronLeft, LogoMark, Menu as MenuIcon } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
-import { Icon } from "@/components/ui/icon";
 import { buttonStyles } from "@/components/ui/button";
-import { useDialog } from "@/components/ui/use-dialog";
+import { Icon } from "@/components/ui/icon";
+import { Menu } from "@/components/ui/menu";
+import { cn } from "@/lib/utils";
+import { MobileNav, type NavLink } from "./MobileNav";
 
-export const NAV = [
-  { href: "/templates", label: "Загварууд" },
-  { href: "/bundles", label: "Багцууд" },
-  { href: "/services", label: "Веб хөгжүүлэлт" },
-  { href: "/portfolio", label: "Портфолио" },
-  { href: "/learn", label: "Сургалт" },
-  { href: "/contact", label: "Тусламж" },
+const NAV: NavLink[] = [
+  { href: "/", label: "Нүүр", icon: "home" },
+  { href: "/templates", label: "Загварууд", icon: "layout-grid" },
+  { href: "/services", label: "Үйлчилгээ", icon: "monitor" },
+  { href: "/builder", label: "Website Builder", icon: "adjustments" },
+  { href: "/contact", label: "Холбоо барих", icon: "message" },
+];
+
+/** Existing destinations that are not in the main five, so nothing becomes unreachable. */
+const MORE: NavLink[] = [
+  { href: "/bundles", label: "Багцууд", icon: "layers" },
+  { href: "/portfolio", label: "Портфолио", icon: "photo" },
+  { href: "/learn", label: "Сургалт", icon: "list-check" },
+  { href: "/blog", label: "Нийтлэл", icon: "file-text" },
+  { href: "/favorites", label: "Хадгалсан", icon: "heart" },
+  { href: "/compare", label: "Харьцуулах", icon: "swap" },
 ];
 
 type Props = {
@@ -34,15 +44,16 @@ type Props = {
 
 export function SiteHeader({ variant = "main", label, back, mobileBack, wide, active: current, tone = "default" }: Props) {
   const [open, setOpen] = useState(false);
-  const dialogRef = useDialog<HTMLDivElement>(open, () => setOpen(false));
+  const [drawerReady, setDrawerReady] = useState(false);
   const band = tone === "band";
-  const max = wide ? "max-w-none px-[clamp(16px,2vw,24px)]" : "max-w-[1240px] px-[clamp(16px,4vw,40px)]";
-  const iconButton = `ax-btn inline-flex h-11 w-11 items-center justify-center rounded-control border ${band ? "border-band-ring bg-transparent text-on-band" : "border-line bg-surface text-ink"}`;
+  const max = wide ? "max-w-none px-[clamp(16px,2vw,24px)]" : "max-w-[1240px] px-gutter";
+  const iconButton = `ax-btn inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-control border ${band ? "border-band-ring bg-transparent text-on-band" : "border-line bg-surface text-ink"}`;
+  const moreActive = MORE.some((n) => n.href === current);
 
   return (
-    <header className={`ax-site-header sticky top-0 z-30 border-b ${band ? "ax-on-band border-band-line bg-band text-on-band" : "border-line bg-header backdrop-blur-[18px]"}`}>
+    <header className={cn("ax-site-header sticky top-0 z-(--ax-z-sticky) border-b", band ? "ax-on-band border-band-line bg-band text-on-band" : "border-line bg-header backdrop-blur-[18px]")}>
       {mobileBack && (
-        <div className="flex h-[60px] items-center gap-2 px-3 min-[900px]:hidden">
+        <div className="flex h-[60px] items-center gap-2 px-3 nav:hidden">
           <Link href={mobileBack.href} aria-label={mobileBack.label} className="ax-btn inline-flex h-11 w-11 items-center justify-center rounded-control text-ink">
             <ChevronLeft size={22} />
           </Link>
@@ -51,31 +62,51 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
         </div>
       )}
 
-      <div className={`mx-auto flex items-center gap-6 ${max} ${variant === "compact" ? "h-[68px]" : "h-[60px] min-[900px]:h-[72px]"} ${mobileBack ? "max-[899px]:hidden" : ""}`}>
-        <Link href="/" aria-label="AXORA нүүр" className={`flex min-h-11 items-center gap-2.5 no-underline ${band ? "text-on-band" : "text-ink"}`}>
+      <div className={cn("mx-auto flex items-center gap-6", max, variant === "compact" ? "h-[68px]" : "h-[60px] nav:h-[72px]", mobileBack && "max-[899px]:hidden")}>
+        <Link href="/" aria-label="AXORA нүүр" className={cn("flex min-h-11 items-center gap-2.5 no-underline", band ? "text-on-band" : "text-ink")}>
           <LogoMark />
           <span className="text-[18px] font-extrabold tracking-[0.08em]">AXORA</span>
         </Link>
 
         {variant === "main" ? (
           <>
-            <nav aria-label="Үндсэн цэс" className="hidden items-center min-[1100px]:flex">
+            <nav aria-label="Үндсэн цэс" className="hidden items-center desk:flex">
               {NAV.map((n) => (
                 <Link key={n.href} href={n.href} aria-current={n.href === current ? "page" : undefined} className="ax-nav-link">
                   {n.label}
                 </Link>
               ))}
+              <Menu
+                label="Бусад хуудас"
+                triggerClassName={cn("ax-nav-link cursor-pointer gap-1 border-0 bg-transparent", moreActive && "text-ink")}
+                trigger={<>Бусад <ChevronDown size={14} /></>}
+              >
+                {MORE.map((n) => (
+                  <Link key={n.href} href={n.href} aria-current={n.href === current ? "page" : undefined} role="menuitem" className="ax-menu-item text-ink no-underline">
+                    <Icon name={n.icon} size={16} className="text-brand" />
+                    {n.label}
+                  </Link>
+                ))}
+              </Menu>
             </nav>
             <div className="ml-auto flex items-center gap-2">
-              <Link href="/favorites" aria-label="Хадгалсан загварууд" className={`${iconButton} max-[1099px]:hidden`}>
-                <Icon name="heart" size={20} />
-              </Link>
               <ThemeToggle tone={band ? "band" : "default"} />
-              <Link href="/order" className={buttonStyles(band ? "lime" : "primary", "ax-btn hidden min-[1100px]:inline-flex")}>
-                Үнийн санал авах
+              <Link href="/builder" className={buttonStyles(band ? "lime" : "primary", "ax-btn hidden sm:inline-flex")}>
+                Вебсайт бүтээх
               </Link>
-              <button type="button" aria-label="Цэс нээх" aria-expanded={open} aria-controls="ax-mobile-menu" onClick={() => setOpen(true)} className={`${iconButton} min-[1100px]:hidden`}>
-                <Menu size={20} />
+              <button
+                type="button"
+                aria-label="Цэс нээх"
+                aria-haspopup="dialog"
+                aria-expanded={open}
+                aria-controls={open ? "ax-mobile-menu" : undefined}
+                onClick={() => {
+                  setDrawerReady(true);
+                  setOpen(true);
+                }}
+                className={`${iconButton} desk:hidden`}
+              >
+                <MenuIcon size={20} />
               </button>
             </div>
           </>
@@ -95,41 +126,7 @@ export function SiteHeader({ variant = "main", label, back, mobileBack, wide, ac
         )}
       </div>
 
-      {open &&
-        createPortal(
-          <div
-            ref={dialogRef}
-            id="ax-mobile-menu"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Цэс"
-            className="fixed inset-0 z-50 flex h-dvh flex-col overflow-y-auto overscroll-contain bg-band p-4 pb-[calc(16px+env(safe-area-inset-bottom))] text-on-band [animation:axFade_.2s_ease_both]"
-          >
-            <div className="flex h-14 items-center justify-between">
-              <span className="text-[18px] font-extrabold tracking-[0.08em]">AXORA</span>
-              <button type="button" aria-label="Цэс хаах" data-autofocus onClick={() => setOpen(false)} className="ax-btn inline-flex h-11 w-11 items-center justify-center rounded-control border border-band-ring bg-transparent text-on-band">
-                <Close size={20} />
-              </button>
-            </div>
-            <nav aria-label="Гар утасны цэс" className="mt-6 flex flex-col">
-              {[{ href: "/", label: "Нүүр" }, ...NAV, { href: "/favorites", label: "Хадгалсан" }].map((n, index) => (
-                <Link
-                  key={n.href}
-                  href={n.href}
-                  onClick={() => setOpen(false)}
-                  className="ax-in-sm border-b border-band-line px-1 py-4 text-[26px] font-extrabold tracking-[-0.02em] text-on-band no-underline"
-                  style={{ animationDelay: `${index * 30}ms` }}
-                >
-                  {n.label}
-                </Link>
-              ))}
-            </nav>
-            <Link href="/order" onClick={() => setOpen(false)} className={buttonStyles("lime", "mt-auto w-full shrink-0", "lg")}>
-              Үнийн санал авах
-            </Link>
-          </div>,
-          document.body,
-        )}
+      {drawerReady && <MobileNav open={open} onClose={() => setOpen(false)} links={NAV} more={MORE} current={current} />}
     </header>
   );
 }

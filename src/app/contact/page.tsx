@@ -38,7 +38,7 @@ async function ContactPageContent({ searchParams }: Pick<PageProps<"/contact">, 
   ];
   return (
     <>
-      <SiteHeader mobileBack={{ href: "/", label: "Нүүр рүү буцах", title: "Холбоо барих" }} />
+      <SiteHeader active="/contact" />
       <main id="main" className="ax-container grid gap-[22px] pt-6 pb-8 min-[900px]:grid-cols-[1fr_1.1fr] min-[900px]:gap-x-16 min-[900px]:px-[clamp(16px,4vw,40px)] min-[900px]:pt-16 min-[900px]:pb-24">
         <div className="flex flex-col gap-[22px]">
           <div className="ax-in d1 flex flex-col gap-2.5">

@@ -12,6 +12,7 @@ import { getPublishedTemplates } from "@/lib/templates/service";
 export const metadata: Metadata = {
   title: "Бэлэн загварууд",
   description: "Notion, Canva, Excel бэлэн загваруудаас хайж, шүүж, өөрт тохирохыг нь сонгоорой.",
+  alternates: { canonical: "/templates" },
 };
 
 function Loading() {
@@ -43,12 +44,13 @@ export default function TemplatesPage() {
   return (
     <>
       <SiteHeader active="/templates" />
-      <main id="main" className="ax-container pt-[clamp(28px,5vw,64px)] pb-[var(--ax-space-section)]">
-        <div className="ax-in-sm flex flex-wrap items-end justify-between gap-x-10 gap-y-3 border-b border-line pb-8">
+      <main id="main" className="ax-container pt-[clamp(16px,3vw,32px)] pb-section">
+        <div className="ax-page-hero ax-in-sm flex flex-col gap-2 py-[clamp(20px,3vw,36px)]">
+          <span className="ax-eyebrow">Marketplace</span>
           <h1 className="ax-h1">
             Бэлэн <span className="serif">загварууд</span>
           </h1>
-          <p className="ax-lead max-w-[28em]">Notion, Canva, Excel загваруудаас хайж, шүүж, өөрт тохирохыг нь сонго.</p>
+          <p className="ax-lead max-w-[32em]">Notion, Canva, Excel загваруудаас хайж, шүүж, өөрт тохирохыг нь сонго.</p>
         </div>
 
         <Suspense fallback={<Loading />}>
@@ -63,7 +65,7 @@ export default function TemplatesPage() {
             <p className="text-base leading-relaxed text-dark-muted">Өнгө, хэв маягаа туршаад үнийн санал аваарай.</p>
           </div>
           <Link href="/builder" className={buttonStyles("lime", "ax-btn", "lg")}>
-            Вебээ загварчлах
+            Вебсайт бүтээх
           </Link>
         </section>
       </main>

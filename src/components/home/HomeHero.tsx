@@ -4,6 +4,7 @@ import { buttonStyles } from "@/components/ui/button";
 import { Icon, type IconName } from "@/components/ui/icon";
 import { TextReveal } from "@/components/ui/text-reveal";
 import type { SiteContent } from "@/lib/content/schema";
+import { HeroStage } from "./HeroStage";
 
 const FORMATS: [IconName, string][] = [
   ["table", "Excel"],
@@ -119,46 +120,47 @@ function NotionMock() {
   );
 }
 
-/** Full-bleed dark hero. The product stage bleeds into the next section, which leaves room with HERO_OVERLAP. */
+/** Full-bleed dark hero. The product stage bleeds into the next section, which leaves room for it with top padding. */
 export function HomeHero({ c }: { c: SiteContent }) {
   return (
     <section aria-labelledby="hero-title" className="ax-band-hero">
       <div aria-hidden="true" className="ax-band-hero-bg ax-grid-dark" />
-      <div className="ax-container pt-[clamp(40px,6vw,88px)]">
-        <h1 id="hero-title" className="ax-display max-w-[14em]">
+      <div aria-hidden="true" className="ax-aurora" />
+      <div className="ax-container flex flex-col items-center pt-[clamp(40px,6vw,88px)] text-center">
+        <span className="ax-pill-band ax-in">
+          <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-lime" />
+          Монгол дижитал бүтээгдэхүүний платформ
+        </span>
+        <h1 id="hero-title" className="ax-display mt-5 max-w-[14em]">
           <TextReveal text={c.heroTitle} />
-          {c.heroAccent && <TextReveal text={c.heroAccent} start={c.heroTitle.split(/\s+/).length} className="serif text-lime" />}
+          {c.heroAccent && <TextReveal text={c.heroAccent} start={c.heroTitle.split(/\s+/).length} className="serif block text-lime" />}
         </h1>
-        <div className="mt-[clamp(24px,3vw,40px)] flex flex-wrap items-end justify-between gap-x-10 gap-y-6">
-          <div className="ax-in d3 flex max-w-[34em] flex-col gap-5">
-            <p className="text-[clamp(17px,1.5vw,20px)] leading-relaxed text-band-muted">{c.heroLead}</p>
-            <ul aria-label="Загварын төрлүүд" className="m-0 flex list-none flex-wrap gap-x-5 gap-y-2 p-0 text-[13px] font-bold text-band-muted">
-              {FORMATS.map(([icon, label]) => (
-                <li key={label} className="inline-flex items-center gap-2">
-                  <Icon name={icon} size={16} className="text-lime" />
-                  {label}
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="ax-in d4 flex flex-wrap gap-3 max-[480px]:w-full">
-            <Link href={c.heroPrimary.href} className={buttonStyles("lime", "ax-btn max-[480px]:w-full", "lg")}>
-              {c.heroPrimary.label}
-              <span className="ax-arrow"><ArrowRight /></span>
-            </Link>
-            <Link href={c.heroSecondary.href} className="ax-button ax-button-lg ax-btn border-band-ring bg-transparent text-on-band hover:bg-band-hover max-[480px]:w-full">
-              {c.heroSecondary.label}
-            </Link>
-          </div>
+        <p className="ax-in d3 mt-[clamp(20px,2.4vw,32px)] max-w-[36em] text-[clamp(17px,1.5vw,20px)] leading-relaxed text-band-muted">{c.heroLead}</p>
+        <div className="ax-in d4 mt-7 flex flex-wrap justify-center gap-3 max-[480px]:w-full">
+          <Link href={c.heroPrimary.href} className={buttonStyles("lime", "ax-btn max-[480px]:w-full", "lg")}>
+            {c.heroPrimary.label}
+            <span className="ax-arrow"><ArrowRight /></span>
+          </Link>
+          <Link href={c.heroSecondary.href} className="ax-button ax-button-lg ax-btn border-band-ring bg-transparent text-on-band hover:bg-band-hover max-[480px]:w-full">
+            {c.heroSecondary.label}
+          </Link>
         </div>
-        <div role="img" aria-label="Бүтээгдэхүүний жишээ: кофе шопын веб, Excel төсөв, Notion самбар" className="ax-stage ax-light mt-[clamp(36px,5vw,64px)] -mb-[clamp(60px,8vw,120px)]">
-          <WebsiteMock />
-          <ExcelMock />
-          <NotionMock />
+        <ul aria-label="Загварын төрлүүд" className="ax-in d5 m-0 mt-6 flex list-none flex-wrap justify-center gap-x-5 gap-y-2 p-0 text-[13px] font-bold text-band-muted">
+          {FORMATS.map(([icon, label]) => (
+            <li key={label} className="inline-flex items-center gap-2">
+              <Icon name={icon} size={16} className="text-lime" />
+              {label}
+            </li>
+          ))}
+        </ul>
+        <div className="ax-stage-glow mt-[clamp(36px,5vw,64px)] -mb-[clamp(60px,8vw,120px)] w-full text-left">
+          <HeroStage>
+            <WebsiteMock />
+            <ExcelMock />
+            <NotionMock />
+          </HeroStage>
         </div>
       </div>
     </section>
   );
 }
-
-export const HERO_OVERLAP = "pt-[calc(clamp(60px,8vw,120px)+var(--ax-space-section))]";
