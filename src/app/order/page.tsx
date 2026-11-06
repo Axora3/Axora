@@ -6,7 +6,7 @@ import { isBackendConfigured } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
   title: "Веб захиалгын анкет",
-  description: "39 асуулт, 7 алхамтай веб захиалгын анкет. Live demo-ийн тохиргоо автоматаар бөглөгдөнө.",
+  description: "39 асуулт, 7 алхамтай веб захиалгын анкет. Website Builder-ийн тохиргоо автоматаар бөглөгдөнө.",
   robots: { index: false },
 };
 

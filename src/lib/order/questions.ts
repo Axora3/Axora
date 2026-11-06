@@ -59,7 +59,7 @@ export const STEPS: Step[] = [
     ],
   },
   {
-    title: "Вебийн зорилго",
+    title: "Вебсайтын зорилго",
     desc: "Ямар веб хэрэгтэй, юунд ашиглах вэ?",
     fields: [
       { id: "q12", n: 12, label: "Вебийн төрөл", req: true, kind: "radio", other: true, opts: ["Бизнесийн танилцуулга", "Онлайн дэлгүүр", "Кафе / QR меню", "Portfolio", "Цаг захиалга", OTHER] },
@@ -79,20 +79,20 @@ export const STEPS: Step[] = [
     ],
   },
   {
-    title: "Дизайн, өнгө",
-    desc: "Live demo дээр хийсэн тохиргоо энд дамжина.",
+    title: "Дизайн ба өнгө",
+    desc: "Website Builder дээр хийсэн тохиргоо энд дамжина.",
     fields: [
       { id: "bld", kind: "builder", label: "" },
       { id: "q17", n: 17, label: "Үндсэн өнгө", req: true, kind: "color", unknown: true },
       { id: "q18", n: 18, label: "Нэмэлт өнгө", kind: "color" },
-      { id: "q19", n: 19, label: "Дизайны хэв маяг", req: true, kind: "radio", opts: ["Minimal", "Modern", "Luxury", "Colorful", "Dark", "Дизайнерт даатгах"] },
+      { id: "q19", n: 19, label: "Дизайны хэв маяг", req: true, kind: "radio", opts: ["Minimal", "Modern", "Elegant", "Creative", "Luxury", "Colorful", "Dark", "Дизайнерт даатгах"] },
       { id: "q20", n: 20, label: "Таалагддаг вебүүдийн холбоос", kind: "textarea", ph: "Нэг мөрөнд нэг холбоос", max: 2000 },
       { id: "q21", n: 21, label: "Лого байгаа эсэх", req: true, kind: "radio", opts: ["Бэлэн байгаа", "Шинэчлэх хэрэгтэй", "Байхгүй"] },
       { id: "q22", n: 22, label: "Лого, брэндийн материал хавсаргах", kind: "file" },
     ],
   },
   {
-    title: "Бүтэц, агуулга",
+    title: "Бүтэц ба контент",
     desc: "Вебэд ямар хэсэг, ямар мэдээлэл орох вэ?",
     fields: [
       {
@@ -113,7 +113,7 @@ export const STEPS: Step[] = [
     ],
   },
   {
-    title: "Нэмэлт функц",
+    title: "Нэмэлт боломжууд",
     desc: "Вебэд ямар боломж хэрэгтэй вэ?",
     fields: [
       {
@@ -149,7 +149,7 @@ export const STEPS: Step[] = [
     ],
   },
   {
-    title: "Нэмэлт хүсэлт, зөвшөөрөл",
+    title: "Нэмэлт мэдээлэл ба баталгаажуулалт",
     desc: "Сүүлийн алхам. Дараа нь бүх хариултаа шалгана.",
     fields: [
       { id: "q37", n: 37, label: "Нэмэлт хүсэлт", kind: "textarea", max: 5000 },

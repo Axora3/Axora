@@ -1,3 +1,6 @@
+/** False for empty values and the bracketed "[Имэйл хаяг]" placeholders in default copy, which visitors should not see. */
+export const isConfigured = (value: string) => !!value.trim() && !/^\[.*\]$/.test(value.trim());
+
 /** Build safe, usable contact links while leaving owner placeholders as plain text. */
 export function phoneHref(value: string): string | null {
   const phone = value.trim().replace(/[^\d+]/g, "");

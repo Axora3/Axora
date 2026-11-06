@@ -6,8 +6,16 @@
 export const BUSINESS_TYPES = ["cafe", "beauty", "shop", "portfolio"] as const;
 export type BusinessType = (typeof BUSINESS_TYPES)[number];
 
+/**
+ * Every value the database accepts for builder_style. Elegant and Creative are stored
+ * as "designer" and "colorful", so no migration is needed. "dark" is no longer offered,
+ * but stays valid for sessions and orders saved before the change.
+ */
 export const STYLE_IDS = ["minimal", "modern", "luxury", "colorful", "dark", "designer"] as const;
 export type StyleId = (typeof STYLE_IDS)[number];
+
+/** The five styles offered in the builder, in display order. */
+export const BUILDER_STYLE_IDS = ["minimal", "modern", "designer", "colorful", "luxury"] as const satisfies readonly StyleId[];
 
 export const PALETTE_IDS = ["forest", "ocean", "terracotta", "lavender", "midnight", "mono"] as const;
 export type PaletteId = (typeof PALETTE_IDS)[number] | "custom";
@@ -123,7 +131,7 @@ export const TYPES: Record<BusinessType, BusinessTypeDef> = {
     ],
   },
   portfolio: {
-    label: "Portfolio",
+    label: "Хувийн портфолио",
     sub: "Ажлууд, танилцуулга",
     name: "Таны Нэр",
     headline: "Брэнд ба веб дизайнер.",
@@ -145,6 +153,8 @@ export const TYPES: Record<BusinessType, BusinessTypeDef> = {
 
 export type StyleDef = {
   label: string;
+  /** One-line description shown on the style card. */
+  desc: string;
   /** Matching answer for order question 19 (дизайны хэв маяг). */
   orderStyle: string;
   fh: string;
@@ -163,12 +173,12 @@ export type StyleDef = {
 };
 
 export const STYLES: Record<StyleId, StyleDef> = {
-  minimal: { label: "Minimal", orderStyle: "Minimal", fh: "var(--font-manrope), system-ui, sans-serif", hw: 600, hst: "normal", hs: "56px", ht: "-0.035em", r: "4px", br: "4px", brs: "4px", bw: "1px", bw2: "1px", px: "44px", py: "80px", shadow: "none" },
-  modern: { label: "Modern", orderStyle: "Modern", fh: "var(--font-onest), var(--font-manrope), system-ui, sans-serif", hw: 800, hst: "normal", hs: "58px", ht: "-0.04em", r: "20px", br: "999px", brs: "10px", bw: "0px", bw2: "1px", px: "36px", py: "64px", shadow: "0 14px 30px -20px rgba(0,0,0,.35)" },
-  luxury: { label: "Luxury", orderStyle: "Luxury", fh: "var(--font-cormorant), var(--font-lora), Georgia, serif", hw: 500, hst: "normal", hs: "68px", ht: "0", r: "0px", br: "0px", brs: "0px", bw: "1px", bw2: "1px", px: "56px", py: "88px", shadow: "none" },
-  colorful: { label: "Colorful", orderStyle: "Colorful", fh: "var(--font-rubik), var(--font-manrope), system-ui, sans-serif", hw: 700, hst: "normal", hs: "56px", ht: "-0.02em", r: "22px", br: "14px", brs: "10px", bw: "2px", bw2: "2px", px: "32px", py: "56px", shadow: "none" },
-  dark: { label: "Dark", orderStyle: "Dark", fh: "var(--font-manrope), system-ui, sans-serif", hw: 800, hst: "normal", hs: "58px", ht: "-0.035em", r: "14px", br: "10px", brs: "8px", bw: "1px", bw2: "1px", px: "40px", py: "72px", shadow: "none" },
-  designer: { label: "Дизайнерт даатгах", orderStyle: "Дизайнерт даатгах", fh: "var(--font-lora), Georgia, serif", hw: 500, hst: "italic", hs: "60px", ht: "-0.02em", r: "16px", br: "10px", brs: "8px", bw: "1px", bw2: "1px", px: "40px", py: "72px", shadow: "0 10px 24px -18px rgba(0,0,0,.3)" },
+  minimal: { label: "Minimal", desc: "Цэвэрхэн, их зайтай, нарийн зураас", orderStyle: "Minimal", fh: "var(--font-manrope), system-ui, sans-serif", hw: 600, hst: "normal", hs: "56px", ht: "-0.035em", r: "4px", br: "4px", brs: "4px", bw: "1px", bw2: "1px", px: "44px", py: "80px", shadow: "none" },
+  modern: { label: "Modern", desc: "Дугуй булан, зөөлөн сүүдэр, градиент", orderStyle: "Modern", fh: "var(--font-onest), var(--font-manrope), system-ui, sans-serif", hw: 800, hst: "normal", hs: "58px", ht: "-0.04em", r: "20px", br: "999px", brs: "10px", bw: "0px", bw2: "1px", px: "36px", py: "64px", shadow: "0 14px 30px -20px rgba(0,0,0,.35)" },
+  luxury: { label: "Luxury", desc: "Төвд тэгшилсэн, том үсэг, тансаг serif", orderStyle: "Luxury", fh: "var(--font-cormorant), var(--font-lora), Georgia, serif", hw: 500, hst: "normal", hs: "68px", ht: "0", r: "0px", br: "0px", brs: "0px", bw: "1px", bw2: "1px", px: "56px", py: "88px", shadow: "none" },
+  colorful: { label: "Creative", desc: "Бүдүүн хүрээ, тод блок, налсан хэлбэр", orderStyle: "Creative", fh: "var(--font-rubik), var(--font-manrope), system-ui, sans-serif", hw: 700, hst: "normal", hs: "56px", ht: "-0.02em", r: "22px", br: "14px", brs: "10px", bw: "2px", bw2: "2px", px: "32px", py: "56px", shadow: "none" },
+  dark: { label: "Dark", desc: "Бараан суурьтай", orderStyle: "Dark", fh: "var(--font-manrope), system-ui, sans-serif", hw: 800, hst: "normal", hs: "58px", ht: "-0.035em", r: "14px", br: "10px", brs: "8px", bw: "1px", bw2: "1px", px: "40px", py: "72px", shadow: "none" },
+  designer: { label: "Elegant", desc: "Налуу serif, нуман хэлбэр, тайван зай", orderStyle: "Elegant", fh: "var(--font-lora), Georgia, serif", hw: 500, hst: "italic", hs: "60px", ht: "-0.02em", r: "16px", br: "10px", brs: "8px", bw: "1px", bw2: "1px", px: "40px", py: "72px", shadow: "0 10px 24px -18px rgba(0,0,0,.3)" },
 };
 
 export function defaultBuilderConfig(type: BusinessType = "cafe"): BuilderConfig {

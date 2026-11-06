@@ -60,10 +60,34 @@ function snapshot(c: BuilderConfig): BuilderSnapshot {
   return { v: 1, type: c.type, style: c.style, palette: c.palette, colors: c.colors, name: c.name, headline: c.headline, desc: c.desc, cta: c.cta };
 }
 
+/** Consent is given fresh each time, so it is never written to a draft or read back from one. */
+function withoutConsent(a: Answers): Answers {
+  const copy = { ...a };
+  delete copy.q39;
+  return copy;
+}
+
+/**
+ * Builder settings as order answers. Text fills in only when the visitor typed it in the
+ * builder, so sample copy such as "Уул кофе" never becomes their business name. A text
+ * answer is replaced only if it is empty or still holds the last value the builder sent.
+ */
+function applyBuilder(a: Answers, c: BuilderConfig, last: Partial<Record<string, string>>): Answers {
+  const next: Answers = { ...a, q12: TYPES[c.type].orderType, q19: STYLES[c.style].orderStyle, q17: c.colors.primary, q17u: false, q18: c.colors.secondary };
+  const texts: [string, "name" | "headline" | "desc", string][] = [["q2", "name", c.name], ["q24", "headline", c.headline], ["q25", "desc", c.desc]];
+  for (const [id, key, value] of texts) {
+    if (!c.edited[key] || !value.trim()) continue;
+    const current = typeof a[id] === "string" ? (a[id] as string).trim() : "";
+    if (!current || current === last[id]) next[id] = value;
+    last[id] = value;
+  }
+  return next;
+}
+
 function readDraft(storage: Storage, key: string): Draft | null {
   try {
     const d = JSON.parse(storage.getItem(key) ?? "null");
-    if (d && d.v === 1 && d.answers && typeof d.answers === "object") return d as Draft;
+    if (d && d.v === 1 && d.answers && typeof d.answers === "object") return { ...d, answers: withoutConsent(d.answers) } as Draft;
   } catch {
     /* ignore */
   }
@@ -117,6 +141,7 @@ export function OrderForm({ backendEnabled, bank }: { backendEnabled: boolean; b
   const [hydrated, setHydrated] = useState(false);
   const idemKey = useRef<string>("");
   const appliedSig = useRef<string>("");
+  const lastBuilderText = useRef<Partial<Record<string, string>>>({});
   const startedAt = useRef<number>(0);
   const honeypot = useRef<HTMLInputElement>(null);
 
@@ -159,26 +184,37 @@ export function OrderForm({ backendEnabled, bank }: { backendEnabled: boolean; b
     const sig = builderSig(c);
     if (sig === appliedSig.current) return;
     appliedSig.current = sig;
-    setAnswers((a) => ({
-      ...a,
-      q12: TYPES[c.type].orderType,
-      q19: STYLES[c.style].orderStyle,
-      q17: c.colors.primary,
-      q17u: false,
-      q18: c.colors.secondary,
-      q2: typeof a.q2 === "string" && a.q2.trim() ? a.q2 : c.name,
-      q24: typeof a.q24 === "string" && a.q24.trim() ? a.q24 : c.headline,
-    }));
+    setAnswers((a) => applyBuilder(a, c, lastBuilderText.current));
   }, [hydrated, builder.ready, builder.config]);
 
+  /* ---------- The builder's logo arrives as a normal q22 attachment, which the customer can still remove ---------- */
+  const builderLogo = builder.logo;
+  useEffect(() => {
+    if (!hydrated || !builder.ready) return;
+    const ref = newIdempotencyKey().replace(/-/g, "").slice(0, 24);
+    /* eslint-disable react-hooks/set-state-in-effect -- mirrors external builder state */
+    setFiles((all) => {
+      if (!builderLogo) return all.some((f) => f.fromBuilder) ? all.filter((f) => !f.fromBuilder) : all;
+      const { file, name } = builderLogo;
+      if (all.some((f) => f.fromBuilder && f.name === name && f.size === file.size)) return all;
+      const others = all.filter((f) => !f.fromBuilder);
+      if (precheckFile(file, others.filter((f) => f.field === "q22").length)) return others;
+      return [...others, { ref, field: "q22", file, name, size: file.size, status: "selected", fromBuilder: true }];
+    });
+    if (builderLogo) setAnswers((a) => (a.q21 ? a : { ...a, q21: "Бэлэн байгаа" }));
+    /* eslint-enable react-hooks/set-state-in-effect */
+  }, [hydrated, builder.ready, builderLogo]);
+
   /* ---------- Auto-save: tab session always, device only if the visitor opted in ---------- */
-  const fileNames = useMemo(() => files.map((f) => f.name), [files]);
+  // The builder's logo restores itself, so it is not a file the visitor has to pick again.
+  const fileNames = useMemo(() => files.filter((f) => !f.fromBuilder).map((f) => f.name), [files]);
   const buildDraft = useCallback(
-    (): Draft => ({ v: 1, answers, step, maxStep, showLinks, idemKey: idemKey.current, builderSig: appliedSig.current, fileNames }),
+    (): Draft => ({ v: 1, answers: withoutConsent(answers), step, maxStep, showLinks, idemKey: idemKey.current, builderSig: appliedSig.current, fileNames }),
     [answers, step, maxStep, showLinks, fileNames],
   );
   useEffect(() => {
-    if (!hydrated || phase === "done" || phase === "partial") return;
+    // "submitting" included: file statuses change during upload, and that must not bring back a draft of a saved order.
+    if (!hydrated || phase === "submitting" || phase === "done" || phase === "partial") return;
     const d = buildDraft();
     try {
       sessionStorage.setItem(SESSION_KEY, JSON.stringify(d));
@@ -368,7 +404,8 @@ export function OrderForm({ backendEnabled, bank }: { backendEnabled: boolean; b
     }
     let fresh = emptyAnswers();
     if (usedBuilder) {
-      fresh = { ...fresh, q12: TYPES[usedBuilder.type].orderType, q19: STYLES[usedBuilder.style].orderStyle, q17: usedBuilder.colors.primary, q18: usedBuilder.colors.secondary, q2: usedBuilder.name, q24: usedBuilder.headline };
+      lastBuilderText.current = {};
+      fresh = applyBuilder(fresh, usedBuilder, lastBuilderText.current);
     }
     setAnswers(fresh);
     setFiles([]);

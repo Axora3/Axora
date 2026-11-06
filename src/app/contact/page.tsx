@@ -2,90 +2,143 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import Link from "next/link";
 import { ContactForm } from "@/components/contact/ContactForm";
+import { Faq } from "@/components/home/Faq";
 import { ArrowRight, Chat, Clock, Mail, PhoneCall } from "@/components/icons";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import { SiteHeader } from "@/components/site/SiteHeader";
+import { buttonStyles } from "@/components/ui/button";
+import { Icon } from "@/components/ui/icon";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getSiteContent } from "@/lib/content/service";
 import { isBackendConfigured } from "@/lib/supabase/server";
-import { emailHref, httpsHref, phoneHref } from "@/lib/contact-links";
+import { emailHref, httpsHref, isConfigured, phoneHref } from "@/lib/contact-links";
 
 export const metadata: Metadata = {
   title: "Холбоо барих",
-  description: "AXORA-тай утас, имэйл, Messenger-ээр холбогдох эсвэл богино зурвас үлдээх.",
+  description: "AXORA-тай холбогдох эсвэл богино зурвас үлдээх. Асуулт байвал бид хариулъя.",
+  alternates: { canonical: "/contact" },
 };
 
-
-
-export default function ContactPage(props: PageProps<"/contact">) {
+function Hero() {
   return (
-    <Suspense fallback={<main id="main" className="mx-auto max-w-[1240px] px-5 pt-10"><p aria-busy="true">Мэдээлэл ачаалж байна…</p></main>}>
-      <ContactPageContent searchParams={props.searchParams} />
-    </Suspense>
+    <section aria-labelledby="ct-title" className="relative isolate overflow-hidden bg-band text-on-band">
+      <div aria-hidden="true" className="ax-aurora" />
+      <div className="ax-container flex flex-col items-start gap-4 py-[clamp(40px,7vw,96px)]">
+        <span className="ax-pill-band ax-in">Холбоо барих</span>
+        <h1 id="ct-title" className="ax-display ax-in d1 max-w-[11em]">
+          Бидэнтэй <span className="serif text-lime">холбогдох</span>
+        </h1>
+        <p className="ax-in d2 max-w-[34em] text-[clamp(17px,1.5vw,20px)] leading-relaxed text-band-muted">Асуулт, санаагаа бичээд үлдээгээрэй. Вебсайт, загвар, захиалгын талаар хамтдаа ярилцъя.</p>
+      </div>
+    </section>
   );
 }
 
-async function ContactPageContent({ searchParams }: Pick<PageProps<"/contact">, "searchParams">) {
+export default function ContactPage(props: PageProps<"/contact">) {
+  return (
+    <>
+      <SiteHeader active="/contact" />
+      <main id="main">
+        <Hero />
+        <Suspense fallback={<div aria-busy="true" aria-label="Ачаалж байна" className="ax-container py-section"><Skeleton className="h-96 rounded-card" /></div>}>
+          <ContactDetails searchParams={props.searchParams} />
+        </Suspense>
+      </main>
+      <Suspense fallback={null}>
+        <SiteFooter />
+      </Suspense>
+    </>
+  );
+}
+
+async function ContactDetails({ searchParams }: Pick<PageProps<"/contact">, "searchParams">) {
   const [content, query] = await Promise.all([getSiteContent(), searchParams]);
   const { contact } = content;
   const bundleSlug = typeof query.bundle === "string" ? query.bundle : "";
   const bundle = content.library.find((entry) => entry.kind === "bundle" && entry.slug === bundleSlug && entry.published);
   const initialMessage = bundle ? `Сайн байна уу. Би “${bundle.title}” багцын талаар асуух гэсэн юм.` : "";
-  const CHANNELS = [
-    { Icon: PhoneCall, label: "Утас", value: contact.phone, href: phoneHref(contact.phone) },
+  // Only details the owner has filled in: unset placeholders are never shown to visitors.
+  const channels = [
     { Icon: Mail, label: "Имэйл", value: contact.email, href: emailHref(contact.email) },
+    { Icon: PhoneCall, label: "Утас", value: contact.phone, href: phoneHref(contact.phone) },
     { Icon: Chat, label: "Messenger", value: contact.messenger, href: httpsHref(contact.messenger) },
     { Icon: Clock, label: "Ажиллах цаг", value: contact.hours, href: null },
-  ];
+  ].filter((channel) => isConfigured(channel.value));
+
   return (
     <>
-      <SiteHeader active="/contact" />
-      <main id="main" className="ax-container grid gap-[22px] pt-6 pb-8 min-[900px]:grid-cols-[1fr_1.1fr] min-[900px]:gap-x-16 min-[900px]:px-[clamp(16px,4vw,40px)] min-[900px]:pt-16 min-[900px]:pb-24">
-        <div className="flex flex-col gap-[22px]">
-          <div className="ax-in d1 flex flex-col gap-2.5">
-            <h1 className="ax-h1">
-              Бидэнтэй <span className="serif">холбогдох</span>
-            </h1>
-            <p className="text-base leading-relaxed text-muted min-[900px]:text-[17px]">Асуулт байвал доорх сувгаар эсвэл богино зурвас үлдээгээрэй.</p>
+      <div className="ax-container grid items-start gap-8 py-section nav:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] nav:gap-x-16">
+        <div className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <h2 className="ax-h3">Шууд холбогдох</h2>
+            <p className="text-[15px] leading-relaxed text-muted">Зурвас үлдээвэл таны бичсэн утас эсвэл имэйлээр эргэн холбогдоно.</p>
           </div>
 
-          <ul aria-label="Холбоо барих сувгууд" className="ax-in d2 m-0 list-none rounded-card border border-line bg-surface px-4 py-1">
-            {CHANNELS.map(({ Icon, label, value, href }, i) => (
-              <li key={label} className={`flex min-h-16 items-center gap-3.5 ${i < CHANNELS.length - 1 ? "border-b border-soft" : ""}`}>
-                <span className="inline-flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl bg-soft text-brand">
-                  <Icon size={20} />
-                </span>
-                <span className="flex flex-col gap-0.5">
-                  <span className="text-[13px] font-bold text-muted">{label}</span>
-                  {href ? <a href={href} className="ax-link text-base font-extrabold text-ink no-underline">{value}</a> : <span className="text-base font-extrabold">{value}</span>}
-                </span>
-              </li>
-            ))}
-          </ul>
+          {channels.length > 0 && (
+            <ul aria-label="Холбоо барих сувгууд" className="m-0 list-none rounded-card border border-line bg-surface px-4 py-1">
+              {channels.map(({ Icon: ChannelIcon, label, value, href }, i) => (
+                <li key={label} className={`flex min-h-16 items-center gap-3.5 ${i < channels.length - 1 ? "border-b border-soft" : ""}`}>
+                  <span className="inline-flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl bg-soft text-brand">
+                    <ChannelIcon size={20} />
+                  </span>
+                  <span className="flex min-w-0 flex-col gap-0.5">
+                    <span className="text-[13px] font-bold text-muted">{label}</span>
+                    {href ? <a href={href} className="ax-link text-base font-extrabold [overflow-wrap:anywhere] text-ink no-underline">{value}</a> : <span className="text-base font-extrabold">{value}</span>}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
 
-          <div className="ax-in d3 grid grid-cols-2 gap-2.5">
-            <Link href="/order" className="ax-btn flex min-h-[104px] flex-col justify-between rounded-card bg-band p-3.5 text-on-band no-underline">
-              <span className="text-[15px] leading-[1.3] font-extrabold">Үнийн санал авах</span>
-              <span className="inline-flex h-[34px] w-[34px] items-center justify-center self-end rounded-control bg-lime text-on-lime">
-                <ArrowRight size={16} strokeWidth={2.2} />
-              </span>
-            </Link>
-            <Link href="/#faq" className="ax-btn flex min-h-[104px] flex-col justify-between rounded-card border border-line bg-surface p-3.5 text-ink no-underline">
-              <span className="text-[15px] leading-[1.3] font-extrabold">Түгээмэл асуулт</span>
-              <span className="inline-flex h-[34px] w-[34px] items-center justify-center self-end rounded-control bg-soft text-brand">
-                <ArrowRight size={16} strokeWidth={2.2} />
-              </span>
-            </Link>
-          </div>
+          {content.social.length > 0 && (
+            <div className="flex flex-col gap-2.5">
+              <h3 className="text-sm font-extrabold">Сошиал хаяг</h3>
+              <ul className="m-0 flex list-none flex-wrap gap-2 p-0">
+                {content.social.map((social) => (
+                  <li key={social.url}>
+                    <a href={social.url} target="_blank" rel="noopener noreferrer" className={buttonStyles("secondary", "ax-btn")}>
+                      {social.label}
+                      <Icon name="external-link" size={16} />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
 
-        <section aria-labelledby="ct-form-t" className="ax-in d4 flex flex-col gap-3.5 self-start rounded-card border border-line bg-surface px-4 py-5 min-[900px]:p-8">
-          <h2 id="ct-form-t" className="text-xl font-extrabold">
-            Зурвас үлдээх
-          </h2>
+        <section aria-labelledby="ct-form-t" className="ax-surface flex flex-col gap-4 p-[clamp(20px,3vw,36px)]">
+          <h2 id="ct-form-t" className="ax-h3">Зурвас үлдээх</h2>
           <ContactForm backendEnabled={isBackendConfigured()} initialMessage={initialMessage} />
         </section>
-      </main>
-      <SiteFooter />
+      </div>
+
+      <section aria-labelledby="ct-faq" className="border-y border-line bg-surface">
+        <div className="ax-container ax-section grid items-start gap-[clamp(28px,5vw,72px)] [grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr))]">
+          <h2 id="ct-faq" className="ax-h2">
+            Түгээмэл <span className="serif">асуулт</span>
+          </h2>
+          <Faq items={content.faq} />
+        </div>
+      </section>
+
+      <section aria-labelledby="ct-cta" className="ax-container py-section">
+        <div className="ax-page-hero flex flex-col gap-5 nav:flex-row nav:items-center nav:justify-between">
+          <div className="flex flex-col gap-2">
+            <h2 id="ct-cta" className="ax-h2">
+              Вебсайтаа <span className="serif">эхлүүлэх үү?</span>
+            </h2>
+            <p className="ax-lead">Өнгө, хэв маягаа туршаад, хэрэгцээгээ анкетаар илгээгээрэй.</p>
+          </div>
+          <div className="flex shrink-0 flex-col gap-2 sm:flex-row">
+            <Link href="/builder" className={buttonStyles("primary", "ax-btn", "lg")}>
+              Вебсайт бүтээх
+              <ArrowRight size={18} />
+            </Link>
+            <Link href="/order" className={buttonStyles("secondary", "ax-btn", "lg")}>Үнийн санал авах</Link>
+          </div>
+        </div>
+      </section>
     </>
   );
 }

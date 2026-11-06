@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { LogoMark } from "@/components/icons";
-import { emailHref, phoneHref } from "@/lib/contact-links";
+import { emailHref, isConfigured, phoneHref } from "@/lib/contact-links";
 import { getSiteContent } from "@/lib/content/service";
 
 const COLUMNS: { title: string; links: [string, string][] }[] = [
@@ -39,8 +39,8 @@ export async function SiteFooter() {
         <div className="flex min-w-0 flex-col gap-1.5 text-sm break-words text-band-muted">
           <h2 className={heading}>Холбоо барих</h2>
           <Link href="/contact" className={link}>Бидэнтэй холбогдох</Link>
-          {phoneHref(c.contact.phone) ? <a href={phoneHref(c.contact.phone)!} className="text-band-muted no-underline hover:text-lime">{c.contact.phone}</a> : <span>{c.contact.phone}</span>}
-          {emailHref(c.contact.email) ? <a href={emailHref(c.contact.email)!} className="text-band-muted no-underline hover:text-lime">{c.contact.email}</a> : <span>{c.contact.email}</span>}
+          {isConfigured(c.contact.phone) && (phoneHref(c.contact.phone) ? <a href={phoneHref(c.contact.phone)!} className="text-band-muted no-underline hover:text-lime">{c.contact.phone}</a> : <span>{c.contact.phone}</span>)}
+          {isConfigured(c.contact.email) && (emailHref(c.contact.email) ? <a href={emailHref(c.contact.email)!} className="text-band-muted no-underline hover:text-lime">{c.contact.email}</a> : <span>{c.contact.email}</span>)}
           {c.social.map((s) => (
             <a key={s.url} href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-10 items-center text-band-muted no-underline hover:text-lime">
               {s.label}

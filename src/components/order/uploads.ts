@@ -18,6 +18,8 @@ export type LocalFile = {
   attachmentId?: string;
   path?: string;
   token?: string | null;
+  /** Came from the builder's logo control rather than this form's file picker. */
+  fromBuilder?: boolean;
 };
 
 export type OrderReceipt = { orderId: string; reference: string; grant: string };
