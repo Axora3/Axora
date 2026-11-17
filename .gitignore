@@ -42,3 +42,8 @@ next-env.d.ts
 
 # keep the template (no secrets)
 !.env.example
+
+*.log
+/.next-ecosystem-qa/
+/test-results/
+/playwright-report/

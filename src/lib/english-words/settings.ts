@@ -1,0 +1,3 @@
+export type EnglishWordsSettings={id:number;price_mnt:number;coin_price:number;welcome_coins:number;discount_percent:number;streak_days:number;daily_coins:number;battle_win_coins:number;sales_enabled:boolean;gate_enabled:boolean;payment_instructions:string;purchase_url:string};
+export const EW_APP='https://english-words-swart.vercel.app/';
+export const EW_FIELDS=[['price_mnt','Нэг сарын үнэ (₮)',1,10000000],['coin_price','Нэг сарын coin үнэ',1,1000000],['welcome_coins','Анхны бэлэг coin',0,100000],['discount_percent','Идэвхийн хөнгөлөлт (%)',0,90],['streak_days','Тасралтгүй өдрийн босго',1,365],['daily_coins','Өдрийн сорилын coin',0,10000],['battle_win_coins','Challenge хожлын coin',0,10000]] as const;

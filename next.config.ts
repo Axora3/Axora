@@ -10,6 +10,7 @@ const supabaseHost = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  distDir: process.env.AXORA_DIST_DIR || ".next",
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,

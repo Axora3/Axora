@@ -20,6 +20,7 @@ const NAV: NavLink[] = [
 
 /** Existing destinations that are not in the main five, so nothing becomes unreachable. */
 const MORE: NavLink[] = [
+  { href: "/english-words", label: "English Words", icon: "list-check" },
   { href: "/bundles", label: "Багцууд", icon: "layers" },
   { href: "/portfolio", label: "Портфолио", icon: "photo" },
   { href: "/learn", label: "Сургалт", icon: "list-check" },

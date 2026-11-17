@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test:email": "node --env-file=.env.local scripts/test-email.mjs"
+    "test:email": "node --env-file=.env.local scripts/test-email.mjs",
+    "test:ecosystem": "node --conditions=react-server --import tsx --test tests/ecosystem/*.test.ts",
+    "test:ecosystem:e2e": "playwright test -c playwright.ecosystem.config.ts",
+    "ecosystem:worker": "node --env-file=.env.local --conditions=react-server --import tsx scripts/ecosystem-worker.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.7",
@@ -17,7 +20,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.69.0",
     "motion": "14.9.1",
-    "next": "16.4.3",
+    "next": "16.4.6",
     "nodemailer": "^10.3.1",
     "radix-ui": "^1.8.1",
     "react": "19.3.0",
@@ -27,15 +30,24 @@
     "zod": "^4.6.7"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "0.3.14",
+    "@playwright/test": "1.56.1",
     "@tailwindcss/turbopack": "^4",
     "@types/node": "^20",
     "@types/nodemailer": "^8.0.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
-    "eslint-config-next": "16.4.3",
+    "eslint-config-next": "16.4.6",
     "pg": "^8.23.1",
+    "prettier": "3.10.0",
     "tailwindcss": "^4",
+    "tsx": "4.23.15",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "^11.0.1"
+    }
   }
 }

@@ -114,6 +114,7 @@ export default async function HomePage() {
         </div>
 
         <Services />
+        <section className="ax-container py-section"><div className="rounded-panel border border-line bg-surface p-8 md:p-12"><p className="text-sm font-bold tracking-widest text-brand">AXORA · ENGLISH WORDS</p><h2 className="ax-h2 my-4">Өдөр бүр нэг үг. Шинэ боломж.</h2><p className="ax-lead mb-6">Англи үг, давталт, дуудлага, хувийн ахиц, найзын challenge — нэг аппад.</p><Link href="/english-words" className="ax-button ax-button-primary">English Words-ийг үзэх</Link></div></section>
 
         <Process />
 
