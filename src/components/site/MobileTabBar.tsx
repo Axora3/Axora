@@ -29,7 +29,7 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label="Доод цэс"
-      className="fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-line bg-tabbar px-2 pt-1.5 pb-[calc(8px+env(safe-area-inset-bottom))] backdrop-blur-[12px] min-[900px]:hidden"
+      className="ax-mobile-dock fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-line bg-tabbar px-2 pt-1.5 pb-[calc(8px+env(safe-area-inset-bottom))] backdrop-blur-[12px] min-[900px]:hidden"
     >
       {TABS.map(({ href, label, Icon, match }) => {
         const on = match(pathname);

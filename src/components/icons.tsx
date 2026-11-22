@@ -53,7 +53,7 @@ export function LogoMark({ size = 32 }: { size?: number }) {
       className="inline-flex shrink-0 items-center justify-center bg-band"
       style={{ width: size, height: size, borderRadius: Math.round(size * 0.28) }}
     >
-      <Icon name="letter-a" size={Math.round(size * 0.56)} color="#D9F279" />
+      <Icon name="letter-a" size={Math.round(size * 0.56)} color="var(--ax-logo-accent, #D9F279)" />
     </span>
   );
 }

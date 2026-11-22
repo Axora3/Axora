@@ -18,7 +18,7 @@ function WebsiteMock() {
     <div className="ax-stage-main ax-in d3 overflow-hidden rounded-card border border-line bg-surface shadow-raised">
       <div className="flex h-10 items-center gap-2 border-b border-line bg-soft-2 px-4">
         <span className="h-2.5 w-2.5 rounded-full bg-[#E1A28F]" />
-        <span className="h-2.5 w-2.5 rounded-full bg-[#E8CF84]" />
+        <span className="h-2.5 w-2.5 rounded-full bg-[#94A3B8]" />
         <span className="h-2.5 w-2.5 rounded-full bg-[#9CC59B]" />
         <span className="ml-3 flex h-6 max-w-[260px] flex-1 items-center rounded-[7px] border border-line bg-surface px-2.5 text-xs text-muted">uul-coffee.mn</span>
       </div>
@@ -83,7 +83,7 @@ function ExcelMock() {
           ))}
         </div>
         <div className="flex h-[54px] items-end gap-1.5 border-b border-line px-0.5">
-          {[[62, "#BFD7C6", "d4"], [80, "#BFD7C6", "d5"], [48, "#BFD7C6", "d5"], [92, "#245C45", "d6"], [70, "#BFD7C6", "d6"], [56, "#D9F279", "d7"]].map(([h, c, d], i) => (
+          {[[62, "#BFD7C6", "d4"], [80, "#BFD7C6", "d5"], [48, "#BFD7C6", "d5"], [92, "#245C45", "d6"], [70, "#BFD7C6", "d6"], [56, "#93B4F5", "d7"]].map(([h, c, d], i) => (
             <span key={i} className={`ax-bar ${d} flex-1 rounded-t-[3px]`} style={{ height: `${h}%`, background: String(c) }} />
           ))}
         </div>
@@ -126,7 +126,7 @@ export function HomeHero({ c }: { c: SiteContent }) {
     <section aria-labelledby="hero-title" className="ax-band-hero">
       <div aria-hidden="true" className="ax-band-hero-bg ax-grid-dark" />
       <div aria-hidden="true" className="ax-aurora" />
-      <div className="ax-container flex flex-col items-center pt-[clamp(40px,6vw,88px)] text-center">
+      <div className="ax-container flex flex-col items-center pt-[clamp(40px,6vw,88px)] text-center" style={{ position: "relative", zIndex: 1 }}>
         <span className="ax-pill-band ax-in">
           <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-lime" />
           Монгол дижитал бүтээгдэхүүний платформ

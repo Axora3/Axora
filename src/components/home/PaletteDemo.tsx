@@ -54,7 +54,7 @@ export function PaletteDemo() {
       <div className="ax-light flex flex-1 flex-col overflow-hidden rounded-2xl border border-line" style={vars} aria-live="polite">
         <div className="flex h-9 shrink-0 items-center gap-2 border-b border-line bg-soft-2 px-3.5">
           <span className="h-2 w-2 rounded-full bg-[#E1A28F]" />
-          <span className="h-2 w-2 rounded-full bg-[#E8CF84]" />
+          <span className="h-2 w-2 rounded-full bg-[#94A3B8]" />
           <span className="h-2 w-2 rounded-full bg-[#9CC59B]" />
           <span className="ml-2 truncate text-xs text-muted">Жишээ веб — {cur?.label ?? "Өөрийн өнгө"}</span>
         </div>
