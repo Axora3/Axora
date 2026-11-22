@@ -1,3 +1,4 @@
+import { AnimatedCloudFooter } from "@/components/cinematic/AnimatedCloudFooter";
 import Link from "next/link";
 import { LogoMark } from "@/components/icons";
 import { emailHref, isConfigured, phoneHref } from "@/lib/contact-links";
@@ -16,15 +17,16 @@ export async function SiteFooter() {
   const c = await getSiteContent();
   return (
     <footer className="ax-site-footer overflow-hidden bg-band text-on-band">
-      <div className="ax-container grid gap-x-8 gap-y-10 pt-16 pb-12 min-[700px]:grid-cols-2 min-[1100px]:grid-cols-[1.4fr_2.4fr_1fr]">
-        <div className="flex max-w-[320px] flex-col gap-3">
+      <AnimatedCloudFooter />
+      <div className="ax-footer-panel ax-container grid gap-x-8 gap-y-10 pt-16 pb-12 min-[700px]:grid-cols-2 min-[1100px]:grid-cols-[1.4fr_2.4fr_1fr]">
+        <div className="ax-footer-brand flex max-w-[320px] flex-col gap-3">
           <Link href="/" className="inline-flex items-center gap-2.5 text-lg font-extrabold tracking-[0.08em] text-on-band no-underline">
             <LogoMark />
             AXORA
           </Link>
           <span className="text-sm leading-relaxed text-band-muted">{c.footerText}</span>
         </div>
-        <nav aria-label="Доод холбоосууд" className="grid grid-cols-2 gap-x-6 gap-y-8 min-[520px]:grid-cols-3 min-[700px]:col-span-2 min-[700px]:row-start-2 min-[1100px]:col-span-1 min-[1100px]:row-start-auto">
+        <nav aria-label="Доод холбоосууд" className="ax-footer-nav grid grid-cols-2 gap-x-6 gap-y-8 min-[520px]:grid-cols-3 min-[700px]:col-span-2 min-[700px]:row-start-2 min-[1100px]:col-span-1 min-[1100px]:row-start-auto">
           {COLUMNS.map((column) => (
             <div key={column.title} className="flex flex-col">
               <h2 className={heading}>{column.title}</h2>
@@ -36,7 +38,7 @@ export async function SiteFooter() {
             </div>
           ))}
         </nav>
-        <div className="flex min-w-0 flex-col gap-1.5 text-sm break-words text-band-muted">
+        <div className="ax-footer-contact flex min-w-0 flex-col gap-1.5 text-sm break-words text-band-muted">
           <h2 className={heading}>Холбоо барих</h2>
           <Link href="/contact" className={link}>Бидэнтэй холбогдох</Link>
           {isConfigured(c.contact.phone) && (phoneHref(c.contact.phone) ? <a href={phoneHref(c.contact.phone)!} className="text-band-muted no-underline hover:text-lime">{c.contact.phone}</a> : <span>{c.contact.phone}</span>)}
@@ -48,7 +50,7 @@ export async function SiteFooter() {
           ))}
         </div>
       </div>
-      <div className="ax-container flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-band-line pt-5 pb-6">
+      <div className="ax-footer-legal ax-container flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-band-line pt-5 pb-6">
         <p className="text-xs text-band-faint">AXORA · Бүтээх ажлыг хялбарчилъя.</p>
         <Link href="/privacy" className="inline-flex min-h-11 items-center text-xs font-semibold text-band-faint no-underline transition-colors hover:text-lime">Нууцлалын бодлого</Link>
       </div>

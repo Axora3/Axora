@@ -10,9 +10,15 @@ const supabaseHost = (() => {
 })();
 
 const nextConfig: NextConfig = {
+  distDir: process.env.AXORA_DIST_DIR || ".next",
   cacheComponents: true,
   partialPrefetching: true,
   poweredByHeader: false,
+  devIndicators: false,
+  // Avoid restoring stale Tailwind loader output across local dev restarts.
+  experimental: {
+    turbopackFileSystemCacheForDev: false,
+  },
   images: {
     remotePatterns: supabaseHost ? [{ protocol: "https", hostname: supabaseHost, pathname: "/storage/v1/object/public/template-previews/**" }] : [],
   },

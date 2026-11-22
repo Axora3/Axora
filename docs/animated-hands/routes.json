@@ -1,0 +1,146 @@
+[
+  {
+    "route": "/",
+    "status": 200,
+    "finalPath": "/",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 865
+  },
+  {
+    "route": "/templates",
+    "status": 200,
+    "finalPath": "/templates",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 2783
+  },
+  {
+    "route": "/templates/jhlk",
+    "status": 200,
+    "finalPath": "/templates/jhlk",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 6375
+  },
+  {
+    "route": "/services",
+    "status": 200,
+    "finalPath": "/services",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 1946
+  },
+  {
+    "route": "/builder",
+    "status": 200,
+    "finalPath": "/builder",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 2019
+  },
+  {
+    "route": "/contact",
+    "status": 200,
+    "finalPath": "/contact",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 2023
+  },
+  {
+    "route": "/bundles",
+    "status": 200,
+    "finalPath": "/bundles",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 1575
+  },
+  {
+    "route": "/portfolio",
+    "status": 200,
+    "finalPath": "/portfolio",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 1564
+  },
+  {
+    "route": "/learn",
+    "status": 200,
+    "finalPath": "/learn",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 1608
+  },
+  {
+    "route": "/blog",
+    "status": 200,
+    "finalPath": "/blog",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 1616
+  },
+  {
+    "route": "/favorites",
+    "status": 200,
+    "finalPath": "/favorites",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 1620
+  },
+  {
+    "route": "/compare",
+    "status": 200,
+    "finalPath": "/compare",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 1580
+  },
+  {
+    "route": "/order",
+    "status": 200,
+    "finalPath": "/order",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 1972
+  },
+  {
+    "route": "/english-words",
+    "status": 200,
+    "finalPath": "/english-words",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 1966
+  },
+  {
+    "route": "/privacy",
+    "status": 200,
+    "finalPath": "/privacy",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 1110
+  },
+  {
+    "route": "/admin/login",
+    "status": 200,
+    "finalPath": "/admin/login",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 2619
+  },
+  {
+    "route": "/admin",
+    "status": 200,
+    "finalPath": "/admin",
+    "hasMain": false,
+    "serverError": false,
+    "milliseconds": 2623
+  },
+  {
+    "route": "/dev/design-system",
+    "status": 200,
+    "finalPath": "/dev/design-system",
+    "hasMain": true,
+    "serverError": false,
+    "milliseconds": 2678
+  }
+]

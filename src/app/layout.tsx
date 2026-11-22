@@ -7,7 +7,9 @@ import { themeInitScript, THEME_COLOR } from "@/components/theme/theme-script";
 import { ThemeSync } from "@/components/theme/ThemeToggle";
 import { SITE } from "@/lib/site";
 import { MotionProvider } from "@/components/ui/motion-provider";
+import { PublicSiteShell } from "@/components/cinematic/PublicSiteShell";
 import "./globals.css";
+import "./cinematic.css";
 
 // Ө and Ү live in Google's cyrillic-ext subset, not cyrillic. Both are preloaded so
 // Mongolian text never swaps those two letters in late.
@@ -59,7 +61,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         </a>
         <BuilderProvider>
           <MotionProvider>
-          {children}
+          <Suspense fallback={null}><PublicSiteShell>{children}</PublicSiteShell></Suspense>
           <Suspense fallback={null}>
             <MobileTabBar />
           </Suspense>

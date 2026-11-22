@@ -22,11 +22,13 @@ export type NavItem = {
 };
 
 export const ADMIN_NAV: NavItem[] = [
+  { href: "/admin/english-words", label: "English Words", group: "УДИРДЛАГА", Icon: Package },
   { href: "/admin", label: "Хяналтын самбар", group: "ҮНДСЭН", tabLabel: "Самбар", exact: true, tab: true, Icon: LayoutDashboard },
   { href: "/admin/orders", label: "Веб захиалгууд", group: "ЗАХИАЛГУУД", tabLabel: "Захиалга", count: "orders", countLabel: "шинэ захиалга", tab: true, Icon: ClipboardList },
   { href: "/admin/template-requests", label: "Template хүсэлтүүд", group: "ЗАХИАЛГУУД", tabLabel: "Хүсэлт", count: "requests", countLabel: "хариу хүлээж буй хүсэлт", tab: true, Icon: Inbox },
   { href: "/admin/templates", label: "Бүтээгдэхүүн", group: "УДИРДЛАГА", tabLabel: "Бүтээгдэхүүн", tab: true, Icon: Package },
   { href: "/admin/projects", label: "Веб төслүүд", group: "УДИРДЛАГА", Icon: FolderKanban },
+  { href: "/admin/ecosystem", label: "AXORA экосистем", group: "УДИРДЛАГА", Icon: Layers },
   // Existing modules beyond the main navigation, kept so nothing becomes unreachable.
   { href: "/admin/payments", label: "Төлбөрүүд", group: "БУСАД", Icon: CreditCard },
   { href: "/admin/support", label: "Тусламжийн хүсэлтүүд", group: "БУСАД", count: "support", countLabel: "шинэ тусламжийн хүсэлт", Icon: LifeBuoy },

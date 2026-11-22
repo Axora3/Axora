@@ -40,8 +40,7 @@ export function Process() {
           <Segmented label="Үйлчилгээний төрөл" options={OPTIONS} value={track} onChange={setTrack} />
         </div>
 
-        <ol key={track} className="ax-in-sm relative m-0 mt-12 grid list-none gap-8 p-0 min-[860px]:grid-cols-3 min-[860px]:gap-10">
-          <span aria-hidden="true" className="absolute top-[27px] right-[16%] left-[8%] hidden h-px bg-line-mid min-[860px]:block" />
+        <ol key={track} className="ax-process-steps ax-in-sm relative m-0 mt-12 grid list-none gap-8 p-0 min-[860px]:grid-cols-3 min-[860px]:gap-10">
           {TRACKS[track].map((step, index) => (
             <li key={step.title} className="relative flex gap-4 min-[860px]:flex-col">
               <span aria-hidden="true" className="relative inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-line-mid bg-surface text-brand">
