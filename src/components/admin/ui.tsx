@@ -4,9 +4,7 @@ import { Card, CardHeader } from "@/components/ui/card";
 import { buttonStyles } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState as BaseEmptyState } from "@/components/ui/empty-state";
-import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { ORDER_STATUS, PAYMENT_STATUS, REQUEST_STATUS, type OrderStatus, type PaymentStatus, type RequestStatus } from "@/lib/admin/labels";
-import { AdminBell, AdminMenuButton } from "./AdminShell";
 import { CopyButton } from "./client";
 
 /** Shared admin building blocks (server-safe). */
@@ -36,7 +34,7 @@ export function PageHeader({
   const band = tone === "band";
   return (
     <header
-      className={`z-30 flex flex-col gap-3 px-[clamp(16px,3vw,32px)] py-3.5 min-[1024px]:justify-center min-[1024px]:py-5 ${
+      className={`ax-admin-page-header z-30 flex flex-col gap-3 px-[clamp(16px,3vw,32px)] py-4 min-[1024px]:justify-center min-[1024px]:py-6 ${
         band
           ? "rounded-b-panel bg-band pb-6 text-on-band min-[1024px]:rounded-none min-[1024px]:pb-6"
           : "sticky top-0 border-b border-line bg-header-admin backdrop-blur-[10px] min-[1024px]:static min-[1024px]:border-b-0 min-[1024px]:bg-transparent min-[1024px]:pb-0 min-[1024px]:backdrop-blur-none"
@@ -56,19 +54,12 @@ export function PageHeader({
               ))}
             </nav>
           )}
-          <h1 className="text-[24px] leading-tight font-extrabold tracking-[-0.025em] [overflow-wrap:anywhere] min-[1024px]:text-[30px]">{title}</h1>
+          <h1 className="text-[24px] leading-tight font-semibold tracking-[-0.025em] [overflow-wrap:anywhere] min-[1024px]:text-[28px]">{title}</h1>
           {description && <div className={`text-[13.5px] leading-normal ${band ? "text-band-muted" : "text-muted"}`}>{description}</div>}
         </div>
-        {actions && <div className="order-3 flex w-full flex-wrap items-center gap-2 min-[1024px]:order-2 min-[1024px]:w-auto">{actions}</div>}
-        <div className="order-2 flex shrink-0 items-center gap-2 self-start min-[1024px]:order-3 min-[1024px]:self-center">
-          <span className="flex items-center gap-2 min-[1024px]:hidden">
-            <AdminBell tone={band ? "band" : "default"} />
-            <ThemeToggle tone={band ? "band" : "default"} size={20} />
-          </span>
-          <AdminMenuButton tone={band ? "band" : "default"} />
-        </div>
+        {actions && <div className="ax-admin-page-actions order-3 flex w-full flex-wrap items-center gap-2 min-[1024px]:order-2 min-[1024px]:w-auto">{actions}</div>}
       </div>
-      {children}
+      {children && <div className="ax-admin-page-tools">{children}</div>}
     </header>
   );
 }
@@ -85,15 +76,15 @@ export function PaymentPill({ status }: { status: string }) {
 }
 
 export function Body({ children, className = "" }: { children: React.ReactNode; className?: string }) {
-  return <main id="main" className={`flex flex-col gap-5 p-[clamp(16px,3vw,32px)] ${className}`}>{children}</main>;
+  return <main id="main" className={`ax-admin-body flex flex-col gap-6 p-[clamp(16px,3vw,32px)] ${className}`}>{children}</main>;
 }
 
 export function Panel({ title, action, children, className = "", id }: { title?: React.ReactNode; action?: React.ReactNode; children: React.ReactNode; className?: string; id?: string }) {
   return (
-    <Card role={title && id ? "region" : undefined} aria-labelledby={title && id ? id : undefined} className={`overflow-hidden ${className}`}>
+    <Card role={title && id ? "region" : undefined} aria-labelledby={title && id ? id : undefined} className={`ax-admin-panel overflow-hidden ${className}`}>
       {title && (
         <CardHeader>
-          <h2 id={id} className="text-[17px] font-extrabold">
+          <h2 id={id} className="text-base font-semibold">
             {title}
           </h2>
           {action}
@@ -129,13 +120,13 @@ export function StatCard({ label, value, note, icon, href, band, warn }: { label
   const body = (
     <>
       <span className="flex w-full items-start justify-between gap-2">
-        <span className="text-[13px] leading-snug font-bold">{label}</span>
+        <span className="ax-stat-label text-[13px] leading-snug font-bold">{label}</span>
         {icon && <span aria-hidden="true" className="ax-stat-icon"><Icon name={icon} size={18} /></span>}
       </span>
       <span className="flex flex-col gap-1.5">
         <span className="ax-stat-value">{value}</span>
         {note && (
-          <span className={`text-xs font-semibold ${warn ? "text-danger" : band ? "text-band-muted" : "text-muted"}`}>
+          <span className={`ax-stat-note text-xs font-semibold ${warn ? "text-danger" : band ? "text-band-muted" : "text-muted"}`}>
             {warn && <Icon name="circle-alert" size={14} className="mr-1 -mt-0.5" />}
             {note}
           </span>

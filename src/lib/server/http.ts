@@ -34,15 +34,23 @@ export async function readJson(req: Request, maxBytes: number): Promise<{ ok: tr
   if (!reader) return { ok: false, res: fail(400, "bad_json", MESSAGES.badJson) };
   const chunks: Uint8Array[] = [];
   let size = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    size += value.byteLength;
-    if (size > maxBytes) {
-      await reader.cancel();
-      return { ok: false, res: fail(413, "too_large", MESSAGES.tooLarge) };
+  try {
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      size += value.byteLength;
+      if (size > maxBytes) {
+        // A disconnected sender can also reject cancellation; the size result
+        // must remain a controlled 413 in that case.
+        await reader.cancel().catch(() => {});
+        return { ok: false, res: fail(413, "too_large", MESSAGES.tooLarge) };
+      }
+      chunks.push(value);
     }
-    chunks.push(value);
+  } catch {
+    return { ok: false, res: fail(400, "bad_json", MESSAGES.badJson) };
+  } finally {
+    reader.releaseLock();
   }
   try {
     const text = new TextDecoder().decode(Buffer.concat(chunks));

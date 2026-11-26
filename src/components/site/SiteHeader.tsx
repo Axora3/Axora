@@ -1,19 +1,20 @@
 "use client";
-
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
-import { LogoMark, Menu as MenuIcon } from "@/components/icons";
+import { AxoraLogo } from "@/components/brand/AxoraLogo";
+import { Menu as MenuIcon } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { buttonStyles } from "@/components/ui/button";
 import { Menu } from "@/components/ui/menu";
-import { cn } from "@/lib/utils";
 import { MobileNav, type NavLink } from "./MobileNav";
-
+import { AxoraGlass } from "@/components/glass/AxoraGlass";
+import { GlassActiveIndicator } from "@/components/glass/GlassActiveIndicator";
 const NAV: NavLink[] = [
   { href: "/", label: "Нүүр", icon: "home" },
   { href: "/templates", label: "Загварууд", icon: "layout-grid" },
   { href: "/services", label: "Үйлчилгээ", icon: "monitor" },
-  { href: "/builder", label: "Website Builder", icon: "adjustments" },
+  { href: "/builder", label: "Веб бүтээгч", icon: "adjustments" },
   { href: "/contact", label: "Холбоо барих", icon: "message" },
 ];
 
@@ -28,103 +29,97 @@ const MORE: NavLink[] = [
   { href: "/compare", label: "Харьцуулах", icon: "swap" },
 ];
 
-type Props = {
-  /** "main": full navigation. "compact": logo, page label and a back link (builder, order). */
-  variant?: "main" | "compact";
-  label?: string;
-  back?: { href: string; label: string };
-  /** Mobile (<900px) shows a back bar with this title instead of the logo bar. */
-  mobileBack?: { href: string; label: string; title: string };
-  wide?: boolean;
-  /** Which main-nav item is the current page (set by the page, so no runtime URL read is needed). */
-  active?: string;
-  /** "band" merges the header into the dark hero below it. */
-  tone?: "default" | "band";
-};
-
-export function SiteHeader({ variant = "main", label, back, mobileBack, wide, active: current, tone = "default" }: Props) {
+/** The persistent public shell is the only owner of this primary navigation. */
+export function SiteHeader() {
+  const pathname = usePathname();
+  const current = [...NAV, ...MORE].find((n) =>
+    n.href === "/"
+      ? pathname === "/"
+      : pathname === n.href || pathname.startsWith(n.href + "/"),
+  )?.href;
   const [open, setOpen] = useState(false);
   const [drawerReady, setDrawerReady] = useState(false);
-  const band = tone === "band";
-  const max = wide ? "max-w-none px-[clamp(16px,2vw,24px)]" : "max-w-[1240px] px-gutter";
-  const iconButton = `ax-btn inline-flex h-11 w-11 cursor-pointer items-center justify-center rounded-control border ${band ? "border-band-ring bg-transparent text-on-band" : "border-line bg-surface text-ink"}`;
-  const moreActive = MORE.some((n) => n.href === current);
-
   return (
-    <header className={cn("ax-site-header sticky top-0 z-(--ax-z-sticky) border-b", variant === "compact" && "ax-header-compact", band ? "ax-on-band border-band-line bg-band text-on-band" : "border-line bg-header backdrop-blur-[18px]")}>
-      {mobileBack && (
-        <div className="ax-header-backbar flex h-[60px] items-center gap-2 px-3 nav:hidden">
-          <Link href={mobileBack.href} aria-label={mobileBack.label} className="ax-btn inline-flex h-11 w-11 items-center justify-center rounded-control text-ink">
-            <span className="text-sm font-semibold">{mobileBack.label}</span>
-          </Link>
-          <span className="flex-1 truncate text-base font-extrabold">{mobileBack.title}</span>
-          <ThemeToggle />
-        </div>
-      )}
-
-      <div className={cn("ax-header-inner mx-auto flex items-center gap-6", max, variant === "compact" ? "h-[68px]" : "h-[60px] nav:h-[72px]", mobileBack && "max-[899px]:hidden")}>
-        <Link href="/" aria-label="AXORA нүүр" className={cn("ax-header-brand flex min-h-11 items-center gap-2.5 no-underline", band ? "text-on-band" : "text-ink")}>
-          <LogoMark />
-          <span className="text-[18px] font-extrabold tracking-[0.08em]">AXORA</span>
+    <header className="ax-site-header ax-optical-host sticky z-(--ax-z-sticky) text-on-band">
+      <AxoraGlass preset="navigation" />
+      <div className="ax-header-inner mx-auto flex h-16 items-center gap-6">
+        <Link
+          href="/"
+          aria-label="AXORA — Нүүр хуудас"
+          className="ax-header-brand inline-flex min-h-11 items-center no-underline text-on-band"
+        >
+          <AxoraLogo />
         </Link>
-
-        {variant === "main" ? (
-          <>
-            <nav aria-label="Үндсэн цэс" className="ax-header-nav hidden items-center desk:flex">
-              {NAV.map((n) => (
-                <Link key={n.href} href={n.href} aria-current={n.href === current ? "page" : undefined} className="ax-nav-link">
-                  {n.label}
-                </Link>
-              ))}
-              <Menu
-                label="Бусад хуудас"
-                triggerClassName={cn("ax-nav-link cursor-pointer gap-1 border-0 bg-transparent", moreActive && "ax-header-more-active text-ink")}
-                trigger="Бусад"
+        <nav
+          aria-label="Үндсэн цэс"
+          className="ax-header-nav ax-optical-nav hidden items-center desk:flex"
+        >
+          <GlassActiveIndicator selection={current ?? pathname} />
+          {NAV.map((n) => (
+            <Link
+              key={n.href}
+              href={n.href}
+              aria-current={n.href === current ? "page" : undefined}
+              className="ax-nav-link"
+            >
+              {n.label}
+            </Link>
+          ))}
+          <Menu
+            label="Бусад хуудас"
+            trigger="Бусад"
+            triggerClassName={`ax-nav-link cursor-pointer border-0 bg-transparent ${MORE.some((n) => n.href === current) ? "ax-header-more-active" : ""}`}
+          >
+            {MORE.map((n) => (
+              <Link
+                key={n.href}
+                href={n.href}
+                role="menuitem"
+                aria-current={n.href === current ? "page" : undefined}
+                className="ax-menu-item text-ink no-underline"
               >
-                {MORE.map((n) => (
-                  <Link key={n.href} href={n.href} aria-current={n.href === current ? "page" : undefined} role="menuitem" className="ax-menu-item text-ink no-underline">
-                    {n.label}
-                  </Link>
-                ))}
-              </Menu>
-            </nav>
-            <div className="ax-header-actions ml-auto flex items-center gap-2">
-              <ThemeToggle tone={band ? "band" : "default"} />
-              <Link href="/builder" className={buttonStyles(band ? "lime" : "primary", "ax-header-cta ax-btn hidden sm:inline-flex")}>
-                Вебсайт бүтээх
+                {n.label}
               </Link>
-              <button
-                type="button"
-                aria-label="Цэс нээх"
-                aria-haspopup="dialog"
-                aria-expanded={open}
-                aria-controls={open ? "ax-mobile-menu" : undefined}
-                onClick={() => {
-                  setDrawerReady(true);
-                  setOpen(true);
-                }}
-                className={`${iconButton} ax-header-menu-toggle desk:hidden`}
-              >
-                <MenuIcon size={20} />
-              </button>
-            </div>
-          </>
-        ) : (
-          <>
-            {label && <span className="hidden border-l border-line pl-5 text-sm font-bold text-muted sm:inline">{label}</span>}
-            <span className="ml-auto flex items-center gap-3">
-              <ThemeToggle />
-              {back && (
-                <Link href={back.href} className="ax-link inline-flex min-h-11 items-center gap-1.5 text-sm font-bold text-ink no-underline">
-                  {back.label}
-                </Link>
-              )}
-            </span>
-          </>
-        )}
+            ))}
+          </Menu>
+        </nav>
+        <div className="ax-header-actions ml-auto flex items-center gap-2">
+          <ThemeToggle tone="band" />
+          <Link
+            href="/builder"
+            className={buttonStyles(
+              "lime",
+              "ax-header-cta ax-optical-host relative ax-btn hidden sm:inline-flex",
+            )}
+          >
+            <AxoraGlass preset="control"/>
+            Вебсайт бүтээх
+          </Link>
+          <button
+            type="button"
+            aria-label="Цэс нээх"
+            aria-haspopup="dialog"
+            aria-expanded={open}
+            aria-controls={open ? "ax-mobile-menu" : undefined}
+            onClick={() => {
+              setDrawerReady(true);
+              setOpen(true);
+            }}
+            className="ax-header-menu-toggle ax-btn inline-flex h-11 w-11 items-center justify-center rounded-full border border-band-ring bg-transparent text-on-band desk:hidden"
+          >
+            <MenuIcon size={20} />
+          </button>
+        </div>
       </div>
-
-      {drawerReady && <MobileNav open={open} onClose={() => setOpen(false)} links={NAV} more={MORE} current={current} />}
+      {drawerReady && (
+        <MobileNav
+          open={open}
+          onClose={() => setOpen(false)}
+          links={NAV}
+          more={MORE}
+          current={current}
+        />
+      )}
     </header>
   );
 }

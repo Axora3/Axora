@@ -189,7 +189,7 @@ export function FieldRenderer({ f, a, set, error, linksOpen, domainHelp, onToggl
                       aria-invalid={!!error || undefined}
                       className="ax-check"
                     />
-                    {lab}
+                    {f.optionLabels?.[lab] ?? lab}
                   </label>
                 );
               })}

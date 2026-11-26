@@ -1,4 +1,5 @@
 import { Icon } from "@/components/ui/icon";
+import { AxoraMonogram } from "@/components/brand/AxoraLogo";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
@@ -12,7 +13,7 @@ function Logo({ size = 34 }: { size?: number }) {
   return (
     <span className="flex items-center gap-2.5">
       <span className="inline-flex items-center justify-center rounded-control bg-lime" style={{ width: size, height: size }}>
-        <Icon name="letter-a" size={size * 0.56} />
+        <AxoraMonogram width={size * 0.72} height={size * 0.72} />
       </span>
       <span className="text-xl font-extrabold tracking-[0.08em]">AXORA</span>
       <span className="rounded-md border border-band-ring px-2 py-1 text-xs font-extrabold text-lime">ADMIN</span>
@@ -23,7 +24,7 @@ function Logo({ size = 34 }: { size?: number }) {
 /** Sign-in only — no admin navigation is rendered here (the panel layout is not used). */
 export default function AdminLoginPage() {
   return (
-    <div className="flex min-h-dvh flex-col bg-band min-[861px]:flex-row min-[861px]:bg-bg-admin">
+    <div className="ax-admin ax-admin-login flex min-h-dvh flex-col bg-band min-[861px]:flex-row min-[861px]:bg-bg-admin">
       {/* Desktop: brand panel. */}
       <div aria-hidden="true" className="relative hidden flex-[1_1_520px] flex-col justify-between overflow-hidden bg-band p-12 text-on-band min-[861px]:flex">
         <Logo />

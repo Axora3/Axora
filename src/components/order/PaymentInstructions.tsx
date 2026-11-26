@@ -20,20 +20,14 @@ function BankRow({ label, value }: { label: string; value: string }) {
 export function PaymentInstructions({ bank, reference }: { bank: SiteContent["bank"]; reference: string | null }) {
   return (
     <>
-      <div className="grid gap-2.5 min-[560px]:grid-cols-3">
+      <div className="grid gap-2.5">
         <div className="flex flex-col gap-1 rounded-control border-2 border-brand bg-soft p-3.5">
           <span className="inline-flex items-center gap-2 text-[15px] font-extrabold"><Icon name="credit-card" size={18} className="text-brand" />Дансаар</span>
           <span className="text-[13px] text-muted">Шилжүүлгээр төлнө</span>
         </div>
-        {["QPay", "SocialPay"].map((method) => (
-          <div key={method} aria-disabled="true" className="flex flex-col gap-1 rounded-control border border-dashed border-line-mid p-3.5 text-muted">
-            <span className="text-[15px] font-extrabold">{method}</span>
-            <span className="text-[13px]">Удахгүй</span>
-          </div>
-        ))}
       </div>
 
-      {bank.name && bank.account ? (
+      {bank.name && bank.account && bank.holder ? (
         <div className="rounded-control border border-line bg-sunken px-4 py-1">
           <BankRow label="Банк" value={bank.name} />
           <BankRow label="Дансны дугаар" value={bank.account} />

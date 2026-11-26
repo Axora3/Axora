@@ -1,8 +1,10 @@
 "use client";
+import { AxoraGlass } from "@/components/glass/AxoraGlass";
+
 
 import Link from "next/link";
 import { useEffect, useRef, useState, type ReactNode } from "react";
-import { ArrowRight, Desktop, LogoMark, Phone, Plus, Tablet } from "@/components/icons";
+import { ArrowRight, Desktop, Phone, Plus, Tablet } from "@/components/icons";
 import { ThemeToggle } from "@/components/theme/ThemeToggle";
 import { Button, buttonStyles } from "@/components/ui/button";
 import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -48,10 +50,10 @@ const TEXT_FIELDS = [
 
 function Section({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <details open className="ax-details border-b border-line px-5">
-      <summary className="!min-h-14 !py-3 !text-[15px] !font-extrabold">
+    <details open className="ax-details ax-builder-group">
+      <summary>
         <h2 className="text-inherit">{title}</h2>
-        <span aria-hidden="true" className="ax-details-icon !h-8 !w-8"><Plus size={14} strokeWidth={2.4} /></span>
+        <span aria-hidden="true" className="ax-details-icon"><Plus size={14} strokeWidth={2.4} /></span>
       </summary>
       <div className="flex flex-col gap-3 pb-5">{children}</div>
     </details>
@@ -72,7 +74,7 @@ function DeviceFrame({ device, slug, children }: { device: Device; slug: string;
   const scale = available ? Math.min(1, available / virtual) : 1;
 
   useEffect(() => {
-    if (!outer.current || !inner.current) return;
+    if (!outer.current || !inner.current || typeof ResizeObserver === "undefined") return;
     const widthObserver = new ResizeObserver(([entry]) => setAvailable(entry.contentRect.width));
     const heightObserver = new ResizeObserver(([entry]) => setHeight(entry.contentRect.height));
     widthObserver.observe(outer.current);
@@ -148,13 +150,10 @@ export function Builder() {
   }
 
   return (
-    <>
-      <header className="sticky top-0 z-(--ax-z-sticky) flex h-[60px] items-center gap-2 border-b border-line bg-surface px-3 min-[960px]:gap-3 min-[960px]:px-4">
-        <Link href="/" aria-label="AXORA нүүр" className="flex min-h-11 shrink-0 items-center gap-2.5 text-ink no-underline">
-          <LogoMark />
-          <span className="text-[17px] font-extrabold tracking-[0.08em] max-[640px]:hidden">AXORA</span>
-        </Link>
-        <span className="border-l border-line pl-3 text-sm font-bold text-muted max-[1099px]:hidden">Website Builder</span>
+    <div className="ax-builder-workspace">
+      <div role="region" aria-label="Веб бүтээх хэрэгслүүд" className="ax-builder-toolbar ax-optical-host relative">
+        <AxoraGlass preset="navigation"/>
+        <span className="text-sm font-bold text-muted max-[479px]:hidden">Website Builder</span>
 
         <div className="mx-auto flex min-w-0 items-center gap-2">
           <Segmented label="Төхөөрөмж" options={DEVICE_OPTIONS} value={device} onChange={setDevice} />
@@ -184,10 +183,10 @@ export function Builder() {
             <ArrowRight size={16} />
           </Link>
         </div>
-      </header>
+      </div>
 
-      <div className="ax-studio max-[959px]:pb-[calc(68px+env(safe-area-inset-bottom))]">
-        <nav aria-label="Харагдац" className="fixed inset-x-0 bottom-0 z-30 grid grid-cols-2 gap-2 border-t border-line bg-tabbar px-3 pt-2 pb-[calc(8px+env(safe-area-inset-bottom))] backdrop-blur-[12px] min-[960px]:hidden">
+      <div className="ax-studio ax-builder-grid">
+        <nav aria-label="Харагдац" className="ax-builder-view-switch fixed z-30 grid grid-cols-2 gap-2 min-[960px]:hidden">
           <button type="button" aria-pressed={!previewing} onClick={() => setPreviewing(false)} className="ax-option min-h-11 items-center justify-center gap-2 text-sm font-bold">
             <Icon name="adjustments" size={18} />
             Тохируулах
@@ -198,7 +197,7 @@ export function Builder() {
           </button>
         </nav>
 
-        <aside aria-label="Тохиргоо" className={cn("min-h-0 min-w-0 overflow-y-auto overscroll-contain bg-surface min-[960px]:border-r min-[960px]:border-line", previewing && "max-[959px]:hidden")}>
+        <aside aria-label="Тохиргоо" className={cn("ax-builder-sidebar min-h-0 min-w-0 overscroll-contain", previewing && "max-[959px]:hidden")}>
           <Section title="Бизнесийн төрөл">
             <div className="grid gap-2">
               {BUSINESS_TYPES.map((k) => (
@@ -249,7 +248,7 @@ export function Builder() {
           </Section>
 
           <Section title="Өнгө">
-            <div className="grid grid-cols-2 gap-2">
+            <div className="ax-builder-palettes grid gap-2">
               {PALETTES.map((p) => (
                 <button
                   key={p.id}
@@ -390,13 +389,13 @@ export function Builder() {
           </Section>
         </aside>
 
-        <section aria-label="Урьдчилан харах" className={cn("ax-canvas min-h-0 min-w-0 overflow-x-hidden overflow-y-auto overscroll-contain p-[clamp(12px,2.4vw,32px)]", !previewing && "max-[959px]:hidden")} tabIndex={0}>
+        <section aria-label="Урьдчилан харах" className={cn("ax-builder-preview min-h-0 min-w-0 overscroll-contain", !previewing && "max-[959px]:hidden")} tabIndex={0}>
           <DeviceFrame device={device} slug={TYPES[config.type].slug}>
             <DemoPreview config={config} logo={b.logo} animKey={anim} />
           </DeviceFrame>
           <p className="mt-3 text-center text-[13px] leading-normal text-muted">Цэс, үнэ зэрэг нь жишээ. Таны бичсэн нэр, гарчиг, тайлбар, CTA, лого шууд харагдана.</p>
         </section>
       </div>
-    </>
+    </div>
   );
 }

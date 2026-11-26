@@ -7,10 +7,10 @@ export const metadata: Metadata = {
   alternates: { canonical: "/builder" },
 };
 
-/** A full-height workspace with its own toolbar, so it has no site header or footer. */
+/** Public navigation lives in the persistent shell; the editor keeps its contextual toolbar. */
 export default function BuilderPage() {
   return (
-    <main id="main">
+    <main id="main" className="ax-builder-page">
       <h1 className="sr-only">Website Builder</h1>
       <Builder />
     </main>

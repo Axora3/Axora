@@ -1,0 +1,152 @@
+/* One optical adapter owns the migrated foreground material. Never apply to sections. */
+:root {
+  --ax-glass-navigation-tint: rgb(245 248 255 / 0.62);
+  --ax-glass-panel-tint: rgb(250 252 255 / 0.88);
+  --ax-glass-control-tint: rgb(235 242 255 / 0.32);
+  --ax-glass-lens-tint: rgb(180 205 245 / 0.2);
+}
+:root[data-theme="dark"],
+:root:has(.ax-public) {
+  --ax-glass-navigation-tint: rgb(9 18 34 / 0.84);
+  --ax-glass-panel-tint: rgb(12 22 39 / 0.86);
+  --ax-glass-control-tint: rgb(32 55 86 / 0.3);
+  --ax-glass-lens-tint: rgb(75 126 218 / 0.17);
+}
+.ax-optical-host {
+  isolation: isolate;
+  background: transparent !important;
+  background-image: none !important;
+  -webkit-backdrop-filter: var(--ax-optical-host-filter, none) !important;
+  backdrop-filter: var(--ax-optical-host-filter, none) !important;
+  box-shadow: none !important;
+  border-color: transparent !important;
+}
+.ax-glass-layer {
+  z-index: -1;
+  background: var(--ax-glass-tint);
+}
+.ax-glass-navigation {
+  --ax-glass-tint: var(--ax-glass-navigation-tint);
+}
+.ax-glass-panel {
+  --ax-glass-tint: var(--ax-glass-panel-tint);
+}
+.ax-glass-control {
+  --ax-glass-tint: var(--ax-glass-control-tint);
+}
+.ax-glass-lens {
+  --ax-glass-tint: var(--ax-glass-lens-tint);
+}
+.ax-glass-layer:not([data-ax-glass-mode="live-backdrop"]) {
+  -webkit-backdrop-filter: blur(7px) saturate(115%);
+  backdrop-filter: blur(7px) saturate(115%);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.2),
+    inset 0 0 0 1px rgb(150 180 220 / 0.16);
+}
+.ax-glass-layer[data-ax-glass-mode="static-fallback"] {
+  background: var(--ax-elevated);
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+.ax-optical-nav {
+  isolation: isolate;
+}
+.ax-header-nav.ax-optical-nav {
+  position: relative;
+}
+.ax-indicator-anchor {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+}
+.ax-active-lens {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  isolation: isolate;
+  border-radius: 999px;
+  pointer-events: none;
+}
+.ax-optical-nav > :not(.ax-indicator-anchor):not(.ax-glass-layer) {
+  position: relative;
+  z-index: 1;
+}
+.ax-optical-nav:has(.ax-active-lens)
+  :is(
+    .ax-nav-link[aria-current="page"],
+    .ax-header-more-active,
+    .ax-dock-link[aria-current="page"]
+  ) {
+  background: transparent;
+  border-color: transparent;
+  box-shadow: none;
+}
+.ax-mobile-dock.ax-optical-host {
+  width: min(340px, calc(100% - 24px));
+  margin-inline: auto;
+  height: 66px;
+  border-radius: 33px;
+}
+.ax-optical-panel {
+  position: relative;
+}
+.ax-optical-dialog {
+  border-radius: 24px;
+}
+.ax-optical-control {
+  position: relative;
+  isolation: isolate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ax-active-lens {
+    transition: none !important;
+  }
+}
+@media (forced-colors: active) {
+  .ax-optical-host {
+    border: 1px solid CanvasText !important;
+  }
+  .ax-active-lens {
+    outline: 1px solid Highlight;
+  }
+  .ax-glass-layer {
+    background: Canvas;
+    box-shadow: none;
+  }
+}
+
+.ax-header-cta.ax-optical-host {
+  color: #f5f5f7 !important;
+  --ax-glass-control-tint: rgb(37 99 235 / 0.5);
+}
+.ax-hero-optical-cta {
+  --ax-glass-control-tint: rgb(22 73 175 / 0.88);
+  color: #f5f5f7 !important;
+}
+.ax-segment.ax-optical-nav {
+  position: relative;
+}
+.ax-segment.ax-optical-nav:has(.ax-active-lens)
+  .ax-segment-item[aria-pressed="true"] {
+  background: transparent;
+  box-shadow: none;
+}
+.ax-admin-notification-popover > .ax-glass-layer {
+  flex: none;
+}
+.ax-glass-sort > select {
+  background: transparent !important;
+}
+.ax-admin-dock.ax-optical-nav:has(.ax-active-lens)
+  .ax-dock-item[aria-current="page"] {
+  background: transparent;
+  box-shadow: none;
+}
+.ax-segment.ax-optical-nav:has(.ax-active-lens)
+  .ax-segment-item[data-state="active"] {
+  background: transparent;
+  box-shadow: none;
+}

@@ -111,8 +111,8 @@
   --ax-header-admin: rgba(243, 245, 238, 0.95);
   --ax-tabbar: rgba(255, 255, 255, 0.96);
   --ax-shadow: rgba(23, 37, 30, 0.38);
-  --ax-sk-a: #eceee6;
-  --ax-sk-b: #f6f8f1;
+  --ax-sk-a: #e7ecf2;
+  --ax-sk-b: #f4f7fa;
   --ax-header-h: 72px;
   /* Scales */
   --ax-space-section: clamp(56px, 7vw, 104px);
@@ -191,8 +191,8 @@
   --ax-header-admin: rgba(15, 21, 18, 0.92);
   --ax-tabbar: rgba(24, 33, 28, 0.94);
   --ax-shadow: rgba(0, 0, 0, 0.75);
-  --ax-sk-a: #1b2520;
-  --ax-sk-b: #28342d;
+  --ax-sk-a: #162031;
+  --ax-sk-b: #29384d;
   --ax-shadow-card: 0 1px 2px rgb(0 0 0 / 0.14), 0 12px 32px -22px rgb(0 0 0 / 0.5);
   --ax-shadow-raised: 0 8px 16px -12px rgb(0 0 0 / 0.3), 0 28px 64px -36px rgb(0 0 0 / 0.65);
   --ax-shadow-button: inset 0 1px 0 rgb(255 255 255 / 0.1), 0 1px 2px rgb(0 0 0 / 0.4);
@@ -787,12 +787,8 @@ option {
   }
 }
 
-/* Room for the mobile tab bar so it never covers content. */
-@media (max-width: 899px) {
-  body.has-tabbar {
-    padding-bottom: calc(68px + env(safe-area-inset-bottom));
-  }
-}
+/* Floating dock clearance belongs inside the public footer, not below the body.
+   Its single safe-area calculation lives in axora-system.css. */
 
 @media (prefers-reduced-motion: reduce) {
   *,
@@ -888,7 +884,6 @@ option {
   .ax-segment-item[aria-pressed="true"], .ax-segment-item[aria-current], .ax-segment-item[data-state="active"] { color: var(--ax-ink); }
   .ax-segment-item:focus-visible { outline: 2px solid var(--ax-focus); outline-offset: -2px; }
   a.ax-segment-item[aria-current] { background: var(--ax-elevated); box-shadow: var(--ax-shadow-xs), 0 0 0 1px var(--ax-line); }
-  .ax-segment-pill { position: absolute; top: 4px; bottom: 4px; left: 0; z-index: 0; border-radius: var(--radius-inner); background: var(--ax-elevated); box-shadow: var(--ax-shadow-xs), 0 0 0 1px var(--ax-line); }
   .ax-segment:not([data-ready]) .ax-segment-item[aria-pressed="true"], .ax-segment:not([data-ready]) .ax-segment-item[data-state="active"] { background: var(--ax-elevated); box-shadow: 0 0 0 1px var(--ax-line); }
 
   /* Radix popovers (dropdown, select, tooltip). Radix waits for the exit animation before unmounting. */
@@ -1004,7 +999,6 @@ option {
   }
 
   /* Footer wordmark */
-  .ax-wordmark { display: block; font-size: clamp(64px, 19vw, 280px); line-height: 0.8; font-weight: 800; letter-spacing: -0.05em; color: var(--ax-band-hover); user-select: none; white-space: nowrap; }
 
   /* Marketplace filters: a scrolling row on small screens, a list in the sidebar. */
   .ax-filter { display: inline-flex; flex: 0 0 auto; min-height: 44px; align-items: center; justify-content: space-between; gap: 10px; padding-inline: 14px; border: 1px solid var(--ax-line); border-radius: 999px; background: var(--ax-surface); color: var(--ax-ink); font-size: 14px; font-weight: 700; cursor: pointer; transition: background-color var(--ax-duration-fast), border-color var(--ax-duration-fast), color var(--ax-duration-fast); }

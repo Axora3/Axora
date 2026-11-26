@@ -28,7 +28,7 @@ const OPTIONS = [
 export function Process() {
   const [track, setTrack] = useState<keyof typeof TRACKS>("custom");
   return (
-    <section aria-labelledby="how-title" className="border-y border-line bg-surface">
+    <section aria-labelledby="how-title" className="ax-content-section">
       <div className="ax-container ax-section">
         <div className="ax-reveal flex flex-wrap items-end justify-between gap-5">
           <div className="flex max-w-[640px] flex-col gap-3">

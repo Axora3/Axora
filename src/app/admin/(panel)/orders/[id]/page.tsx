@@ -7,6 +7,8 @@ import { AttachmentActions, OrderStatusForm } from "@/components/admin/forms";
 import { NotesHistory } from "@/components/admin/NotesHistory";
 import { OrderDesignPreview } from "@/components/admin/OrderDesignPreview";
 import { OrderPaymentPanel } from "@/components/admin/OrderPaymentPanel";
+import {AdminOrderWorkflow} from '@/components/admin/AdminOrderWorkflow';
+import type {AdminWorkflow} from '@/lib/order-workflow/contracts';
 import { OrderStatusControl } from "@/components/admin/OrderStatusControl";
 import { CreateProjectButton, WorkChecklist, type Milestone } from "@/components/admin/ProjectControls";
 import { Body, LoadFailed, Notice, OrderPrompt, PageHeader, Panel } from "@/components/admin/ui";
@@ -79,6 +81,8 @@ async function OrderDetailContent({ params, searchParams }: PageProps<"/admin/or
   const { db, user } = c.ctx;
   const { data: o, error } = await db.from("website_orders").select("*").eq("id", id).maybeSingle();
   if (error) return <Body><LoadFailed what="захиалгыг" /></Body>;
+  const {data:workflowData}=await db.rpc('website_order_admin_view',{p_order:id});
+  const workflow=workflowData as AdminWorkflow|null;
   if (!o) notFound();
   const { data: atts, error: attErr } = await db.from("order_attachments").select("id, field, original_name, mime_type, size_bytes, upload_status, created_at").eq("order_id", id).order("created_at");
   const { data: project, error: projectError } = await db.from("website_projects").select("id").eq("order_id", id).maybeSingle();
@@ -244,12 +248,13 @@ async function OrderDetailContent({ params, searchParams }: PageProps<"/admin/or
         }
         actions={
           <>
-            <OrderStatusControl id={o.id} updatedAt={o.updated_at} status={o.status} title={o.business_name} reference={o.reference} size="md" />
+            {!o.workflow_managed&&<OrderStatusControl id={o.id} updatedAt={o.updated_at} status={o.status} title={o.business_name} reference={o.reference} size="md" />}
             <BackToList storageKey="admin-orders-list" fallback="/admin/orders" label="Жагсаалт" />
           </>
         }
       />
       <Body>
+        {workflow ? <AdminOrderWorkflow initial={workflow}/> : <Notice tone="warn">Үнийн саналын ажиллагаа одоогоор холбогдоогүй. Анкетын мэдээлэл хадгалагдсан. Үнийн санал, төлбөр баталгаажуулах болон хугацааны тохиргоо өгөгдлийн сангийн шинэчлэл бэлэн болсны дараа нээгдэнэ.</Notice>}
         <div className="grid items-start gap-5 min-[1100px]:grid-cols-[minmax(0,1fr)_340px]">
           <div className="min-w-0">
             <Tabs
@@ -274,7 +279,7 @@ async function OrderDetailContent({ params, searchParams }: PageProps<"/admin/or
             )}
             <Panel title="Хөгжүүлэлтийн төсөл">
               <div className="flex flex-col gap-3 p-[18px]">
-                {projectError && !isMissingMigration(projectError) ? <LoadFailed what="холбоотой төслийг" /> : isMissingMigration(projectError) ? <Notice tone="warn">{ADMIN_MODULE_MIGRATION_HINT}</Notice> : <CreateProjectButton orderId={o.id} projectId={project?.id ?? null} />}
+                {o.workflow_managed?<p>Төлбөр баталгаажихад нэг төсөл автоматаар үүснэ. Дээрх ажиллагаанаас удирдана.</p>:projectError && !isMissingMigration(projectError) ? <LoadFailed what="холбоотой төслийг" /> : isMissingMigration(projectError) ? <Notice tone="warn">{ADMIN_MODULE_MIGRATION_HINT}</Notice> : <CreateProjectButton orderId={o.id} projectId={project?.id ?? null} />}
                 <p className="m-0 text-xs leading-relaxed text-muted">{project ? "Checklist-ийн алхмуудыг төслийн хуудаснаас засаж, хасаж болно." : "Төсөл үүсгэснээр ажлын checklist нээгдэнэ. Анкет, хэрэглэгчийн хариултыг өөрчлөхгүй."}</p>
               </div>
             </Panel>
@@ -283,14 +288,14 @@ async function OrderDetailContent({ params, searchParams }: PageProps<"/admin/or
                 {/* select("*") simply lacks these columns until the migration runs. */}
                 {o.payment_status === undefined ? (
                   <Notice tone="warn">{ORDER_PAYMENT_MIGRATION_HINT}</Notice>
-                ) : (
+                ) : o.workflow_managed ? <p className="text-sm">Төлбөрийг дээрх үнийн саналын ажиллагаанаас батална.</p> : (
                   <OrderPaymentPanel id={o.id} updatedAt={o.updated_at} amount={o.quote_amount != null ? Number(o.quote_amount) : null} paid={o.payment_status === "paid"} paidAt={o.paid_at} token={o.payment_token} />
                 )}
               </div>
             </Panel>
             <Panel title="Төлөв ба хугацаа" id="side-status">
               <div className="p-[18px]">
-                <OrderStatusForm id={o.id} updatedAt={o.updated_at} status={o.status} agreed={o.agreed_deadline} next={o.next_contact_on} />
+                {o.workflow_managed?<p className="text-sm">Төлөв, дуусах огноог дээрх ажиллагаанаас өөрчилнө.</p>:<OrderStatusForm id={o.id} updatedAt={o.updated_at} status={o.status} agreed={o.agreed_deadline} next={o.next_contact_on} />}
               </div>
             </Panel>
             <Panel title="Холбоо барих" id="side-contact">

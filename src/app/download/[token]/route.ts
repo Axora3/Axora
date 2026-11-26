@@ -1,5 +1,5 @@
 import { createHash } from "node:crypto";
-import { adminClient, BUCKETS } from "@/lib/supabase/server";
+import { adminClient, BUCKETS, isBackendConfigured } from "@/lib/supabase/server";
 
 const headers = { "Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer", "X-Content-Type-Options": "nosniff" };
 const hashToken = (token: string) => createHash("sha256").update(token).digest("hex");
@@ -14,6 +14,7 @@ function page(message: string, status = 200, button = false) {
 export async function GET(_request: Request, { params }: Context) {
   const { token } = await params;
   if (!valid(token)) return page("Холбоос буруу байна.", 404);
+  if (!isBackendConfigured()) return page("Татах үйлчилгээ түр бэлэн биш байна. Дараа дахин оролдоно уу.", 503);
   const { data, error } = await adminClient().from("template_download_tokens").select("expires_at,consumed_at").eq("token_hash", hashToken(token)).maybeSingle();
   if (error) return page("Түр алдаа гарлаа. Дараа дахин оролдоно уу.", 503);
   if (!data || data.consumed_at || Date.parse(data.expires_at) <= Date.now()) return page("Энэ холбоос ашиглагдсан эсвэл хугацаа нь дууссан байна. AXORA-тай холбогдоно уу.", 410);
@@ -25,6 +26,7 @@ export async function POST(request: Request, { params }: Context) {
   if (origin && origin !== new URL(request.url).origin) return page("Хүсэлтийг зөвшөөрөхгүй.", 403);
   const { token } = await params;
   if (!valid(token)) return page("Холбоос буруу байна.", 404);
+  if (!isBackendConfigured()) return page("Татах үйлчилгээ түр бэлэн биш байна. Дараа дахин оролдоно уу.", 503);
   const db = adminClient();
   const hash = hashToken(token);
   const { data, error } = await db.from("template_download_tokens").select("storage_path,expires_at,consumed_at").eq("token_hash", hash).maybeSingle();

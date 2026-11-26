@@ -49,7 +49,7 @@ export function SiteTypes() {
 
   return (
     <>
-      <div role="tablist" aria-label="Вебийн төрөл" className="ax-scroll -mx-[clamp(16px,4vw,40px)] mt-4 gap-2 px-[clamp(16px,4vw,40px)] pb-1 min-[900px]:mx-0 min-[900px]:flex-wrap min-[900px]:px-0">
+      <div role="tablist" aria-label="Вебийн төрөл" className="ax-scroll -mx-[var(--public-gutter)] mt-4 gap-2 px-[var(--public-gutter)] pb-1 min-[900px]:mx-0 min-[900px]:flex-wrap min-[900px]:px-0">
         {TYPES.map((t, idx) => {
           const on = t.id === id;
           return (

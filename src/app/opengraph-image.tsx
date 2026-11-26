@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { MONOGRAM_PATH, WORDMARK_PATH } from "@/components/brand/AxoraLogo";
 
 export const alt = "AXORA — Бэлэн загвар ба захиалгат веб";
 export const size = { width: 1200, height: 630 };
@@ -20,8 +21,8 @@ export default function OpenGraphImage() {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 18 }}>
-          <div style={{ width: 62, height: 62, borderRadius: 18, display: "flex", alignItems: "center", justifyContent: "center", background: "#93b4f5", color: "#0f172a", fontSize: 42, fontWeight: 800 }}>A</div>
-          <span style={{ fontSize: 34, fontWeight: 800, letterSpacing: 7 }}>AXORA</span>
+          <svg width="62" height="60" viewBox="0 0 64 60" fill="#c0c7d0"><path d={MONOGRAM_PATH} /></svg>
+          <svg width="240" height="44" viewBox="0 0 278 50" fill="#f5f5f7"><path fillRule="evenodd" d={WORDMARK_PATH} /></svg>
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 20 }}>
           <div style={{ fontSize: 64, lineHeight: 1.1, fontWeight: 800 }}>Бэлэн загвар ба</div>

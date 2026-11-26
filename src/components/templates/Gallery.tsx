@@ -57,7 +57,7 @@ export function Gallery({ category, style, images, title }: { category: Template
         <AnimatePresence initial={false}>
           <m.div key={i} className="absolute inset-0" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={transitions.enter}>
             {cur.img ? (
-              <Image src={cur.img.url} alt={cur.img.alt} fill sizes="(max-width: 999px) 100vw, 780px" className="object-cover" priority={i === 0} />
+              <Image src={cur.img.url} alt={cur.img.alt} fill sizes="(max-width: 999px) 100vw, 780px" className="object-cover" preload={i === 0} />
             ) : (
               <div
                 aria-hidden="true"

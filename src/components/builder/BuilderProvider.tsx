@@ -55,8 +55,10 @@ export function BuilderProvider({ children }: { children: React.ReactNode }) {
   const [ready, setReady] = useState(false);
   const [logo, setLogoState] = useState<BuilderLogo>(null);
   const logoRef = useRef<BuilderLogo>(null);
+  const logoRevision = useRef(0);
 
   const showLogo = useCallback((file: File | null) => {
+    logoRevision.current += 1;
     if (logoRef.current) URL.revokeObjectURL(logoRef.current.url);
     const next = file ? { url: URL.createObjectURL(file), name: file.name, file } : null;
     logoRef.current = next;
@@ -65,6 +67,8 @@ export function BuilderProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
+    const revision = logoRevision.current;
     try {
       const saved = parseBuilderConfig(JSON.parse(sessionStorage.getItem(STORAGE_KEY) ?? "null"));
       // eslint-disable-next-line react-hooks/set-state-in-effect -- hydrate from storage once after mount
@@ -74,14 +78,18 @@ export function BuilderProvider({ children }: { children: React.ReactNode }) {
         fetch(storedLogo.data)
           .then((res) => res.blob())
           .then((blob) => {
-            if (!logoRef.current) showLogo(new File([blob], storedLogo.name, { type: storedLogo.type }));
+            if (!cancelled && logoRevision.current === revision)
+              showLogo(new File([blob], storedLogo.name, { type: storedLogo.type }));
           })
-          .catch(clearStoredLogo);
+          .catch(() => {
+            if (!cancelled && logoRevision.current === revision) clearStoredLogo();
+          });
       }
     } catch {
       /* storage unavailable — defaults are fine */
     }
     setReady(true);
+    return () => { cancelled = true; };
   }, [showLogo]);
 
   useEffect(() => {

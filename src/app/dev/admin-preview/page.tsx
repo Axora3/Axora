@@ -1,3 +1,4 @@
+import { FilterSheet } from "@/components/admin/FilterSheet";
 import { notFound } from "next/navigation";
 import { AdminShell } from "@/components/admin/AdminShell";
 import { OrderStatusControl } from "@/components/admin/OrderStatusControl";
@@ -10,6 +11,8 @@ import { RequestsChart } from "@/components/admin/DashboardInsights";
 import { WorkChecklist } from "@/components/admin/ProjectControls";
 import { BankPreview } from "@/components/order/BankPreview";
 import { OrderPaymentPanel } from "@/components/admin/OrderPaymentPanel";
+import { DateInput } from "@/components/admin/DateInput";
+import { OrderStatusForm } from "@/components/admin/forms";
 
 export const metadata = { title: "Admin UI preview (dev)", robots: { index: false, follow: false } };
 
@@ -26,6 +29,8 @@ export default function AdminPreview() {
       <PageHeader title="UI preview (туршилт)" description="Зөвхөн development — бодит өгөгдөл биш." />
       <Body>
         <Notice tone="warn">Туршилтын дэлгэц. Энд хадгалах үйлдэл серверт эрхгүй тул алдаа буцаана.</Notice>
+        <Panel title="Огноо сонгох"><FilterSheet title="Огнооны шүүлтүүр"><form id="date-preview" method="get" className="flex flex-wrap items-end gap-4 p-5"><label className="flex flex-col gap-2 text-sm">Эхлэх огноо<DateInput name="from" defaultValue="2026-11-07" className="ax-control px-3" /></label><label className="flex flex-col gap-2 text-sm">Дуусах огноо<DateInput name="to" defaultValue="2026-11-14" className="ax-control px-3" /></label><button className="ax-button">Шүүх</button><button type="reset" className="ax-button">Цэвэрлэх</button></form></FilterSheet></Panel>
+        <Panel title="Огнооны form тест"><div className="p-5"><OrderStatusForm id="00000000-0000-4000-8000-000000000001" updatedAt={t} status="new" agreed="2026-11-07" next="" /></div></Panel>
         <div className="grid grid-cols-2 gap-3.5 min-[900px]:grid-cols-4">
           <StatCard band label="[Гол үзүүлэлт]" value="00" note="Туршилтын утга" icon="calendar" />
           <StatCard label="[Үзүүлэлт]" value="00" note="Туршилтын утга" icon="inbox" />
@@ -53,7 +58,7 @@ export default function AdminPreview() {
         <Panel title="Ажлын checklist" className="max-w-[340px]"><div className="p-[18px]"><WorkChecklist projectId="00000000-0000-4000-8000-000000000009" milestones={[{ id: "00000000-0000-4000-8000-00000000000a", project_id: "00000000-0000-4000-8000-000000000009", title: "Анкетыг шалгах", description: "", due_on: null, completed_at: t, updated_at: t }, { id: "00000000-0000-4000-8000-00000000000b", project_id: "00000000-0000-4000-8000-000000000009", title: "Захиалагчтай холбогдох", description: "", due_on: null, completed_at: null, updated_at: t }]} /></div></Panel>
         <OrderPrompt text={buildOrderPrompt({ reference: "AX-TEST0001", attachments: [{ field: "q22", name: "logo.png" }], design: { type: "[Төрөл]", style: "Modern", palette: "forest", primary: "#2F5D46", secondary: "#E9E2CF", bg: "#FBF8F0", name: "[Нэр]", headline: "[Гарчиг]", desc: "", cta: "[CTA]" }, answers: { q1: "[Нэр, овог]", q2: "[Бизнесийн нэр]", q12: "Бусад", q12o: "[Тодруулга]", q13: ["Онлайн захиалга авах"], q14: "Тийм", q15: "example.test", q17u: true, q18: "#E9E2CF", q22d: "https://example.test/drive", q38: "Messenger", q38x: "[Messenger нэр]", q39: true } })} />
         <Panel><EmptyState title="Хоосон төлөв" text="Энд өгөгдөл ирмэгц харагдана." /></Panel>
-        <div className="-m-[clamp(16px,3vw,32px)]"><AdminPageSkeleton /></div>
+        <div className="-m-[var(--admin-gutter)]"><AdminPageSkeleton /></div>
         <ul className="m-0 flex list-none flex-col gap-2.5 p-0">
           <li className="flex flex-col gap-3 rounded-card border border-line bg-surface p-3.5">
             <strong>[Бизнесийн нэр]</strong>

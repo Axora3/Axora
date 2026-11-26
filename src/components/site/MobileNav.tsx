@@ -42,7 +42,6 @@ export function MobileNav({ open, onClose, links, more, current }: { open: boole
           transition={{ duration: reduced ? 0 : 0.18 }}
         >
           <div ref={ref} id="ax-mobile-menu" role="dialog" aria-modal="true" aria-label="Цэс" className="ax-spatial-menu">
-            <div className="ax-spatial-light" aria-hidden="true" />
             <header className="ax-spatial-header">
               <Link href="/" onClick={onClose} aria-label="AXORA нүүр" className="ax-spatial-brand"><LogoMark /><span>AXORA</span></Link>
               <div className="ax-spatial-controls">

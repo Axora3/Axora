@@ -86,3 +86,38 @@ Source: https://github.com/ibelick/motion-primitives/blob/main/components/core/s
 ## Runtime and other assets
 
 Motion 14.9.1 is installed through npm with its packaged license. See node_modules/motion/LICENSE.md and package-lock.json for dependency versions. Regen source attribution and license remain in vendor/regen-icons. The hero gradient and grid, and the home bento grid, are original CSS. No Aceternity code or paid assets were copied.
+
+
+## AXORA rendering additions
+
+@react-three/fiber 9.8.2 — MIT, Copyright (c) 2019-2025 Poimandres. Distributed through npm; its complete upstream MIT license is retained in vendor/react-three-fiber/LICENSE (the published package declares MIT but omits a standalone license file). Three.js and its types retain their packaged MIT licenses.
+
+The four research repositories are discussed in AXORA_UPGRADE_REPORT.md. No code was copied from Liquid Glass JS, Shader Gradient, or Paper liquid-logo. Paper liquid-logo uses PolyForm Shield 1.0.0 and is research-only. AXORA brand geometry, metal shader and gradient field are original project implementations.
+
+Design craft guidance adapted from unslop by Damir Sokolovsky, CC BY 4.0: https://heydamir.design/unslop.
+
+## @samasante/liquid-glass 0.1.1
+
+Primary optical material engine. Source: https://github.com/samasante/liquid-glass
+
+MIT License
+
+Copyright (c) 2026 Sam Asante
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.

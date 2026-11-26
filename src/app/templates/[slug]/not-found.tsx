@@ -1,11 +1,10 @@
-import { SiteHeader } from "@/components/site/SiteHeader";
 import { SiteFooter } from "@/components/site/SiteFooter";
 import Link from "next/link";
 import { SearchEmpty } from "@/components/icons";
 
 export default function TemplateNotFound() {
   return (
-    <><SiteHeader active="/templates" /><main id="main" className="ax-page"><div className="flex flex-col items-center gap-3.5 rounded-card border border-dashed border-line-mid bg-surface px-6 py-[clamp(32px,6vw,72px)] text-center">
+    <><main id="main" className="ax-page"><div className="flex flex-col items-center gap-3.5 rounded-card border border-dashed border-line-mid bg-surface px-6 py-[clamp(32px,6vw,72px)] text-center">
       <span className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-soft text-brand">
         <SearchEmpty size={24} />
       </span>

@@ -1,6 +1,6 @@
 import { AnimatedCloudFooter } from "@/components/cinematic/AnimatedCloudFooter";
 import Link from "next/link";
-import { LogoMark } from "@/components/icons";
+import { AxoraLogo, AxoraWordmark } from "@/components/brand/AxoraLogo";
 import { emailHref, isConfigured, phoneHref } from "@/lib/contact-links";
 import { getSiteContent } from "@/lib/content/service";
 
@@ -16,13 +16,12 @@ const link = "inline-flex min-h-10 items-center text-[15px] font-semibold text-o
 export async function SiteFooter() {
   const c = await getSiteContent();
   return (
-    <footer className="ax-site-footer overflow-hidden bg-band text-on-band">
+    <footer className="ax-site-footer text-on-band">
       <AnimatedCloudFooter />
       <div className="ax-footer-panel ax-container grid gap-x-8 gap-y-10 pt-16 pb-12 min-[700px]:grid-cols-2 min-[1100px]:grid-cols-[1.4fr_2.4fr_1fr]">
         <div className="ax-footer-brand flex max-w-[320px] flex-col gap-3">
-          <Link href="/" className="inline-flex items-center gap-2.5 text-lg font-extrabold tracking-[0.08em] text-on-band no-underline">
-            <LogoMark />
-            AXORA
+          <Link href="/" aria-label="AXORA нүүр хуудас руу буцах" className="inline-flex items-center gap-2.5 text-lg font-extrabold tracking-[0.08em] text-on-band no-underline">
+            <AxoraLogo />
           </Link>
           <span className="text-sm leading-relaxed text-band-muted">{c.footerText}</span>
         </div>
@@ -54,8 +53,8 @@ export async function SiteFooter() {
         <p className="text-xs text-band-faint">AXORA · Бүтээх ажлыг хялбарчилъя.</p>
         <Link href="/privacy" className="inline-flex min-h-11 items-center text-xs font-semibold text-band-faint no-underline transition-colors hover:text-lime">Нууцлалын бодлого</Link>
       </div>
-      <div aria-hidden="true" className="ax-container -mb-[0.1em] pt-4">
-        <span className="ax-wordmark">AXORA</span>
+      <div aria-hidden="true" className="ax-container pt-4">
+        <AxoraWordmark className="ax-footer-vector" />
       </div>
     </footer>
   );

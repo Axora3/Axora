@@ -1,3 +1,4 @@
+import { AxoraMonogram } from "./brand/AxoraLogo";
 import { Icon, type IconProps } from "./ui/icon";
 
 // Compatibility names keep existing callers and sizing intact; geometry is exclusively Regen.
@@ -47,13 +48,4 @@ export const Copy = (props: P) => <Icon name="copy" {...props} />;
 export const Lock = (props: P) => <Icon name="lock" {...props} />;
 export const Monitor = (props: P) => <Icon name="monitor" {...props} />;
 
-export function LogoMark({ size = 32 }: { size?: number }) {
-  return (
-    <span
-      className="inline-flex shrink-0 items-center justify-center bg-band"
-      style={{ width: size, height: size, borderRadius: Math.round(size * 0.28) }}
-    >
-      <Icon name="letter-a" size={Math.round(size * 0.56)} color="var(--ax-logo-accent, #D9F279)" />
-    </span>
-  );
-}
+export function LogoMark({ size = 32 }: { size?: number }) { return <AxoraMonogram width={size} height={size} />; }

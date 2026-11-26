@@ -1,3 +1,4 @@
+import { DateInput } from "@/components/admin/DateInput";
 import { Icon } from "@/components/ui/icon";
 import { Menu } from "@/components/ui/menu";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
@@ -117,11 +118,11 @@ async function OrdersPageContent({ searchParams }: PageProps<"/admin/orders">) {
               </label>
               <label className="flex flex-[1_1_140px] flex-col gap-1.5">
                 <span className={field.label}>Эхлэх огноо</span>
-                <input type="date" name="from" defaultValue={from} className={field.input} />
+                <DateInput name="from" defaultValue={from} className={field.input} />
               </label>
               <label className="flex flex-[1_1_140px] flex-col gap-1.5">
                 <span className={field.label}>Дуусах огноо</span>
-                <input type="date" name="to" defaultValue={to} className={field.input} />
+                <DateInput name="to" defaultValue={to} className={field.input} />
               </label>
               <label className="flex flex-[1_1_160px] flex-col gap-1.5">
                 <span className={field.label}>Эрэмбэ</span>

@@ -19,7 +19,7 @@ async function ProjectDetail({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound();
   const { db, user } = c.ctx;
-  const { data: project, error } = await db.from("website_projects").select("id, order_id, status, description, start_date, target_completion_date, progress_percent, updated_at, created_at, website_orders(id, reference, business_name, full_name, email, phone, status)").eq("id", id).maybeSingle();
+  const { data: project, error } = await db.from("website_projects").select("*, website_orders(id, reference, business_name, full_name, email, phone, status)").eq("id", id).maybeSingle();
   if (isMissingMigration(error)) return <><PageHeader title="Веб төсөл"/><Body><Notice tone="warn">{ADMIN_MODULE_MIGRATION_HINT}</Notice></Body></>;
   if (error) return <Body><LoadFailed what="төслийг"/></Body>;
   if (!project) notFound();
@@ -31,7 +31,7 @@ async function ProjectDetail({ params }: { params: Promise<{ id: string }> }) {
     <Body>
       <div className="grid items-start gap-5 min-[1100px]:grid-cols-[minmax(0,1fr)_360px]">
         <div className="flex min-w-0 flex-col gap-5">
-          <Panel title="Төслийн мэдээлэл"><div className="p-[18px]"><ProjectForm key={project.updated_at} project={{id:project.id,orderId:project.order_id,expected:project.updated_at,status:project.status as ProjectStatus,description:project.description,startDate:project.start_date,targetDate:project.target_completion_date,progress:project.progress_percent}}/></div></Panel>
+          <Panel title="Төслийн мэдээлэл"><div className="p-[18px]"><ProjectForm key={project.updated_at} project={{id:project.id,orderId:project.order_id,expected:project.updated_at,status:project.status as ProjectStatus,description:project.description,startDate:project.start_date,targetDate:project.target_completion_date,progress:project.progress_percent,managed:project.workflow_managed}}/></div></Panel>
           <Panel title="Үе шат"><div className="p-[18px]">{milestoneError ? <LoadFailed what="төслийн үе шатуудыг"/> : <ProjectMilestones projectId={id} milestones={(milestones??[]) as Milestone[]}/>}</div></Panel>
           <Panel title="Тэмдэглэл ба түүх"><div className="p-[18px]"><NotesHistory db={db} entityType="website_project" entityId={id} meId={user.id}/></div></Panel>
         </div>

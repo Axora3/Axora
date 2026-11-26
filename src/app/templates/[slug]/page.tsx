@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { SiteHeader } from "@/components/site/SiteHeader";
 import { DetailInfo } from "@/components/templates/DetailInfo";
 import { Gallery } from "@/components/templates/Gallery";
 import { TemplateCard } from "@/components/templates/TemplateCard";
@@ -111,8 +110,9 @@ function DetailSkeleton() {
 export default function TemplateDetailPage({ params }: PageProps<"/templates/[slug]">) {
   return (
     <>
-      <SiteHeader active="/templates" mobileBack={{ href: "/templates", label: "Загварууд руу буцах", title: "Загварын дэлгэрэнгүй" }} />
+
       <main id="main" className="ax-container pt-[clamp(16px,3vw,32px)] pb-[calc(120px+env(safe-area-inset-bottom))] min-[900px]:pb-[var(--ax-space-section)]">
+        <Link href="/templates" className="mb-4 inline-flex min-h-11 items-center text-sm text-brand">Загварууд руу буцах</Link>
         <Suspense fallback={<DetailSkeleton />}>
           <Detail params={params} />
         </Suspense>

@@ -1,3 +1,4 @@
+import { DateInput } from "@/components/admin/DateInput";
 import { Suspense } from "react";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import Link from "next/link";
@@ -46,8 +47,8 @@ async function ActivityPageContent({ searchParams }: PageProps<"/admin/activity"
         <form method="get" className="flex flex-wrap items-end gap-3" aria-label="Шүүлтүүр">
           <label className="flex min-w-0 flex-col gap-1.5"><span className={field.label}>Хайх</span><input type="search" name="q" defaultValue={one(sp, "q")} placeholder="Дугаар, лавлагаа, гарчиг…" className={field.input} /></label>
           <label className="flex min-w-0 flex-col gap-1.5"><span className={field.label}>Үйлдэл</span><select name="action" defaultValue={action} className={field.input}><option value="">Бүх үйлдэл</option>{Object.entries(AUDIT_ACTION).map(([key, label]) => <option key={key} value={key}>{label}</option>)}</select></label>
-          <label className="flex flex-col gap-1.5"><span className={field.label}>Эхлэх өдөр</span><input name="from" type="date" defaultValue={one(sp, "from")} className={field.input} /></label>
-          <label className="flex flex-col gap-1.5"><span className={field.label}>Дуусах өдөр</span><input name="to" type="date" defaultValue={one(sp, "to")} className={field.input} /></label>
+          <label className="flex flex-col gap-1.5"><span className={field.label}>Эхлэх өдөр</span><DateInput name="from" defaultValue={one(sp, "from")} className={field.input} /></label>
+          <label className="flex flex-col gap-1.5"><span className={field.label}>Дуусах өдөр</span><DateInput name="to" defaultValue={one(sp, "to")} className={field.input} /></label>
           <label className="flex flex-col gap-1.5">
             <span className={field.label}>Төрөл</span>
             <select name="entity" defaultValue={entity} className={field.input}>

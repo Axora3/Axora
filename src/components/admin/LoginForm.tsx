@@ -78,7 +78,7 @@ export function LoginForm({ configured }: { configured: boolean }) {
           onChange={(e) => setEmail(e.target.value)}
           aria-invalid={eE}
           aria-describedby={eE ? "lg-email-e" : undefined}
-          className="min-h-13 rounded-control bg-surface px-4 text-base text-ink"
+          className="min-h-13 min-w-0 w-full rounded-control bg-surface px-4 text-base text-ink"
           style={border(eE)}
         />
         {eE && <FieldError id="lg-email-e">Имэйл хаягаа зөв оруулна уу.</FieldError>}
@@ -97,7 +97,7 @@ export function LoginForm({ configured }: { configured: boolean }) {
             onChange={(e) => setPass(e.target.value)}
             aria-invalid={pE}
             aria-describedby={pE ? "lg-pass-e" : undefined}
-            className="min-h-13 flex-1 rounded-control bg-surface py-0 pr-[100px] pl-4 text-base text-ink"
+            className="min-h-13 min-w-0 w-full flex-1 rounded-control bg-surface py-0 pr-[100px] pl-4 text-base text-ink"
             style={border(pE)}
           />
           <button

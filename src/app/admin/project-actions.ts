@@ -6,6 +6,7 @@ import { DENIED, requireAdminAction, type ActionResult } from "@/lib/admin/auth"
 import { ADMIN_MODULE_MIGRATION_HINT, isMissingMigration } from "@/lib/admin/db-errors";
 import { PROJECT_STATUSES } from "@/lib/admin/projects";
 import { isCalendarDate } from "@/lib/admin/dates";
+import { standardChecklist } from "@/lib/admin/standard-checklist";
 
 const date = z.string().refine((value) => value === "" || isCalendarDate(value)).transform((value) => value || null);
 const uuid = z.uuid();
@@ -27,9 +28,10 @@ export async function createProjectForOrderAction(orderId: string): Promise<Acti
   const ctx = await requireAdminAction();
   if (!ctx) return DENIED;
   if (!uuid.safeParse(orderId).success) return { ok: false, code: "invalid", message: "Захиалгын дугаар буруу байна." };
-  const { data: order, error: orderError } = await ctx.db.from("website_orders").select("id").eq("id", orderId).maybeSingle();
+  const { data: order, error: orderError } = await ctx.db.from("website_orders").select("*").eq("id", orderId).maybeSingle();
   if (orderError) return ERROR;
   if (!order) return { ok: false, code: "not_found", message: "Захиалга олдсонгүй." };
+  if(order.workflow_managed)return {ok:false,code:'workflow',message:'Төслийг захиалгын төлбөр баталгаажуулах ажиллагаанаас үүсгэнэ.'};
   const { data: before, error: beforeError } = await ctx.db.from("website_projects").select("id").eq("order_id", orderId).maybeSingle();
   if (beforeError) return missing(beforeError);
   if (before) return { ok: true, id: before.id, existing: true };
@@ -64,7 +66,6 @@ export async function saveProjectAction(input: z.input<typeof projectInput>): Pr
   const { data, error } = await ctx.db.from("website_projects").update({
     status: p.data.status,
     description: p.data.description,
-    start_date: p.data.startDate,
     target_completion_date: p.data.targetDate,
     progress_percent: p.data.progress,
   }).eq("id", p.data.id).eq("updated_at", p.data.expected).select("updated_at, order_id");
@@ -90,7 +91,7 @@ export async function addProjectMilestoneAction(input: z.input<typeof milestoneI
 }
 
 /** A starting point for an empty checklist; every item can be edited or removed on the project page. */
-const STANDARD_CHECKLIST = ["Анкетыг шалгах", "Захиалагчтай холбогдох", "Үнийн санал илгээх", "Дизайн батлуулах", "Веб сайт хөгжүүлэх", "Домэйн холбох", "Шалгаж хүлээлгэн өгөх"];
+// Standard rows use stable project-scoped IDs so concurrent inserts cannot duplicate them.
 
 export async function addStandardChecklistAction(projectId: string): Promise<ActionResult> {
   const ctx = await requireAdminAction();
@@ -103,7 +104,8 @@ export async function addStandardChecklistAction(projectId: string): Promise<Act
   const { count, error: countError } = await ctx.db.from("project_milestones").select("id", { count: "exact", head: true }).eq("project_id", projectId);
   if (countError) return missing(countError);
   if (count) return { ok: false, code: "conflict", message: "Жагсаалт аль хэдийн нэмэгдсэн байна." };
-  const { error } = await ctx.db.from("project_milestones").insert(STANDARD_CHECKLIST.map((title, index) => ({ project_id: projectId, title, sort_order: (index + 1) * 10 })));
+  const { error } = await ctx.db.from("project_milestones").insert(standardChecklist(projectId));
+  if (error?.code === "23505") return { ok: false, code: "conflict", message: "Жагсаалт аль хэдийн нэмэгдсэн байна. Хуудсаа сэргээнэ үү." };
   if (error) return missing(error);
   refreshProject(projectId, project.order_id);
   return { ok: true };

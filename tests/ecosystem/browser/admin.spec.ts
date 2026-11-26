@@ -1,6 +1,39 @@
 import { test, expect, type BrowserContext } from "@playwright/test";
 import { createServerClient, type CookieOptions } from "@supabase/ssr";
 const admin = "00000000-0000-4000-8000-000000000001";
+
+test("notification entries open their detail and preferences open the real settings panel", async ({ page, context }) => {
+  await login(context);
+  await page.goto("/admin/settings");
+  await page.getByRole("button", { name: /^Мэдэгдэл/ }).first().click();
+  await page.getByRole("link", { name: /QA notification/ }).click();
+  await expect(page).toHaveURL(/\/admin\/notifications\/00000000-0000-4000-8000-000000000099$/);
+  await expect(page.getByRole("heading", { name: "QA notification", exact: true })).toBeVisible();
+  await expect(page.getByText("QA notification detail", { exact: true })).toBeVisible();
+  await page.getByRole("button", { name: /^Мэдэгдэл/ }).first().click();
+  await page.getByRole("link", { name: "Мэдэгдлийн тохиргоо", exact: true }).click();
+  await expect(page).toHaveURL(/\/admin\/settings#notification-preferences$/);
+  await expect(page.getByRole("checkbox", { name: /Товч жагсаалтад зөвхөн уншаагүй/ })).toBeVisible();
+});
+
+test("notification preferences persist and authenticated admin chrome fits phone widths", async ({ page, context }) => {
+  await login(context);
+  await page.goto("/admin/settings#notification-preferences");
+  const preference = page.getByRole("checkbox", { name: /Товч жагсаалтад зөвхөн уншаагүй/ });
+  await expect(preference).not.toBeChecked();
+  await preference.check();
+  await page.reload();
+  await expect(preference).toBeChecked();
+  for (const width of [320, 360, 375, 390, 430, 768, 1024, 1440, 1920]) {
+    await page.setViewportSize({ width, height: 960 });
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  }
+  for (const width of [375, 1440]) {
+    await page.setViewportSize({ width, height: 960 });
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: "instant" }));
+    await page.screenshot({ path: `artifacts/axora-upgrade/admin-settings-${width}.png`, fullPage: true });
+  }
+});
 async function login(context: BrowserContext, id = admin) {
   const jwt =
     Buffer.from(JSON.stringify({ alg: "HS256", typ: "JWT" })).toString(

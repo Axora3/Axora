@@ -1,3 +1,4 @@
+import { DateInput } from "@/components/admin/DateInput";
 import { Icon } from "@/components/ui/icon";
 import { AdminPageSkeleton } from "@/components/admin/PageSkeleton";
 import Link from "next/link";
@@ -123,8 +124,8 @@ async function RequestsPageContent({ searchParams }: PageProps<"/admin/template-
         <form method="get" className="flex flex-wrap items-end gap-3" aria-label="Хүргэлт, огноогоор шүүх">
           {["q", "status", "pay"].map((key) => one(sp,key) && <input key={key} type="hidden" name={key} value={one(sp,key)} />)}
           <label className="flex min-w-0 flex-col gap-1"><span className={field.label}>Хүргэлт</span><select name="delivery" defaultValue={delivery} disabled={migrationMissing} className={`${field.input} max-w-full`}><option value="">Бүх хүргэлт</option>{Object.entries(DELIVERY_STATUS).map(([key,label])=><option key={key} value={key}>{label}</option>)}</select></label>
-          <label className="flex flex-col gap-1"><span className={field.label}>Эхлэх өдөр</span><input name="from" type="date" defaultValue={one(sp,"from")} className={field.input}/></label>
-          <label className="flex flex-col gap-1"><span className={field.label}>Дуусах өдөр</span><input name="to" type="date" defaultValue={one(sp,"to")} className={field.input}/></label>
+          <label className="flex flex-col gap-1"><span className={field.label}>Эхлэх өдөр</span><DateInput name="from" defaultValue={one(sp,"from")} className={field.input}/></label>
+          <label className="flex flex-col gap-1"><span className={field.label}>Дуусах өдөр</span><DateInput name="to" defaultValue={one(sp,"to")} className={field.input}/></label>
           <button className={btn.ghost}>Шүүх</button>
         </form>
         {migrationMissing && <Notice tone="warn">{MIGRATION_HINT}</Notice>}

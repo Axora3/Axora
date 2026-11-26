@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { SiteHeader } from "@/components/site/SiteHeader";
 
 export const metadata: Metadata = {
   title: "Нууцлал ба мэдээлэл ашиглалт",
@@ -13,8 +13,9 @@ const P = "mt-2 text-[15px] leading-relaxed text-muted";
 export default function PrivacyPage() {
   return (
     <>
-      <SiteHeader mobileBack={{ href: "/", label: "Нүүр рүү буцах", title: "Нууцлал" }} />
+
       <main id="main" className="mx-auto max-w-[860px] px-5 pt-8 pb-16 min-[900px]:px-10 min-[900px]:pt-14 min-[900px]:pb-24">
+        <Link href="/" className="mb-4 inline-flex min-h-11 items-center text-sm text-brand">Нүүр рүү буцах</Link>
         <header>
           <p className="text-sm font-extrabold tracking-[0.08em] text-brand uppercase">AXORA</p>
           <h1 className="ax-h1 mt-2">Нууцлал ба мэдээлэл ашиглалт</h1>

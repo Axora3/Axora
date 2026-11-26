@@ -1,6 +1,7 @@
 import { createServer } from "node:http";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { randomUUID } from "node:crypto";
+import { readFile } from "node:fs/promises";
 import { database, adminId } from "./helpers";
 export const fixtureToken = "fixture-ecosystem-service-" + "x".repeat(40);
 export async function fixture(port = 0) {
@@ -24,6 +25,19 @@ export async function fixture(port = 0) {
       {},
     ],
   );
+  // Exercise the actual notification UI against disposable rows using the
+  // application's table definition, without changing any production records.
+  const adminMigration = await readFile("supabase/migrations/20261031000000_admin_modules.sql", "utf8");
+  const notificationTable = adminMigration.match(/create table if not exists public\.admin_notifications \([\s\S]*?\n\);/);
+  if (!notificationTable) throw new Error("Notification fixture schema missing");
+  await db.exec(notificationTable[0]);
+  const publicMigration = await readFile("supabase/migrations/20261028000000_axora_schema.sql", "utf8");
+  const contactTable = publicMigration.match(/create table public\.contact_messages \([\s\S]*?\n\);/);
+  if (!contactTable) throw new Error("Contact fixture schema missing");
+  await db.exec(contactTable[0]);
+  await db.query("insert into admin_notifications(id,admin_id,event_type,title,body,entity_type,entity_id)values($1,$2,$3,$4,$5,$6,$7)", [
+    "00000000-0000-4000-8000-000000000099", adminId, "new_order", "QA notification", "QA notification detail", "website_order", orderId,
+  ]);
   function send(res: ServerResponse, data: unknown, status = 200) {
     res.writeHead(status, {
       "content-type": "application/json",
@@ -100,7 +114,7 @@ export async function fixture(port = 0) {
       if (path.startsWith("/rest/v1/")) {
         const table = path.split("/").at(-1)!;
         if (
-          !/^(ecosystem_[a-z_]+|website_orders|website_projects)$/.test(table)
+          !/^(ecosystem_[a-z_]+|website_orders|website_projects|admin_notifications|contact_messages)$/.test(table)
         )
           return send(res, []);
         if (req.method === "POST") {
@@ -142,6 +156,13 @@ export async function fixture(port = 0) {
             filters.push(k + "=$" + values.length);
           }
           if (v === "is.null") filters.push(k + " is null");
+        }
+        if (req.method === "PATCH" && table === "admin_notifications") {
+          const payload = await body(req);
+          if (Object.keys(payload).some(key => key !== "read_at")) throw Error("Unsupported fixture notification patch");
+          values.push(payload.read_at);
+          const rows = (await db.query(`update admin_notifications set read_at=$${values.length}${filters.length ? " where " + filters.join(" and ") : ""} returning ${columns}`, values)).rows;
+          return send(res, rows);
         }
         let sql =
           "select " +

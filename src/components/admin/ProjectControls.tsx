@@ -1,4 +1,6 @@
 "use client";
+import { DateInput } from "@/components/admin/DateInput";
+
 
 import { Icon } from "@/components/ui/icon";
 
@@ -28,7 +30,7 @@ export function CreateProjectButton({ orderId, projectId }: { orderId: string; p
   })}>{pending ? "Үүсгэж байна…" : "Энэ захиалгаар төсөл үүсгэх"}</button>;
 }
 
-type ProjectFormValues = { id: string; orderId: string; expected: string; status: ProjectStatus; description: string; startDate: string | null; targetDate: string | null; progress: number };
+type ProjectFormValues = { id: string; orderId: string; expected: string; status: ProjectStatus; description: string; startDate: string | null; targetDate: string | null; progress: number; managed?:boolean };
 
 export function ProjectForm({ project }: { project: ProjectFormValues }) {
   const router = useRouter();
@@ -38,6 +40,7 @@ export function ProjectForm({ project }: { project: ProjectFormValues }) {
   const [saved, setSaved] = useState(JSON.stringify(project));
   useUnsavedChanges(JSON.stringify(values) !== saved);
   const patch = <K extends keyof ProjectFormValues>(key: K, value: ProjectFormValues[K]) => setValues((current) => ({ ...current, [key]: value }));
+  if(project.managed)return <div className="flex flex-col gap-3"><p>Төлөв, хугацаа болон явцыг захиалгын ажиллагаанаас удирдана. Бодит эхэлсэн огноо: {project.startDate??'Эхлээгүй'}.</p><Link className={btn.primary} href={'/admin/orders/'+project.orderId}>Захиалгын ажиллагааг нээх</Link></div>;
   return <form className="flex flex-col gap-4" onSubmit={(event) => {
     event.preventDefault();
     start(async () => {
@@ -52,8 +55,8 @@ export function ProjectForm({ project }: { project: ProjectFormValues }) {
     <label className="flex flex-col gap-1.5"><span className={field.label}>Төслийн төлөв</span><select className={field.input} value={values.status} onChange={(event) => patch("status", event.target.value as ProjectStatus)}>{PROJECT_STATUSES.map((status) => <option key={status} value={status}>{PROJECT_STATUS[status].label}</option>)}</select></label>
     <label className="flex flex-col gap-1.5"><span className={field.label}>Төслийн тайлбар</span><textarea className={field.textarea} rows={5} maxLength={5000} value={values.description} onChange={(event) => patch("description", event.target.value)}/></label>
     <div className="grid gap-3 sm:grid-cols-2">
-      <label className="flex flex-col gap-1.5"><span className={field.label}>Эхлэх огноо</span><input className={field.input} type="date" value={values.startDate ?? ""} onChange={(event) => patch("startDate", event.target.value || null)}/></label>
-      <label className="flex flex-col gap-1.5"><span className={field.label}>Зорилтот дуусах огноо</span><input className={field.input} type="date" min={values.startDate ?? undefined} value={values.targetDate ?? ""} onChange={(event) => patch("targetDate", event.target.value || null)}/></label>
+      <p className="text-sm text-muted">Бодит эхэлсэн огноо: {values.startDate??'Ажил эхлэхэд автоматаар бүртгэнэ'}</p>
+      <label className="flex flex-col gap-1.5"><span className={field.label}>Зорилтот дуусах огноо</span><DateInput className={field.input} min={values.startDate ?? undefined} value={values.targetDate ?? ""} onChange={(event) => patch("targetDate", event.target.value || null)}/></label>
     </div>
     <label className="flex flex-col gap-1.5"><span className={field.label}>Явц · {values.progress}%</span><input type="range" min={0} max={100} step={5} value={values.progress} onChange={(event) => patch("progress", Number(event.target.value))}/></label>
     <button className={btn.primary} disabled={pending}>{pending ? "Хадгалж байна…" : "Төслийн мэдээлэл хадгалах"}</button>
@@ -185,7 +188,7 @@ export function ProjectMilestones({ projectId, milestones }: { projectId: string
     {milestones.map((milestone) => <form key={`${milestone.id}:${milestone.updated_at}`} className="flex flex-col gap-3 rounded-xl border border-line bg-sunken p-3" onSubmit={(event) => { event.preventDefault(); save(milestone, event.currentTarget); }}>
       <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_190px]">
         <label className="flex flex-col gap-1"><span className={field.label}>Үе шат</span><input name="title" className={field.input} maxLength={160} defaultValue={milestone.title}/></label>
-        <label className="flex flex-col gap-1"><span className={field.label}>Дуусгах өдөр</span><input name="dueOn" type="date" className={field.input} defaultValue={milestone.due_on ?? ""}/></label>
+        <label className="flex flex-col gap-1"><span className={field.label}>Дуусгах өдөр</span><DateInput name="dueOn" className={field.input} defaultValue={milestone.due_on ?? ""}/></label>
       </div>
       <label className="flex flex-col gap-1"><span className={field.label}>Тайлбар</span><textarea name="description" className={field.textarea} rows={2} maxLength={1200} defaultValue={milestone.description}/></label>
       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -203,7 +206,7 @@ export function ProjectMilestones({ projectId, milestones }: { projectId: string
       <h3 className="font-extrabold">Үе шат нэмэх</h3>
       <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_190px]">
         <label className="flex flex-col gap-1"><span className={field.label}>Нэр</span><input className={field.input} maxLength={160} required value={newTitle} onChange={(event) => setNewTitle(event.target.value)}/></label>
-        <label className="flex flex-col gap-1"><span className={field.label}>Дуусгах өдөр</span><input className={field.input} type="date" value={newDue} onChange={(event) => setNewDue(event.target.value)}/></label>
+        <label className="flex flex-col gap-1"><span className={field.label}>Дуусгах өдөр</span><DateInput className={field.input} value={newDue} onChange={(event) => setNewDue(event.target.value)}/></label>
       </div>
       <label className="flex flex-col gap-1"><span className={field.label}>Тайлбар</span><textarea className={field.textarea} rows={2} maxLength={1200} value={newDescription} onChange={(event) => setNewDescription(event.target.value)}/></label>
       <button className={`${btn.primary} self-start`} disabled={pending}>{pending ? "Нэмж байна…" : "Үе шат нэмэх"}</button>

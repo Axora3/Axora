@@ -1,4 +1,6 @@
 "use client";
+import { DateInput } from "@/components/admin/DateInput";
+
 
 import { Icon } from "@/components/ui/icon";
 
@@ -83,12 +85,12 @@ export function OrderStatusForm(p: { id: string; updatedAt: string; status: stri
       </label>
       <label className="flex flex-col gap-1.5">
         <span className={field.label}>Тохиролцсон хугацаа</span>
-        <input type="date" value={agreed} onChange={(e) => setAgreed(e.target.value)} className={field.input} />
+        <DateInput value={agreed} onChange={(e) => setAgreed(e.target.value)} className={field.input} />
         <span className={field.hint}>Хэрэглэгчийн хүссэн хугацаанаас тусдаа бүртгэгдэнэ.</span>
       </label>
       <label className="flex flex-col gap-1.5">
         <span className={field.label}>Дараагийн холбоо барих огноо</span>
-        <input type="date" value={next} onChange={(e) => setNext(e.target.value)} className={field.input} />
+        <DateInput value={next} onChange={(e) => setNext(e.target.value)} className={field.input} />
         <span className={field.hint}>Зөвхөн бүртгэл — сануулга, мэдэгдэл илгээгдэхгүй.</span>
       </label>
       <Feedback msg={msg} />

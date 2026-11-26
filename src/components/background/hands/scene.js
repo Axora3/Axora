@@ -101,12 +101,12 @@ export function createHandsBackground(canvas, host, hero) {
     requestPaint();
   }
 
-  const sizeObserver = new ResizeObserver(() => {
+  const sizeObserver = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(() => {
     resize();
     trigger?.refresh();
   });
-  sizeObserver.observe(host);
-  sizeObserver.observe(hero);
+  sizeObserver?.observe(host);
+  sizeObserver?.observe(hero);
   addEventListener("scroll", requestPaint, { passive: true });
   addEventListener("resize", resize, { passive: true });
   document.addEventListener("visibilitychange", requestPaint);
@@ -128,7 +128,7 @@ export function createHandsBackground(canvas, host, hero) {
     if (frame) cancelAnimationFrame(frame);
     trigger?.kill();
     tween?.kill();
-    sizeObserver.disconnect();
+    sizeObserver?.disconnect();
     removeEventListener("scroll", requestPaint);
     removeEventListener("resize", resize);
     document.removeEventListener("visibilitychange", requestPaint);

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Suspense } from "react";
 import { AdminShell, SignOutButton } from "@/components/admin/AdminShell";
 import { requireAdminPage } from "@/lib/admin/auth";
+import { AdminShellSkeleton } from "@/components/admin/PageSkeleton";
 
 export const metadata: Metadata = {
   title: { default: "Админ", template: "%s — AXORA Admin" },
@@ -59,34 +60,23 @@ async function Guard({ children }: { children: React.ReactNode }) {
     );
   }
   const { db } = c.ctx;
-  const [o, r, s, n] = await Promise.all([
+  const [o, r, s, n, recentNotifications] = await Promise.all([
     db.from("website_orders").select("id", { count: "exact", head: true }).eq("status", "new"),
     db.from("template_requests").select("id", { count: "exact", head: true }).eq("status", "new"),
     db.from("contact_messages").select("id", { count: "exact", head: true }).eq("status", "new"),
     db.from("admin_notifications").select("id", { count: "exact", head: true }).eq("admin_id", c.ctx.user.id).is("read_at", null),
+    db.from("admin_notifications").select("id,title,created_at,read_at").eq("admin_id", c.ctx.user.id).order("created_at", { ascending: false }).limit(5),
   ]);
   return (
-    <AdminShell counts={{ orders: o.count, requests: r.count, support: s.count, notifications: n.count }} email={c.ctx.user.email ?? "admin"}>
+    <AdminShell counts={{ orders: o.count, requests: r.count, support: s.count, notifications: n.count }} email={c.ctx.user.email ?? "admin"} notifications={recentNotifications.error ? null : recentNotifications.data ?? []}>
       {children}
     </AdminShell>
   );
 }
 
-function ShellLoading() {
-  return (
-    <div className="flex min-h-dvh bg-bg-admin" aria-busy="true" aria-label="Ачаалж байна">
-      <div className="hidden w-[264px] shrink-0 bg-band min-[1024px]:block" />
-      <div className="flex-1 p-8">
-        <div className="ax-sk h-8 w-60 rounded-lg" />
-        <div className="ax-sk mt-6 h-40 rounded-2xl" />
-      </div>
-    </div>
-  );
-}
-
 export default function PanelLayout({ children }: LayoutProps<"/admin">) {
   return (
-    <Suspense fallback={<ShellLoading />}>
+    <Suspense fallback={<AdminShellSkeleton />}>
       <Guard>{children}</Guard>
     </Suspense>
   );

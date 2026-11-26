@@ -1,0 +1,339 @@
+{
+  "date": "2026-11-24",
+  "timezone": "Asia/Ulaanbaatar",
+  "totalBugsDiscovered": 11,
+  "criticalBugs": 0,
+  "highSeverityBugs": 0,
+  "mediumSeverityBugs": 8,
+  "lowSeverityBugs": 3,
+  "cosmeticBugs": 0,
+  "verifiedFixes": 11,
+  "unresolvedBugs": 0,
+  "blockedBugs": 0,
+  "unverifiedFindings": 1,
+  "regressionBugs": 1,
+  "routesTested": 49,
+  "routePatternsDiscovered": 45,
+  "routePatternsExercised": 45,
+  "componentsTested": null,
+  "componentsTestedUnavailableReason": "No instrumented component coverage; integrated components are listed in the test report.",
+  "apiEndpointsTested": 13,
+  "testsPassed": 54,
+  "testsFailed": 0,
+  "testsSkipped": 0,
+  "unitTestsPassed": 35,
+  "browserTestsPassed": 19,
+  "buildStatus": "passed",
+  "statementCoveragePercent": null,
+  "branchCoveragePercent": null,
+  "responsiveCases": 630,
+  "sourceGraph": {
+    "modules": 256,
+    "clientEntrypoints": 84,
+    "clientReachableModules": 138,
+    "serverOnlyBoundaryViolations": [],
+    "runtimeImportCycles": [
+      [
+        "src/components/admin/AdminTopBar.tsx",
+        "src/components/admin/AdminShell.tsx"
+      ]
+    ],
+    "method": "TypeScript AST imports/exports/literal dynamic imports, type-only edges excluded; use-server action modules stop client traversal. Source graph complements compiler, not a security proof."
+  },
+  "browserCompatibility": [
+    {
+      "engine": "Chromium",
+      "status": "passed",
+      "checks": [
+        "Builder palette persistence",
+        "AXORA home navigation",
+        "mobile dialog and Escape",
+        "contact validation without write",
+        "five responsive sizes"
+      ],
+      "layouts": [
+        {
+          "width": 320,
+          "overflow": false
+        },
+        {
+          "width": 390,
+          "overflow": false
+        },
+        {
+          "width": 768,
+          "overflow": false
+        },
+        {
+          "width": 1440,
+          "overflow": false
+        },
+        {
+          "width": 2560,
+          "overflow": false
+        }
+      ],
+      "errors": [],
+      "postRequests": 0
+    },
+    {
+      "engine": "Firefox",
+      "status": "failed-or-unavailable",
+      "reason": "browserType.launch: spawn UNKNOWN\nCall log:\n\u001b[2m  - <launching> C:\\Users\\tulhu\\AppData\\Local\\ms-playwright\\firefox-1495\\firefox\\firefox.exe -no-remote -headless -profile C:\\Users\\tulhu\\AppData\\Local\\Temp\\playwright_firefoxdev_profile-1xUlmK -juggler-pipe -silent\u001b[22m\n"
+    },
+    {
+      "engine": "WebKit",
+      "status": "passed",
+      "checks": [
+        "Builder palette persistence",
+        "AXORA home navigation",
+        "mobile dialog and Escape",
+        "contact validation without write",
+        "five responsive sizes"
+      ],
+      "layouts": [
+        {
+          "width": 320,
+          "overflow": false
+        },
+        {
+          "width": 390,
+          "overflow": false
+        },
+        {
+          "width": 768,
+          "overflow": false
+        },
+        {
+          "width": 1440,
+          "overflow": false
+        },
+        {
+          "width": 2560,
+          "overflow": false
+        }
+      ],
+      "errors": [],
+      "postRequests": 0
+    }
+  ],
+  "performance": {
+    "environment": "Production fixture build, local unthrottled Chrome; reduced motion; concurrent local QA; no field INP",
+    "results": [
+      {
+        "width": 390,
+        "run": 1,
+        "lcpMs": 708,
+        "cls": 0,
+        "element": "P ax-in d3 mt-[clamp(20px,2.4vw,32px)] max-w-[36em] text-[clamp(17px,1.5vw,20px)] leading-relaxed text-band-muted",
+        "jsTransferBytes": 610411
+      },
+      {
+        "width": 390,
+        "run": 2,
+        "lcpMs": 416,
+        "cls": 0,
+        "element": "P ax-in d3 mt-[clamp(20px,2.4vw,32px)] max-w-[36em] text-[clamp(17px,1.5vw,20px)] leading-relaxed text-band-muted",
+        "jsTransferBytes": 610411
+      },
+      {
+        "width": 390,
+        "run": 3,
+        "lcpMs": 408,
+        "cls": 0,
+        "element": "P ax-in d3 mt-[clamp(20px,2.4vw,32px)] max-w-[36em] text-[clamp(17px,1.5vw,20px)] leading-relaxed text-band-muted",
+        "jsTransferBytes": 610411
+      },
+      {
+        "width": 1440,
+        "run": 1,
+        "lcpMs": 616,
+        "cls": 0,
+        "element": "SPAN ax-word",
+        "jsTransferBytes": 548338
+      },
+      {
+        "width": 1440,
+        "run": 2,
+        "lcpMs": 612,
+        "cls": 0,
+        "element": "SPAN ax-word",
+        "jsTransferBytes": 548338
+      },
+      {
+        "width": 1440,
+        "run": 3,
+        "lcpMs": 352,
+        "cls": 0,
+        "element": "SPAN ax-word",
+        "jsTransferBytes": 548338
+      }
+    ]
+  },
+  "bugs": [
+    {
+      "id": "AXORA-BUG-001",
+      "title": "Хүсэлтийн урсгал тасрахад API хяналтгүй алдаа гаргасан",
+      "severity": "P2",
+      "status": "VERIFIED",
+      "regression": false,
+      "locations": [
+        "src/lib/server/http.ts:27"
+      ]
+    },
+    {
+      "id": "AXORA-BUG-002",
+      "title": "Эвдэрсэн эсвэл хаалттай хадгалалт анкетыг унагасан",
+      "severity": "P2",
+      "status": "VERIFIED",
+      "regression": false,
+      "locations": [
+        "src/components/order/OrderForm.tsx:14",
+        "src/lib/order/draft.ts:26"
+      ]
+    },
+    {
+      "id": "AXORA-BUG-003",
+      "title": "Footer-ийн лого холбоос уншигдах нэргүй байсан",
+      "severity": "P2",
+      "status": "VERIFIED",
+      "regression": false,
+      "locations": [
+        "src/components/site/SiteFooter.tsx:23"
+      ]
+    },
+    {
+      "id": "AXORA-BUG-004",
+      "title": "Зарим текстийн өнгө дэвсгэрээс хангалттай ялгараагүй",
+      "severity": "P2",
+      "status": "VERIFIED",
+      "regression": false,
+      "locations": [
+        "src/components/home/foreground.css:232",
+        "src/app/cinematic.css:23",
+        "src/app/admin-refinement.css:4"
+      ]
+    },
+    {
+      "id": "AXORA-BUG-005",
+      "title": "Утасны дугаарын шалгалт үсэгтэй утгыг зөвшөөрсөн",
+      "severity": "P2",
+      "status": "VERIFIED",
+      "regression": false,
+      "locations": [
+        "src/lib/requests/validation.ts:3",
+        "src/lib/order/questions.ts:7",
+        "src/lib/requests/phone.ts:2"
+      ]
+    },
+    {
+      "id": "AXORA-BUG-006",
+      "title": "Нооргийн эхний засвар TypeScript-ийн зөрчил үүсгэсэн",
+      "severity": "P3",
+      "status": "VERIFIED",
+      "regression": true,
+      "locations": [
+        "src/lib/order/draft.ts:14"
+      ]
+    },
+    {
+      "id": "AXORA-BUG-007",
+      "title": "Builder reset-ийн дараа хуучин лого буцаж гарсан",
+      "severity": "P2",
+      "status": "VERIFIED",
+      "regression": false,
+      "locations": [
+        "src/components/builder/BuilderProvider.tsx:58"
+      ]
+    },
+    {
+      "id": "AXORA-BUG-008",
+      "title": "Стандарт checklist зэрэг нэмэгдэхэд давхардсан",
+      "severity": "P2",
+      "status": "VERIFIED",
+      "regression": false,
+      "locations": [
+        "src/app/admin/project-actions.ts:9",
+        "src/lib/admin/standard-checklist.ts:8"
+      ]
+    },
+    {
+      "id": "AXORA-BUG-009",
+      "title": "Backend тохиргоогүй үед татах холбоос exception гаргасан",
+      "severity": "P2",
+      "status": "VERIFIED",
+      "regression": false,
+      "locations": [
+        "src/app/download/[token]/route.ts:2"
+      ]
+    },
+    {
+      "id": "AXORA-BUG-010",
+      "title": "English Words admin хуудсанд үндсэн агуулгын landmark байгаагүй",
+      "severity": "P3",
+      "status": "VERIFIED",
+      "regression": false,
+      "locations": [
+        "src/app/admin/(panel)/english-words/page.tsx:10",
+        "src/app/admin/(panel)/error.tsx:4"
+      ]
+    },
+    {
+      "id": "AXORA-BUG-011",
+      "title": "Далд хүснэгт 320px dashboard-ийг өргөсгөсөн",
+      "severity": "P3",
+      "status": "VERIFIED",
+      "regression": false,
+      "locations": [
+        "src/components/admin/DashboardInsights.tsx:107"
+      ]
+    }
+  ],
+  "modifiedApplicationFiles": [
+    "src/lib/server/http.ts",
+    "src/lib/order/draft.ts",
+    "src/components/order/OrderForm.tsx",
+    "src/components/site/SiteFooter.tsx",
+    "src/components/home/foreground.css",
+    "src/app/cinematic.css",
+    "src/app/admin-refinement.css",
+    "src/lib/requests/validation.ts",
+    "src/lib/order/questions.ts",
+    "src/lib/requests/phone.ts",
+    "src/components/builder/BuilderProvider.tsx",
+    "src/app/admin/project-actions.ts",
+    "src/lib/admin/standard-checklist.ts",
+    "src/app/download/[token]/route.ts",
+    "src/app/admin/(panel)/english-words/page.tsx",
+    "src/app/admin/(panel)/error.tsx",
+    "src/components/admin/DashboardInsights.tsx"
+  ],
+  "modifiedTestFiles": [
+    "tests/ecosystem/http-boundaries.test.ts",
+    "tests/ecosystem/order-draft.test.ts",
+    "tests/ecosystem/contact-validation.test.ts",
+    "tests/ecosystem/standard-checklist.test.ts",
+    "tests/ecosystem/download-availability.test.ts",
+    "tests/ecosystem/public-intake-database.test.ts",
+    "tests/ecosystem/browser/audit.spec.ts",
+    "tests/ecosystem/browser/fixture-auth.ts",
+    "tests/ecosystem/service-fixture.ts",
+    "tests/ecosystem/browser/public.spec.ts"
+  ],
+  "limitations": [
+    "Firefox installed but launch failed with spawn UNKNOWN.",
+    "Production Supabase/storage/auth state and external payment/mail services were not mutated or exhaustively validated.",
+    "Hosted Storage transport and real physical devices/assistive technologies were not exercised.",
+    "English Words remote membership RPC/schema is not included in this checkout; live membership operations remain unverified.",
+    "One existing runtime import cycle remains; no reproduced runtime failure.",
+    "Field Core Web Vitals and real-user INP are unavailable."
+  ],
+  "dependencyVulnerabilities": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  }
+}

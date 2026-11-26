@@ -38,7 +38,11 @@
     ".next-ecosystem-qa/types/**/*.ts",
     ".next-ecosystem-qa/dev/types/**/*.ts",
     ".next-hands-qa/types/**/*.ts",
-    ".next-hands-qa/dev/types/**/*.ts"
+    ".next-hands-qa/dev/types/**/*.ts",
+    ".next-orders-qa/types/**/*.ts",
+    ".next-orders-qa/dev/types/**/*.ts",
+    ".next-glass-proof/types/**/*.ts",
+    ".next-glass-proof/dev/types/**/*.ts"
   ],
   "exclude": [
     "node_modules"

@@ -1,38 +1,90 @@
 import { TYPES, STYLES } from "@/lib/builder/config";
+import { initializeWorkflow } from "@/lib/order-workflow/server";
 import { EXT_TO_MIME, extOf } from "@/lib/order/attachments";
-import { ANSWERS_SCHEMA_VERSION, BUILDER_SCHEMA_VERSION, CONSENT_TEXT_VERSION, orderSubmissionSchema, type UploadTicket } from "@/lib/order/schema";
-import { ALL_FIELDS, allErrors, formatAnswer, preferredChannel, sanitizeAnswers, type Answers } from "@/lib/order/questions";
-import { MESSAGES, canonical, fail, looksLikeSpam, newGrant, ok, rateLimit, readJson, sha256 } from "@/lib/server/http";
-import { BUCKETS, adminClient, isBackendConfigured } from "@/lib/supabase/server";
+import {
+  ANSWERS_SCHEMA_VERSION,
+  BUILDER_SCHEMA_VERSION,
+  CONSENT_TEXT_VERSION,
+  orderSubmissionSchema,
+  type UploadTicket,
+} from "@/lib/order/schema";
+import {
+  ALL_FIELDS,
+  allErrors,
+  formatAnswer,
+  preferredChannel,
+  sanitizeAnswers,
+  type Answers,
+} from "@/lib/order/questions";
+import {
+  MESSAGES,
+  canonical,
+  fail,
+  looksLikeSpam,
+  newGrant,
+  ok,
+  rateLimit,
+  readJson,
+  sha256,
+} from "@/lib/server/http";
+import {
+  BUCKETS,
+  adminClient,
+  isBackendConfigured,
+} from "@/lib/supabase/server";
 
 const GRANT_TTL_MS = 24 * 60 * 60 * 1000;
 
-type RpcAttachment = { id: string; client_ref: string; storage_path: string; upload_status: string };
+type RpcAttachment = {
+  id: string;
+  client_ref: string;
+  storage_path: string;
+  upload_status: string;
+};
 type RpcResult =
-  | { status: "created" | "duplicate"; order_id: string; reference: string; attachments: RpcAttachment[] }
+  | {
+      status: "created" | "duplicate";
+      order_id: string;
+      reference: string;
+      attachments: RpcAttachment[];
+    }
   | { status: "conflict" };
 
 const field = (id: string) => ALL_FIELDS.find((f) => f.id === id)!;
 
 export async function POST(req: Request) {
-  if (!isBackendConfigured()) return fail(503, "not_configured", MESSAGES.notConfigured);
+  if (!isBackendConfigured())
+    return fail(503, "not_configured", MESSAGES.notConfigured);
 
   const body = await readJson(req, 200 * 1024);
   if (!body.ok) return body.res;
 
   const parsed = orderSubmissionSchema.safeParse(body.data);
-  if (!parsed.success) return fail(400, "invalid", "Мэдээллийн бүтэц буруу байна. Хуудсыг дахин ачаалаад оролдоно уу.");
+  if (!parsed.success)
+    return fail(
+      400,
+      "invalid",
+      "Мэдээллийн бүтэц буруу байна. Хуудсыг дахин ачаалаад оролдоно уу.",
+    );
   const input = parsed.data;
 
-  if (looksLikeSpam(input.meta, 5000)) return fail(400, "rejected", MESSAGES.spam);
-  if (!(await rateLimit(req, "orders", 5, 600))) return fail(429, "rate_limited", MESSAGES.rateLimited);
+  if (looksLikeSpam(input.meta, 5000))
+    return fail(400, "rejected", MESSAGES.spam);
+  if (!(await rateLimit(req, "orders", 5, 600)))
+    return fail(429, "rate_limited", MESSAGES.rateLimited);
 
   // Same rules as the browser: required, conditional, option lists, formats.
   const raw = input.answers as Answers;
   const errors = allErrors(raw);
   if (errors.length) {
     return fail(422, "validation", "Зарим талбарт засвар хэрэгтэй.", {
-      fieldErrors: errors.flatMap((s) => s.errors.map((e) => ({ id: e.field.id, step: s.step, message: e.message }))),
+      fieldErrors: errors.flatMap((s) =>
+        s.errors.map((e) => ({
+          id: e.field.id,
+          step: s.step,
+          message: e.message,
+        })),
+      ),
     });
   }
   const answers = sanitizeAnswers(raw);
@@ -42,12 +94,26 @@ export async function POST(req: Request) {
   const atts = [];
   for (const a of input.attachments) {
     const ext = extOf(a.name);
-    if (!ext) return fail(422, "file_type", `${a.name} — зөвшөөрөгдөөгүй файлын төрөл.`);
-    atts.push({ field: a.field, client_ref: a.clientRef, original_name: a.name, size_bytes: a.size, ext, mime_type: EXT_TO_MIME[ext] });
+    if (!ext)
+      return fail(
+        422,
+        "file_type",
+        `${a.name} — зөвшөөрөгдөөгүй файлын төрөл.`,
+      );
+    atts.push({
+      field: a.field,
+      client_ref: a.clientRef,
+      original_name: a.name,
+      size_bytes: a.size,
+      ext,
+      mime_type: EXT_TO_MIME[ext],
+    });
   }
 
   const b = input.builder;
-  const payloadHash = sha256(canonical({ answers, builder: b, attachments: atts }));
+  const payloadHash = sha256(
+    canonical({ answers, builder: b, attachments: atts }),
+  );
   const grant = newGrant();
 
   const order = {
@@ -62,7 +128,11 @@ export async function POST(req: Request) {
     preferred_channel: preferredChannel(answers),
     timeline: (answers.q34 as string) || null,
     budget: (answers.q35 as string) || null,
-    answers: { schema_version: ANSWERS_SCHEMA_VERSION, ...answers },
+    answers: {
+      schema_version: ANSWERS_SCHEMA_VERSION,
+      ...answers,
+      quotation_requested: true,
+    },
     answers_schema_version: ANSWERS_SCHEMA_VERSION,
     builder_type: b?.type ?? null,
     builder_style: b?.style ?? null,
@@ -75,7 +145,12 @@ export async function POST(req: Request) {
     builder_description: b?.desc ?? null,
     builder_cta: b?.cta ?? null,
     builder_config: b
-      ? { schema_version: BUILDER_SCHEMA_VERSION, ...b, type_label: TYPES[b.type].label, style_label: STYLES[b.style].label }
+      ? {
+          schema_version: BUILDER_SCHEMA_VERSION,
+          ...b,
+          type_label: TYPES[b.type].label,
+          style_label: STYLES[b.style].label,
+        }
       : null,
     consent_text_version: CONSENT_TEXT_VERSION,
   };
@@ -92,20 +167,72 @@ export async function POST(req: Request) {
     return fail(500, "server", MESSAGES.server);
   }
   const result = data as RpcResult;
-  if (result.status === "conflict") return fail(409, "conflict", MESSAGES.conflict);
+  if (result.status === "conflict")
+    return fail(409, "conflict", MESSAGES.conflict);
+  let trackingUrl: string | undefined;
+  try {
+    trackingUrl = await initializeWorkflow(result.order_id, answers);
+  } catch {
+    // Intake has already committed. Quotation availability must not turn a
+    // saved order into a failed submission or prevent its attachment uploads.
+    console.error("[orders] quotation pending after saved intake");
+    if (result.status === "duplicate") {
+      // Recover earlier failed submissions too, preserving their stored answers.
+      const { data: stored } = await db
+        .from("website_orders")
+        .select("answers,updated_at")
+        .eq("id", result.order_id)
+        .single();
+      if (stored && stored.answers?.quotation_requested !== true) {
+        const { error: markerError } = await db
+          .from("website_orders")
+          .update({ answers: { ...stored.answers, quotation_requested: true } })
+          .eq("id", result.order_id)
+          .eq("updated_at", stored.updated_at);
+        if (markerError)
+          console.error(
+            "[orders] pending quotation marker failed:",
+            markerError.code,
+          );
+      }
+    }
+  }
 
   // One signed upload URL per still-missing file, bound to its random path.
   const uploads: UploadTicket[] = await Promise.all(
     result.attachments.map(async (a): Promise<UploadTicket> => {
-      if (a.upload_status === "uploaded") return { attachmentId: a.id, clientRef: a.client_ref, path: a.storage_path, token: null, status: "uploaded" };
-      const { data: signed, error: e } = await db.storage.from(BUCKETS.attachments).createSignedUploadUrl(a.storage_path);
+      if (a.upload_status === "uploaded")
+        return {
+          attachmentId: a.id,
+          clientRef: a.client_ref,
+          path: a.storage_path,
+          token: null,
+          status: "uploaded",
+        };
+      const { data: signed, error: e } = await db.storage
+        .from(BUCKETS.attachments)
+        .createSignedUploadUrl(a.storage_path);
       if (e) console.error("[orders] signed upload url failed:", e.message);
-      return { attachmentId: a.id, clientRef: a.client_ref, path: a.storage_path, token: signed?.token ?? null, status: a.upload_status };
+      return {
+        attachmentId: a.id,
+        clientRef: a.client_ref,
+        path: a.storage_path,
+        token: signed?.token ?? null,
+        status: a.upload_status,
+      };
     }),
   );
 
   return ok(
-    { status: result.status, reference: result.reference, orderId: result.order_id, uploadGrant: grant.token, uploads },
+    {
+      status: result.status,
+      reference: result.reference,
+      orderId: result.order_id,
+      uploadGrant: grant.token,
+      uploads,
+      trackingUrl,
+      quotationStatus: trackingUrl ? "ready" : "pending",
+    },
     result.status === "created" ? 201 : 200,
   );
 }

@@ -34,7 +34,7 @@ export function buildOrderPrompt({ reference, answers: a, design, attachments = 
       if (SKIP.includes(f.kind) || !isVisible(f, a, { showLinks: true })) continue;
       const label = f.id === "q38x" ? contactExtraLabel(a) : f.label;
       const value = f.kind === "file" ? fileAnswer(f, a, attachments) : formatAnswer(f, a);
-      lines.push(`- ${f.n}. ${label}: ${value || EMPTY}`);
+      lines.push(`- ${f.n == null ? '' : `${f.n}. `}${label}: ${value || EMPTY}`);
     }
   });
 

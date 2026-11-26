@@ -4,6 +4,9 @@
  * apply exactly the same required / conditional rules.
  */
 
+import { isPhoneNumber } from "@/lib/requests/phone";
+import {OWNER_PRICING} from '@/lib/order-workflow/defaults';
+
 export type AnswerValue = string | string[] | boolean;
 export type Answers = Record<string, AnswerValue | undefined>;
 
@@ -24,6 +27,7 @@ export type Field = {
   ph?: string;
   hint?: string;
   opts?: string[];
+  optionLabels?: Record<string, string>;
   /** Adds a free-text “Бусад” explanation when that option is chosen. */
   other?: boolean;
   /** Colour field offering “Өнгөө мэдэхгүй”. */
@@ -145,6 +149,12 @@ export const STEPS: Step[] = [
       { id: "q33", n: 33, label: "Хүсэж буй эсвэл одоо байгаа домэйн", kind: "input", type: "text", ph: "tanai-ner.mn", cond: "domain", max: 200 },
       { id: "q34", n: 34, label: "Хүсэж буй хугацаа", req: true, kind: "radio", hint: "Энэ нь таны хүсэлт — AXORA-ийн баталгаат хугацаа биш.", opts: ["Аль болох хурдан", "1 долоо хоног", "2 долоо хоног", "1 сар", "Тодорхойгүй"] },
       { id: "q35", n: 35, label: "Төсөв", kind: "radio", opts: ["100,000₮ хүртэл", "100,000–200,000₮", "200,000–350,000₮", "350,000₮-өөс дээш", "Шийдээгүй"] },
+      {id:'qPages',label:'Нийт хуудасны тоо',kind:'input',max:4,ph:'Жишээ: 3',hint:'Нүүр, үйлчилгээ, холбоо барих нь тусдаа хуудас. Хуудасны доторх хэсгүүдийг энд тоолохгүй.'},
+      {id:'qPackage',label:'Хүсэж буй үндсэн багц',kind:'radio',opts:['Автоматаар санал болгох','Starter','Business','Premium']},
+      {id:'qAddons',label:'Нэмэлт функцүүд',kind:'multi',opts:OWNER_PRICING.features.map(f=>f.id),optionLabels:Object.fromEntries(OWNER_PRICING.features.map(f=>[f.id,f.answerValue])),hint:'Багцад багтсан функцийг давхар тооцохгүй. Үнийн саналыг автоматаар тооцно.'},
+      {id:'qExtraRevs',label:'Багцаас нэмэлт засварын тоо',kind:'input',max:3,ph:'0'},
+      {id:'qUrgent',label:'Яаралтай хөгжүүлэлт хүсэх үү?',kind:'radio',opts:['Тийм','Үгүй'],hint:'Хөгжүүлэлтийн нийт үнэд тохируулсан нэмэгдэл тооцно. Хугацааг админ батална.'},
+      {id:'qMaintenance',label:'Сарын үйлчилгээ, арчилгаа авах уу?',kind:'radio',opts:['Тийм','Үгүй'],hint:'Сарын төлбөрийг нэг удаагийн хөгжүүлэлтээс тусад нь харуулна.'},
       { id: "q36", n: 36, label: "Дараа шинэчлэлт хийх давтамж", kind: "radio", opts: ["Тогтмол", "Заримдаа", "Нэг удаа", "Мэдэхгүй"] },
     ],
   },
@@ -230,6 +240,8 @@ const URL_RE = /^(https?:\/\/)?[^\s/.]+(\.[^\s/.]+)+(\/\S*)?$/i;
 export function checkField(f: Field, a: Answers): string {
   const v = a[f.id];
   const s = str(v);
+    if(f.id==='qPages'&&s&&(!/^\d+$/.test(s)||Number(s)<1||Number(s)>1000))return 'Хуудасны тоог 1–1000 хооронд оруулна уу.';
+    if(f.id==='qExtraRevs'&&s&&(!/^\d+$/.test(s)||Number(s)>100))return 'Нэмэлт засварын тоог 0–100 хооронд оруулна уу.';
   if (f.id === "q38x") return s ? "" : "Энэ талбарыг бөглөнө үү.";
   switch (f.kind) {
     case "input":
@@ -237,7 +249,7 @@ export function checkField(f: Field, a: Answers): string {
       if (f.req && !s) return "Энэ талбарыг бөглөнө үү.";
       if (s && f.max && s.length > f.max) return `Хамгийн ихдээ ${f.max} тэмдэгт оруулна уу.`;
       if (s && f.type === "email" && !EMAIL_RE.test(s)) return "Имэйл хаяг буруу байна. Жишээ: ner@mail.mn";
-      if (s && f.type === "tel" && s.replace(/\D/g, "").length < 8) return "Утасны дугаар дор хаяж 8 оронтой байна.";
+      if (s && f.type === "tel" && !isPhoneNumber(s)) return "Утасны дугаараа зөв оруулна уу. Дор хаяж 8 оронтой байна.";
       if (s && f.type === "url" && !URL_RE.test(s)) return "Холбоос буруу байна. Жишээ: facebook.com/tanai-huudas";
       return "";
     case "radio":
@@ -248,7 +260,7 @@ export function checkField(f: Field, a: Answers): string {
     case "multi": {
       const list = arr(v);
       if (f.req && !list.length) return "Дор хаяж нэгийг сонгоно уу.";
-      if (f.opts && list.some((x) => !f.opts!.includes(x))) return "Сонголт буруу байна.";
+      if (f.opts && list.some((x) => !f.opts!.includes(x) && !Object.values(f.optionLabels ?? {}).includes(x))) return "Сонголт буруу байна.";
       if (list.includes(NONE_FEATURE) && list.length > 1) return "“Шаардлагагүй”-г бусад функцтэй зэрэг сонгох боломжгүй.";
       if (list.includes(OTHER) && f.other && !str(a[f.id + "o"])) return "“Бусад” сонголтоо тодруулна уу.";
       return "";
@@ -298,7 +310,7 @@ export function sanitizeAnswers(a: Answers): Answers {
     if (!isVisible(f, a, { showLinks: true })) continue;
     const v = a[f.id];
     if (f.kind === "multi") {
-      const list = Array.from(new Set(arr(v).filter((x) => typeof x === "string")));
+      const list = Array.from(new Set(arr(v).filter((x) => typeof x === "string").map(x=>Object.entries(f.optionLabels??{}).find(([,label])=>label===x)?.[0]??x)));
       if (list.length) out[f.id] = list;
       if (f.other && list.includes(OTHER) && str(a[f.id + "o"])) out[f.id + "o"] = str(a[f.id + "o"]).slice(0, 300);
     } else if (f.kind === "radio") {
@@ -322,7 +334,7 @@ export function sanitizeAnswers(a: Answers): Answers {
 /** Human-readable value for the review step and exported JSON. */
 export function formatAnswer(f: Field, a: Answers): string {
   const v = a[f.id];
-  if (f.kind === "multi") return arr(v).map((x) => (x === OTHER && str(a[f.id + "o"]) ? `${OTHER}: ${str(a[f.id + "o"])}` : x)).join(", ");
+  if (f.kind === "multi") return arr(v).map((x) => (x === OTHER && str(a[f.id + "o"]) ? `${OTHER}: ${str(a[f.id + "o"])}` : f.optionLabels?.[x] ?? x)).join(", ");
   if (f.kind === "radio") return v === OTHER && str(a[f.id + "o"]) ? `${OTHER}: ${str(a[f.id + "o"])}` : str(v);
   if (f.kind === "color") return f.unknown && a[f.id + "u"] === true ? "Санал авъя" : str(v);
   if (f.kind === "consent") return a.q39 === true ? "Зөвшөөрсөн" : "Зөвшөөрөөгүй";

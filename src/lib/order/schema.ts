@@ -36,24 +36,63 @@ export const attachmentManifestSchema = z.object({
 });
 export type AttachmentManifest = z.infer<typeof attachmentManifestSchema>;
 
-const answerValue = z.union([z.string().max(6000), z.array(z.string().max(300)).max(20), z.boolean()]);
+export const answerValue = z.union([
+  z.string().max(6000),
+  z.array(z.string().max(300)).max(20),
+  z.boolean(),
+]);
 
 export const orderSubmissionSchema = z
   .object({
     idempotencyKey: z.uuid(),
     answers: z.record(z.string().max(16), answerValue),
     builder: builderSnapshotSchema.nullable(),
-    attachments: z.array(attachmentManifestSchema).max(MAX_FILES_PER_FIELD * FILE_FIELDS.length),
+    attachments: z
+      .array(attachmentManifestSchema)
+      .max(MAX_FILES_PER_FIELD * FILE_FIELDS.length),
     meta: metaSchema,
   })
-  .refine((o) => FILE_FIELDS.every((f) => o.attachments.filter((a) => a.field === f).length <= MAX_FILES_PER_FIELD), {
-    message: "too_many_files",
-  })
-  .refine((o) => new Set(o.attachments.map((a) => a.clientRef)).size === o.attachments.length, { message: "duplicate_ref" });
+  .refine(
+    (o) =>
+      FILE_FIELDS.every(
+        (f) =>
+          o.attachments.filter((a) => a.field === f).length <=
+          MAX_FILES_PER_FIELD,
+      ),
+    {
+      message: "too_many_files",
+    },
+  )
+  .refine(
+    (o) =>
+      new Set(o.attachments.map((a) => a.clientRef)).size ===
+      o.attachments.length,
+    { message: "duplicate_ref" },
+  );
 export type OrderSubmission = z.infer<typeof orderSubmissionSchema>;
 
 /** What the order endpoint returns — no personal data, just what the browser needs to finish uploads. */
-export type UploadTicket = { attachmentId: string; clientRef: string; path: string; token: string | null; status: string };
+export type UploadTicket = {
+  attachmentId: string;
+  clientRef: string;
+  path: string;
+  token: string | null;
+  status: string;
+};
 export type OrderResponse =
-  | { ok: true; status: "created" | "duplicate"; reference: string; orderId: string; uploadGrant: string; uploads: UploadTicket[] }
-  | { ok: false; code: string; message: string; fieldErrors?: { id: string; message: string }[] };
+  | {
+      ok: true;
+      status: "created" | "duplicate";
+      reference: string;
+      orderId: string;
+      uploadGrant: string;
+      trackingUrl?: string;
+      quotationStatus?: "ready" | "pending";
+      uploads: UploadTicket[];
+    }
+  | {
+      ok: false;
+      code: string;
+      message: string;
+      fieldErrors?: { id: string; message: string }[];
+    };

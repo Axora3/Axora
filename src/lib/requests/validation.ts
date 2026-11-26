@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { metaSchema } from "@/lib/order/schema";
+import { isPhoneNumber } from "./phone";
 
 /** Template purchase request + contact message rules, shared by browser and server. */
 
@@ -16,7 +17,7 @@ export function contactError(channel: Channel, value: string): string {
   const v = value.trim();
   if (!v) return `${CHANNELS[channel].contactLabel} оруулна уу.`;
   if (channel === "email" && !EMAIL_RE.test(v)) return "Имэйл хаяг буруу байна. Жишээ: ner@mail.mn";
-  if (channel === "phone" && v.replace(/\D/g, "").length < 8) return "Утасны дугаар 8 оронтой байх ёстой.";
+  if (channel === "phone" && !isPhoneNumber(v)) return "Утасны дугаараа зөв оруулна уу. Дор хаяж 8 оронтой байна.";
   if (v.length > 200) return "Хэт урт байна.";
   if (v.length < 3) return "Хэт богино байна.";
   return "";
@@ -29,7 +30,7 @@ export const optionalContactError = (channel: Channel, value: string) => (value.
 export function phoneOrEmailError(value: string): string {
   const c = value.trim();
   if (!c) return "Утас эсвэл имэйлээ оруулна уу.";
-  if (c.includes("@") ? !EMAIL_RE.test(c) : c.replace(/\D/g, "").length < 8) return "Утас (8 орон) эсвэл зөв имэйл оруулна уу.";
+  if (c.includes("@") ? !EMAIL_RE.test(c) : !isPhoneNumber(c)) return "Утас (8 орон) эсвэл зөв имэйл оруулна уу.";
   return "";
 }
 

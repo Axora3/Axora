@@ -6,7 +6,7 @@ import { Activity, Bell, ClipboardList, CreditCard, FolderKanban, Inbox, Layers,
  * the rest are reachable from the mobile menu.
  */
 export type NavCount = "orders" | "requests" | "support" | "notifications";
-export const NAV_GROUPS = ["ҮНДСЭН", "ЗАХИАЛГУУД", "УДИРДЛАГА", "БУСАД"] as const;
+export const NAV_GROUPS = ["Үндсэн", "Захиалгууд", "Удирдлага", "Бусад"] as const;
 export type NavItem = {
   href: string;
   label: string;
@@ -22,21 +22,21 @@ export type NavItem = {
 };
 
 export const ADMIN_NAV: NavItem[] = [
-  { href: "/admin/english-words", label: "English Words", group: "УДИРДЛАГА", Icon: Package },
-  { href: "/admin", label: "Хяналтын самбар", group: "ҮНДСЭН", tabLabel: "Самбар", exact: true, tab: true, Icon: LayoutDashboard },
-  { href: "/admin/orders", label: "Веб захиалгууд", group: "ЗАХИАЛГУУД", tabLabel: "Захиалга", count: "orders", countLabel: "шинэ захиалга", tab: true, Icon: ClipboardList },
-  { href: "/admin/template-requests", label: "Template хүсэлтүүд", group: "ЗАХИАЛГУУД", tabLabel: "Хүсэлт", count: "requests", countLabel: "хариу хүлээж буй хүсэлт", tab: true, Icon: Inbox },
-  { href: "/admin/templates", label: "Бүтээгдэхүүн", group: "УДИРДЛАГА", tabLabel: "Бүтээгдэхүүн", tab: true, Icon: Package },
-  { href: "/admin/projects", label: "Веб төслүүд", group: "УДИРДЛАГА", Icon: FolderKanban },
-  { href: "/admin/ecosystem", label: "AXORA экосистем", group: "УДИРДЛАГА", Icon: Layers },
+  { href: "/admin/english-words", label: "English Words", group: "Удирдлага", Icon: Package },
+  { href: "/admin", label: "Хяналтын самбар", group: "Үндсэн", tabLabel: "Самбар", exact: true, tab: true, Icon: LayoutDashboard },
+  { href: "/admin/orders", label: "Веб захиалгууд", group: "Захиалгууд", tabLabel: "Захиалга", count: "orders", countLabel: "шинэ захиалга", tab: true, Icon: ClipboardList },
+  { href: "/admin/template-requests", label: "Загварын хүсэлтүүд", group: "Захиалгууд", tabLabel: "Хүсэлт", count: "requests", countLabel: "хариу хүлээж буй хүсэлт", tab: true, Icon: Inbox },
+  { href: "/admin/templates", label: "Бүтээгдэхүүн", group: "Удирдлага", tabLabel: "Бүтээгдэхүүн", tab: true, Icon: Package },
+  { href: "/admin/projects", label: "Веб төслүүд", group: "Удирдлага", Icon: FolderKanban },
+  { href: "/admin/ecosystem", label: "AXORA экосистем", group: "Удирдлага", Icon: Layers },
   // Existing modules beyond the main navigation, kept so nothing becomes unreachable.
-  { href: "/admin/payments", label: "Төлбөрүүд", group: "БУСАД", Icon: CreditCard },
-  { href: "/admin/support", label: "Тусламжийн хүсэлтүүд", group: "БУСАД", count: "support", countLabel: "шинэ тусламжийн хүсэлт", Icon: LifeBuoy },
-  { href: "/admin/marketing", label: "Маркетинг", group: "БУСАД", Icon: Megaphone },
-  { href: "/admin/notifications", label: "Мэдэгдэл", group: "БУСАД", count: "notifications", countLabel: "уншаагүй мэдэгдэл", Icon: Bell },
-  { href: "/admin/content", label: "Сайтын агуулга", group: "БУСАД", Icon: Layers },
-  { href: "/admin/activity", label: "Үйлдлийн түүх", group: "БУСАД", Icon: Activity },
-  { href: "/admin/settings", label: "Тохиргоо", group: "БУСАД", Icon: Settings },
+  { href: "/admin/payments", label: "Төлбөрүүд", group: "Бусад", Icon: CreditCard },
+  { href: "/admin/support", label: "Тусламжийн хүсэлтүүд", group: "Бусад", count: "support", countLabel: "шинэ тусламжийн хүсэлт", Icon: LifeBuoy },
+  { href: "/admin/marketing", label: "Маркетинг", group: "Бусад", Icon: Megaphone },
+  { href: "/admin/notifications", label: "Мэдэгдэл", group: "Бусад", count: "notifications", countLabel: "уншаагүй мэдэгдэл", Icon: Bell },
+  { href: "/admin/content", label: "Сайтын агуулга", group: "Бусад", Icon: Layers },
+  { href: "/admin/activity", label: "Үйлдлийн түүх", group: "Бусад", Icon: Activity },
+  { href: "/admin/settings", label: "Тохиргоо", group: "Бусад", Icon: Settings },
 ];
 
 export const isActive = (n: NavItem, path: string) => (n.exact ? path === n.href : path === n.href || path.startsWith(n.href + "/"));

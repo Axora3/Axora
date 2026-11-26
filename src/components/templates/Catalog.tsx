@@ -1,5 +1,6 @@
 "use client";
 
+import { AxoraGlass } from "@/components/glass/AxoraGlass";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -10,6 +11,7 @@ import { EmptyState } from "@/components/ui/empty-state";
 import { Icon } from "@/components/ui/icon";
 import { Input } from "@/components/ui/input";
 import { NativeSelect } from "@/components/ui/native-select";
+import { BottomSheet } from "@/components/ui/BottomSheet";
 import { TEMPLATE_CATEGORIES, type Template } from "@/lib/templates/types";
 import { useTemplateCollections } from "@/lib/templates/use-template-collections";
 import { CompareTray } from "./Collections";
@@ -19,29 +21,59 @@ type Cat = "all" | (typeof TEMPLATE_CATEGORIES)[number];
 type Price = "all" | "free" | "paid";
 type Sort = "rec" | "asc" | "desc" | "name";
 
-const filterHeading = "mb-1.5 hidden px-3.5 text-xs font-extrabold text-muted min-[1024px]:block";
-const filterGroup = "flex shrink-0 gap-1.5 min-[1024px]:flex-col min-[1024px]:gap-0.5";
+const filterHeading = "mb-3 px-1 text-sm font-semibold text-muted";
+const filterGroup = "grid gap-2";
 
 /** The catalogue is already in the browser, so filters update the URL without a server request. Next.js keeps useSearchParams in sync. */
 const writeUrl = (url: string) => window.history.replaceState(null, "", url);
 
-function pick<T extends string>(v: string | null, allowed: readonly T[], fallback: T): T {
+function pick<T extends string>(
+  v: string | null,
+  allowed: readonly T[],
+  fallback: T,
+): T {
   return v && (allowed as readonly string[]).includes(v) ? (v as T) : fallback;
 }
 
-function Filter({ on, onClick, label, count }: { on: boolean; onClick: () => void; label: string; count?: number }) {
+function Filter({
+  on,
+  onClick,
+  label,
+  count,
+}: {
+  on: boolean;
+  onClick: () => void;
+  label: string;
+  count?: number;
+}) {
   return (
-    <button type="button" aria-pressed={on} onClick={onClick} className="ax-filter">
+    <button
+      type="button"
+      aria-pressed={on}
+      onClick={onClick}
+      className="ax-filter"
+    >
       {label}
       {count !== undefined && <span className="ax-filter-count">{count}</span>}
     </button>
   );
 }
 
-function ActiveChip({ label, onRemove }: { label: string; onRemove: () => void }) {
+function ActiveChip({
+  label,
+  onRemove,
+}: {
+  label: string;
+  onRemove: () => void;
+}) {
   return (
     <li>
-      <button type="button" onClick={onRemove} aria-label={`${label} шүүлтүүрийг хасах`} className="ax-btn inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-soft px-3 text-[13px] font-bold text-ink">
+      <button
+        type="button"
+        onClick={onRemove}
+        aria-label={`${label} шүүлтүүрийг хасах`}
+        className="ax-btn inline-flex min-h-11 cursor-pointer items-center gap-1.5 rounded-full border border-line bg-soft px-3 text-[13px] font-bold text-ink"
+      >
         {label}
         <Close size={14} strokeWidth={2.4} />
       </button>
@@ -66,10 +98,16 @@ export function Catalog({ templates }: { templates: Template[] }) {
     setQ(urlQuery);
   }
   const [savedOnly, setSavedOnly] = useState(false);
-  const { favorites, comparison, toggleFavorite, toggleComparison } = useTemplateCollections();
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const { favorites, comparison, toggleFavorite, toggleComparison } =
+    useTemplateCollections();
   const cat = pick<Cat>(sp.get("cat"), ["all", ...TEMPLATE_CATEGORIES], "all");
   const price = pick<Price>(sp.get("price"), ["all", "free", "paid"], "all");
-  const sort = pick<Sort>(sp.get("sort"), ["rec", "asc", "desc", "name"], "rec");
+  const sort = pick<Sort>(
+    sp.get("sort"),
+    ["rec", "asc", "desc", "name"],
+    "rec",
+  );
 
   function setParam(next: Record<string, string>) {
     // The live URL, not `sp`: two quick clicks must not overwrite each other.
@@ -101,17 +139,29 @@ export function Catalog({ templates }: { templates: Template[] }) {
       if (cat !== "all" && t.category !== cat) return false;
       if (price === "free" && !t.isFree) return false;
       if (price === "paid" && t.isFree) return false;
-      if (needle && !`${t.title} ${t.shortDescription} ${t.longDescription} ${t.category}`.toLowerCase().includes(needle)) return false;
+      if (
+        needle &&
+        !`${t.title} ${t.shortDescription} ${t.longDescription} ${t.category}`
+          .toLowerCase()
+          .includes(needle)
+      )
+        return false;
       if (savedOnly && !favorites.includes(t.id)) return false;
       return true;
     });
     if (sort === "asc") list = [...list].sort((a, b) => a.price - b.price);
     if (sort === "desc") list = [...list].sort((a, b) => b.price - a.price);
-    if (sort === "name") list = [...list].sort((a, b) => a.title.localeCompare(b.title, "mn"));
+    if (sort === "name")
+      list = [...list].sort((a, b) => a.title.localeCompare(b.title, "mn"));
     return list;
   }, [templates, q, cat, price, sort, savedOnly, favorites]);
 
-  const hasFilters = !!q.trim() || cat !== "all" || price !== "all" || sort !== "rec" || savedOnly;
+  const hasFilters =
+    !!q.trim() ||
+    cat !== "all" ||
+    price !== "all" ||
+    sort !== "rec" ||
+    savedOnly;
   const clearAll = () => {
     setQ("");
     setSavedOnly(false);
@@ -128,58 +178,139 @@ export function Catalog({ templates }: { templates: Template[] }) {
         icon={<Icon name="layers" size={24} />}
         title="Одоогоор нийтлэгдсэн загвар алга"
         description="Загвар нийтлэгдмэгц энд харагдана. Яаралтай хэрэгтэй бол бидэнтэй холбогдоорой."
-        action={<Link href="/contact" className={buttonStyles("primary")}>Холбоо барих</Link>}
+        action={
+          <Link href="/contact" className={buttonStyles("primary")}>
+            Холбоо барих
+          </Link>
+        }
       />
     );
   }
 
-  const countOf = (c: (typeof TEMPLATE_CATEGORIES)[number]) => templates.filter((t) => t.category === c).length;
+  const countOf = (c: (typeof TEMPLATE_CATEGORIES)[number]) =>
+    templates.filter((t) => t.category === c).length;
   const freeCount = templates.filter((t) => t.isFree).length;
+  const filterCount =
+    Number(cat !== "all") + Number(price !== "all") + Number(savedOnly);
+  const filters = () => (
+    <div className="flex flex-col gap-6">
+      <fieldset className="min-w-0 rounded-2xl border border-line p-4">
+        <legend className={filterHeading}>Ангилал</legend>
+        <div className={filterGroup}>
+          <Filter
+            on={cat === "all"}
+            onClick={() => setParam({ cat: "all" })}
+            label="Бүгд"
+            count={templates.length}
+          />
+          {TEMPLATE_CATEGORIES.map((c) => (
+            <Filter
+              key={c}
+              on={cat === c}
+              onClick={() => setParam({ cat: c })}
+              label={c}
+              count={countOf(c)}
+            />
+          ))}
+        </div>
+      </fieldset>
+      <fieldset className="min-w-0 rounded-2xl border border-line p-4">
+        <legend className={filterHeading}>Үнэ</legend>
+        <div className={filterGroup}>
+          <Filter
+            on={price === "all"}
+            onClick={() => setParam({ price: "all" })}
+            label="Бүх үнэ"
+          />
+          <Filter
+            on={price === "free"}
+            onClick={() => setParam({ price: "free" })}
+            label="Үнэгүй"
+            count={freeCount}
+          />
+          <Filter
+            on={price === "paid"}
+            onClick={() => setParam({ price: "paid" })}
+            label="Төлбөртэй"
+            count={templates.length - freeCount}
+          />
+        </div>
+      </fieldset>
+      <fieldset className="min-w-0 rounded-2xl border border-line p-4">
+        <legend className={filterHeading}>Миний сонголт</legend>
+        <button
+          type="button"
+          aria-pressed={savedOnly}
+          onClick={() => setSavedOnly((v) => !v)}
+          className="ax-filter"
+        >
+          <span className="inline-flex items-center gap-2">
+            <Icon name={savedOnly ? "heart-filled" : "heart"} size={16} />
+            Хадгалсан
+          </span>
+          <span className="ax-filter-count">{favorites.length}</span>
+        </button>
+      </fieldset>
+    </div>
+  );
 
   return (
     <div className="mt-8 grid items-start gap-x-8 gap-y-5 min-[1024px]:grid-cols-[236px_minmax(0,1fr)]">
-      <aside aria-label="Шүүлтүүр" className="flex min-w-0 flex-col gap-3 min-[1024px]:sticky min-[1024px]:top-[92px] min-[1024px]:gap-6">
+      <aside
+        aria-label="Шүүлтүүр"
+        className="flex min-w-0 flex-col gap-3 min-[1024px]:sticky min-[1024px]:top-[92px] min-[1024px]:gap-6"
+      >
         <div className="relative flex items-center">
-          <label htmlFor="tp-search" className="sr-only">Нэр, тайлбараар хайх</label>
+          <label htmlFor="tp-search" className="sr-only">
+            Нэр, тайлбараар хайх
+          </label>
           <Search className="pointer-events-none absolute left-3.5 z-[1] text-muted" />
-          <Input id="tp-search" type="search" value={q} onChange={(e) => setQ(e.target.value)} placeholder="Төсөв, контент, кофе…" className="min-h-12 py-0 pr-3.5 pl-[42px] text-base" />
+          <Input
+            id="tp-search"
+            type="search"
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            placeholder="Төсөв, контент, кофе…"
+            className="min-h-12 py-0 pr-3.5 pl-[42px] text-base"
+          />
         </div>
 
-        <div className="ax-scroll -mx-[clamp(16px,4vw,40px)] items-start gap-3 px-[clamp(16px,4vw,40px)] pb-1 min-[1024px]:mx-0 min-[1024px]:flex-col min-[1024px]:gap-6 min-[1024px]:overflow-visible min-[1024px]:px-0 min-[1024px]:pb-0">
-          <div role="group" aria-label="Ангилал" className="shrink-0 min-[1024px]:w-full">
-            <p aria-hidden="true" className={filterHeading}>Ангилал</p>
-            <div className={filterGroup}>
-              <Filter on={cat === "all"} onClick={() => setParam({ cat: "all" })} label="Бүгд" count={templates.length} />
-              {TEMPLATE_CATEGORIES.map((c) => (
-                <Filter key={c} on={cat === c} onClick={() => setParam({ cat: c })} label={c} count={countOf(c)} />
-              ))}
+        <Button
+          variant="secondary"
+          onClick={() => setFiltersOpen(true)}
+          className="min-[1024px]:hidden"
+        >
+          Шүүлтүүр{filterCount ? ` · ${filterCount}` : ""}
+        </Button>
+        <div className="hidden min-[1024px]:block">{filters()}</div>
+        <BottomSheet
+          open={filtersOpen}
+          onClose={() => setFiltersOpen(false)}
+          title="Загвар шүүх"
+          footer={
+            <div className="flex gap-3">
+              <Button onClick={clearAll} className="flex-1">
+                Цэвэрлэх
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() => setFiltersOpen(false)}
+                className="flex-1"
+              >
+                {items.length} загвар харах
+              </Button>
             </div>
-          </div>
-          <span aria-hidden="true" className="w-px shrink-0 self-stretch bg-line min-[1024px]:hidden" />
-          <div role="group" aria-label="Үнэ" className="shrink-0 min-[1024px]:w-full">
-            <p aria-hidden="true" className={filterHeading}>Үнэ</p>
-            <div className={filterGroup}>
-              <Filter on={price === "all"} onClick={() => setParam({ price: "all" })} label="Бүх үнэ" />
-              <Filter on={price === "free"} onClick={() => setParam({ price: "free" })} label="Үнэгүй" count={freeCount} />
-              <Filter on={price === "paid"} onClick={() => setParam({ price: "paid" })} label="Төлбөртэй" count={templates.length - freeCount} />
-            </div>
-          </div>
-          <span aria-hidden="true" className="w-px shrink-0 self-stretch bg-line min-[1024px]:hidden" />
-          <div className="shrink-0 min-[1024px]:w-full min-[1024px]:border-t min-[1024px]:border-line min-[1024px]:pt-4">
-            <button type="button" aria-pressed={savedOnly} onClick={() => setSavedOnly((v) => !v)} className="ax-filter">
-              <span className="inline-flex items-center gap-2">
-                <Icon name={savedOnly ? "heart-filled" : "heart"} size={16} />
-                Хадгалсан
-              </span>
-              <span className="ax-filter-count">{favorites.length}</span>
-            </button>
-          </div>
-        </div>
+          }
+        >
+          {filters()}
+        </BottomSheet>
       </aside>
 
       <div className="min-w-0">
         <div className="flex min-h-12 flex-wrap items-center justify-between gap-3">
-          <p aria-live="polite" className="text-[15px] font-bold">{items.length} загвар олдлоо</p>
+          <p aria-live="polite" className="text-[15px] font-bold">
+            {items.length} загвар олдлоо
+          </p>
           <div className="flex items-center gap-2">
             {hasFilters && (
               <Button variant="quiet" onClick={clearAll}>
@@ -187,28 +318,54 @@ export function Catalog({ templates }: { templates: Template[] }) {
                 Цэвэрлэх
               </Button>
             )}
-            <label htmlFor="tp-sort" className="sr-only">Эрэмбэ</label>
-            <NativeSelect id="tp-sort" value={sort} onChange={(e) => setParam({ sort: e.target.value })} className="w-auto bg-surface text-[15px]">
-              <option value="rec">Санал болгосон</option>
-              <option value="asc">Үнэ: багаас их</option>
-              <option value="desc">Үнэ: ихээс бага</option>
-              <option value="name">Нэрээр: А–Я</option>
-            </NativeSelect>
+            <label htmlFor="tp-sort" className="sr-only">
+              Эрэмбэ
+            </label>
+            <div className="ax-optical-host ax-glass-sort relative rounded-control">
+              <AxoraGlass preset="control" />
+              <NativeSelect
+                id="tp-sort"
+                value={sort}
+                onChange={(e) => setParam({ sort: e.target.value })}
+                className="w-auto bg-surface text-[15px]"
+              >
+                <option value="rec">Санал болгосон</option>
+                <option value="asc">Үнэ: багаас их</option>
+                <option value="desc">Үнэ: ихээс бага</option>
+                <option value="name">Нэрээр: А–Я</option>
+              </NativeSelect>
+            </div>
           </div>
         </div>
 
         {(cat !== "all" || price !== "all" || !!q.trim()) && (
-          <ul aria-label="Идэвхтэй шүүлтүүр" className="m-0 mt-2 flex list-none flex-wrap gap-2 p-0">
-            {cat !== "all" && <ActiveChip label={cat} onRemove={() => setParam({ cat: "all" })} />}
-            {price !== "all" && <ActiveChip label={price === "free" ? "Үнэгүй" : "Төлбөртэй"} onRemove={() => setParam({ price: "all" })} />}
-            {!!q.trim() && <ActiveChip label={`“${q.trim()}”`} onRemove={() => setQ("")} />}
+          <ul
+            aria-label="Идэвхтэй шүүлтүүр"
+            className="m-0 mt-2 flex list-none flex-wrap gap-2 p-0"
+          >
+            {cat !== "all" && (
+              <ActiveChip
+                label={cat}
+                onRemove={() => setParam({ cat: "all" })}
+              />
+            )}
+            {price !== "all" && (
+              <ActiveChip
+                label={price === "free" ? "Үнэгүй" : "Төлбөртэй"}
+                onRemove={() => setParam({ price: "all" })}
+              />
+            )}
+            {!!q.trim() && (
+              <ActiveChip label={`“${q.trim()}”`} onRemove={() => setQ("")} />
+            )}
           </ul>
         )}
 
         {items.length > 0 ? (
           <AnimatedGroup className="mt-4 grid gap-5 [grid-template-columns:repeat(auto-fill,minmax(min(280px,100%),1fr))]">
-            {items.map((t) => (
+            {items.map((t, index) => (
               <TemplateCard
+                eager={index === 0}
                 key={t.id}
                 t={t}
                 favorite={favorites.includes(t.id)}
@@ -225,9 +382,23 @@ export function Catalog({ templates }: { templates: Template[] }) {
             headingLevel={2}
             className="ax-in-sm mt-4"
             icon={<SearchEmpty size={24} />}
-            title={savedOnly && favorites.length === 0 ? "Хадгалсан загвар алга" : "Тохирох загвар олдсонгүй"}
-            description={savedOnly && favorites.length === 0 ? "Таалагдсан загвараа зүрхэн товчоор хадгалж, эндээс дахин үзээрэй." : "Өөр түлхүүр үгээр хайх эсвэл шүүлтүүрээ цэвэрлээд дахин үзээрэй."}
-            action={hasFilters ? <Button variant="primary" onClick={clearAll}>Шүүлтүүр цэвэрлэх</Button> : undefined}
+            title={
+              savedOnly && favorites.length === 0
+                ? "Хадгалсан загвар алга"
+                : "Тохирох загвар олдсонгүй"
+            }
+            description={
+              savedOnly && favorites.length === 0
+                ? "Таалагдсан загвараа зүрхэн товчоор хадгалж, эндээс дахин үзээрэй."
+                : "Өөр түлхүүр үгээр хайх эсвэл шүүлтүүрээ цэвэрлээд дахин үзээрэй."
+            }
+            action={
+              hasFilters ? (
+                <Button variant="primary" onClick={clearAll}>
+                  Шүүлтүүр цэвэрлэх
+                </Button>
+              ) : undefined
+            }
           />
         )}
       </div>

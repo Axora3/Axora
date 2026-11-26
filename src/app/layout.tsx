@@ -2,14 +2,18 @@ import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import { Cormorant_Garamond, Lora, Manrope, Onest, Rubik } from "next/font/google";
 import { BuilderProvider } from "@/components/builder/BuilderProvider";
-import { MobileTabBar } from "@/components/site/MobileTabBar";
 import { themeInitScript, THEME_COLOR } from "@/components/theme/theme-script";
 import { ThemeSync } from "@/components/theme/ThemeToggle";
 import { SITE } from "@/lib/site";
 import { MotionProvider } from "@/components/ui/motion-provider";
 import { PublicSiteShell } from "@/components/cinematic/PublicSiteShell";
+import { adminSidebarInitScript } from "@/components/admin/sidebar-preference";
 import "./globals.css";
 import "./cinematic.css";
+import "./admin-refinement.css";
+import "@/styles/axora-system.css";
+import "@/styles/scrollbars.css";
+import "@/styles/liquid-glass.css";
 
 // Ө and Ү live in Google's cyrillic-ext subset, not cyrillic. Both are preloaded so
 // Mongolian text never swaps those two letters in late.
@@ -25,7 +29,8 @@ export const metadata: Metadata = {
   title: { default: "AXORA — Бэлэн загвар ба захиалгат веб", template: "%s — AXORA" },
   description: SITE.description,
   applicationName: "AXORA",
-  openGraph: { type: "website", locale: "mn_MN", siteName: "AXORA", title: "AXORA — Бэлэн загвар ба захиалгат веб", description: SITE.description },
+  icons: { icon: [{ url: "/brand/favicon.svg", type: "image/svg+xml" }, { url: "/brand/favicon-32x32.png", sizes: "32x32" }], apple: "/brand/apple-touch-icon.png" },
+  openGraph: { images: [{ url: "/brand/og-image.png", width: 1200, height: 630 }], type: "website", locale: "mn_MN", siteName: "AXORA", title: "AXORA — Бэлэн загвар ба захиалгат веб", description: SITE.description },
   robots: { index: true, follow: true },
 };
 
@@ -49,7 +54,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${manrope.variable} ${lora.variable} ${onest.variable} ${rubik.variable} ${cormorant.variable}`}
     >
       <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        <script dangerouslySetInnerHTML={{ __html: `${themeInitScript};${adminSidebarInitScript}` }} />
       </head>
       <body>
         <ThemeSync />
@@ -62,9 +67,6 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <BuilderProvider>
           <MotionProvider>
           <Suspense fallback={null}><PublicSiteShell>{children}</PublicSiteShell></Suspense>
-          <Suspense fallback={null}>
-            <MobileTabBar />
-          </Suspense>
           </MotionProvider>
         </BuilderProvider>
       </body>

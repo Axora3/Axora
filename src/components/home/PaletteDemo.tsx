@@ -1,16 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight } from "@/components/icons";
+import { useState } from "react";
+import { ArrowUpRight, Check, Monitor, Smartphone, Tablet } from "lucide-react";
 import { useBuilder } from "@/components/builder/BuilderProvider";
 import { PALETTES, luminance, mix } from "@/lib/builder/config";
+import { BrowserChrome } from "./ProductPreviews";
 
-/**
- * Home-page palette teaser. It writes to the shared builder state, so the
- * colour picked here is already selected when the visitor opens /builder.
- */
+/** Palette choices stay in the shared builder state; device sizing is local to this preview. */
 export function PaletteDemo() {
   const { config, setPalette } = useBuilder();
+  const [device, setDevice] = useState("desktop");
   const cur = PALETTES.find((p) => p.id === config.palette);
   const { primary, bg, secondary } = config.colors;
   const dark = luminance(bg) < 0.2;
@@ -18,74 +18,133 @@ export function PaletteDemo() {
   const vars = {
     "--d-bg": bg,
     "--d-text": text,
-    "--d-muted": mix(text, bg, 0.32),
+    "--d-muted": mix(text, bg, 0.24),
     "--d-p": primary,
     "--d-on": luminance(primary) > 0.35 ? "#17251E" : "#FFFFFF",
     "--d-s": secondary,
     "--d-line": mix(text, bg, 0.84),
   } as React.CSSProperties;
-
   return (
-    <div aria-labelledby="demo-title" role="group" className="flex h-full flex-col gap-5 rounded-card border border-line bg-surface p-[clamp(18px,2.4vw,28px)]">
-      <div className="flex flex-col gap-2">
-        <span className="ax-eyebrow">Live demo</span>
-        <h3 id="demo-title" className="ax-h3">
-          Өнгөө сонго — вэб <span className="serif">шууд</span> өөрчлөгдөнө.
-        </h3>
+    <div aria-labelledby="demo-title" role="group" className="fg-live-demo">
+      <div className="fg-demo-heading">
+        <div>
+          <span className="fg-section-index">01 / Интерактив веб</span>
+          <h3 id="demo-title">
+            Өнгө өөрчлөгдөнө.
+            <br />
+            <span>Таны хэв маяг үлдэнэ.</span>
+          </h3>
+        </div>
+        <span className="fg-demo-indicator">Шууд турших</span>
       </div>
-      <div role="group" aria-label="Өнгөний palette" className="flex flex-wrap gap-2">
+      <div
+        role="group"
+        aria-label="Өнгөний palette"
+        className="fg-palette-controls"
+      >
         {PALETTES.map((p) => (
           <button
             key={p.id}
             type="button"
             aria-pressed={config.palette === p.id}
             onClick={() => setPalette(p.id)}
-            className="ax-btn ax-option min-h-11 items-center gap-2 rounded-full px-3 text-[13px] font-bold"
           >
-            <span aria-hidden="true" className="flex shrink-0">
-              <span className="h-4 w-4 rounded-full border border-line-strong" style={{ background: p.primary }} />
-              <span className="-ml-1.5 h-4 w-4 rounded-full border border-line-strong" style={{ background: p.secondary }} />
+            <span
+              className="fg-palette-swatch"
+              aria-hidden="true"
+              style={{ background: p.primary }}
+            >
+              <i style={{ background: p.secondary }} />
             </span>
-            {p.label}
+            <span>{p.label}</span>
+            {config.palette === p.id && <Check size={12} aria-hidden="true" />}
           </button>
         ))}
       </div>
-
-      <div className="ax-light flex flex-1 flex-col overflow-hidden rounded-2xl border border-line" style={vars} aria-live="polite">
-        <div className="flex h-9 shrink-0 items-center gap-2 border-b border-line bg-soft-2 px-3.5">
-          <span className="h-2 w-2 rounded-full bg-[#E1A28F]" />
-          <span className="h-2 w-2 rounded-full bg-[#94A3B8]" />
-          <span className="h-2 w-2 rounded-full bg-[#9CC59B]" />
-          <span className="ml-2 truncate text-xs text-muted">Жишээ веб — {cur?.label ?? "Өөрийн өнгө"}</span>
-        </div>
-        <div className="flex flex-1 flex-col gap-4 p-[clamp(16px,2vw,24px)] transition-colors duration-300" style={{ background: "var(--d-bg)", color: "var(--d-text)" }}>
-          <span className="flex items-center gap-2 text-[13px] font-extrabold">
-            <span className="h-[22px] w-[22px] rounded-[7px]" style={{ background: "var(--d-p)" }} />
-            Нарс студи
-          </span>
-          <span className="text-[clamp(22px,2.4vw,32px)] leading-[1.1] font-extrabold tracking-[-0.02em]">Таны бизнес, таны өнгө.</span>
-          <span className="max-w-[32em] text-sm leading-[1.55]" style={{ color: "var(--d-muted)" }}>
-            Үйлчилгээгээ танилцуулж, захиалгаа онлайнаар аваарай.
-          </span>
-          <span className="flex flex-wrap gap-2.5">
-            <span className="rounded-[9px] px-4 py-[11px] text-[13px] font-bold" style={{ background: "var(--d-p)", color: "var(--d-on)" }}>Цаг авах</span>
-            <span className="rounded-[9px] border-[1.5px] px-4 py-2.5 text-[13px] font-bold" style={{ borderColor: "var(--d-p)", color: "var(--d-p)" }}>Үйлчилгээ үзэх</span>
-          </span>
-          <div className="mt-auto grid grid-cols-3 gap-2.5 pt-2">
-            {[1, 2, 3].map((n) => (
-              <div key={n} className="flex flex-col gap-1.5 rounded-xl p-2.5" style={n === 1 ? { background: "var(--d-s)" } : { border: "1px solid var(--d-line)" }}>
-                <span className="aspect-[1.6] w-full rounded-lg" style={{ background: n === 1 ? "var(--d-p)" : "var(--d-s)", opacity: n === 1 ? 0.85 : 1 }} />
-                <span className="truncate text-xs font-bold">Үйлчилгээ {n}</span>
+      <div className="fg-demo-canvas" data-device={device}>
+        <div className="fg-demo-window ax-light" style={vars}>
+          <BrowserChrome
+            address={`nars.studio / ${cur?.label ?? "Өөрийн өнгө"}`}
+          />
+          <div
+            className="fg-demo-site"
+            aria-label={`${cur?.label ?? "Өөрийн өнгө"} өнгийн веб жишээ`}
+          >
+            <div className="fg-demo-site-nav">
+              <span>
+                <i />
+                Нарс студи
+              </span>
+              <span>Дизайн & веб</span>
+            </div>
+            <div className="fg-demo-site-main">
+              <div>
+                <span className="fg-demo-site-kicker">
+                  Таны санаанаас эхэлнэ
+                </span>
+                <h4>
+                  Таны бизнес,
+                  <br />
+                  таны өнгө.
+                </h4>
+                <p>
+                  Үйлчилгээгээ танилцуулж,
+                  <br />
+                  захиалгаа онлайнаар аваарай.
+                </p>
+                <span className="fg-demo-site-actions">
+                  <span>
+                    Цаг авах <ArrowUpRight size={12} />
+                  </span>
+                  <span>Үйлчилгээ үзэх</span>
+                </span>
               </div>
-            ))}
+              <div className="fg-demo-art" aria-hidden="true">
+                <i />
+                <i />
+                <i />
+                <span>Н / С</span>
+              </div>
+            </div>
+            <div className="fg-demo-services">
+              {["Брэнд дизайн", "Вебсайт", "Контент"].map((label, i) => (
+                <div key={label}>
+                  <span>0{i + 1}</span>
+                  <span>{label}</span>
+                  <ArrowUpRight size={12} />
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </div>
-
-      <Link href="/builder" className="ax-link inline-flex min-h-11 items-center gap-2 self-start text-[15px] font-bold text-brand no-underline">
-        Бүрэн туршиж үзэх
-        <span className="ax-arrow"><ArrowRight size={16} /></span>
-      </Link>
+      <div className="fg-demo-footer">
+        <div
+          className="fg-device-controls"
+          role="group"
+          aria-label="Дэлгэцийн хэмжээ"
+        >
+          {[
+            { id: "desktop", label: "Desktop", Icon: Monitor },
+            { id: "tablet", label: "Tablet", Icon: Tablet },
+            { id: "mobile", label: "Mobile", Icon: Smartphone },
+          ].map(({ id, label, Icon }) => (
+            <button
+              key={id}
+              type="button"
+              aria-label={label}
+              aria-pressed={device === id}
+              onClick={() => setDevice(id)}
+              title={label}
+            >
+              <Icon size={16} />
+            </button>
+          ))}
+        </div>
+        <Link href="/builder">
+          Бүрэн турших <ArrowUpRight size={16} />
+        </Link>
+      </div>
     </div>
   );
 }

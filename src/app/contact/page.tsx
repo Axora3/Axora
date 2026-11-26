@@ -5,7 +5,6 @@ import { ContactForm } from "@/components/contact/ContactForm";
 import { Faq } from "@/components/home/Faq";
 import { ArrowRight, Chat, Clock, Mail, PhoneCall } from "@/components/icons";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { SiteHeader } from "@/components/site/SiteHeader";
 import { buttonStyles } from "@/components/ui/button";
 import { Icon } from "@/components/ui/icon";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -21,8 +20,7 @@ export const metadata: Metadata = {
 
 function Hero() {
   return (
-    <section aria-labelledby="ct-title" className="relative isolate overflow-hidden bg-band text-on-band">
-      <div aria-hidden="true" className="ax-aurora" />
+    <section aria-labelledby="ct-title" className="ax-content-section text-on-band">
       <div className="ax-container flex flex-col items-start gap-4 py-[clamp(40px,7vw,96px)]">
         <span className="ax-pill-band ax-in">Холбоо барих</span>
         <h1 id="ct-title" className="ax-display ax-in d1 max-w-[11em]">
@@ -37,7 +35,7 @@ function Hero() {
 export default function ContactPage(props: PageProps<"/contact">) {
   return (
     <>
-      <SiteHeader active="/contact" />
+
       <main id="main">
         <Hero />
         <Suspense fallback={<div aria-busy="true" aria-label="Ачаалж байна" className="ax-container py-section"><Skeleton className="h-96 rounded-card" /></div>}>
@@ -113,7 +111,7 @@ async function ContactDetails({ searchParams }: Pick<PageProps<"/contact">, "sea
         </section>
       </div>
 
-      <section aria-labelledby="ct-faq" className="border-y border-line bg-surface">
+      <section aria-labelledby="ct-faq" className="ax-content-section">
         <div className="ax-container ax-section grid items-start gap-[clamp(28px,5vw,72px)] [grid-template-columns:repeat(auto-fit,minmax(min(340px,100%),1fr))]">
           <h2 id="ct-faq" className="ax-h2">
             Түгээмэл <span className="serif">асуулт</span>
@@ -123,7 +121,7 @@ async function ContactDetails({ searchParams }: Pick<PageProps<"/contact">, "sea
       </section>
 
       <section aria-labelledby="ct-cta" className="ax-container py-section">
-        <div className="ax-page-hero flex flex-col gap-5 nav:flex-row nav:items-center nav:justify-between">
+        <div className="ax-content-section flex flex-col gap-5 nav:flex-row nav:items-center nav:justify-between">
           <div className="flex flex-col gap-2">
             <h2 id="ct-cta" className="ax-h2">
               Вебсайтаа <span className="serif">эхлүүлэх үү?</span>

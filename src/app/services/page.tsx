@@ -4,7 +4,6 @@ import { ArrowRight, Gear, Globe, Image as ImageIcon, Pages } from "@/components
 import { ServiceChapters, ServiceProcess } from "@/components/services/ServiceChapters";
 import { SiteTypes } from "@/components/services/SiteTypes";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { SiteHeader } from "@/components/site/SiteHeader";
 import { buttonStyles } from "@/components/ui/button";
 
 export const metadata: Metadata = {
@@ -30,10 +29,9 @@ const JUMPS = [
 export default function ServicesPage() {
   return (
     <>
-      <SiteHeader active="/services" />
+
       <main id="main">
-        <section aria-labelledby="sv-h" className="relative isolate overflow-hidden bg-band text-on-band">
-          <div aria-hidden="true" className="ax-aurora" />
+        <section aria-labelledby="sv-h" className="ax-content-section text-on-band">
           <div className="ax-container flex flex-col items-start gap-5 py-[clamp(48px,8vw,112px)]">
             <span className="ax-pill-band ax-in">Үйлчилгээ</span>
             <h1 id="sv-h" className="ax-display ax-in d1 max-w-[12em]">
@@ -63,7 +61,7 @@ export default function ServicesPage() {
           <ServiceChapters />
         </div>
 
-        <section aria-labelledby="sv-process" className="relative isolate overflow-hidden bg-band text-on-band">
+        <section aria-labelledby="sv-process" className="ax-content-section text-on-band">
           <div className="ax-container ax-section">
             <h2 id="sv-process" className="ax-h2 ax-reveal">
               Ажлын <span className="serif text-lime">явц</span>
@@ -121,7 +119,7 @@ export default function ServicesPage() {
           </section>
 
           <section aria-labelledby="sv-cta" className="py-section">
-            <div className="ax-page-hero ax-reveal flex flex-col gap-5 nav:flex-row nav:items-center nav:justify-between">
+            <div className="ax-content-section ax-reveal flex flex-col gap-5 nav:flex-row nav:items-center nav:justify-between">
               <div className="flex flex-col gap-3">
                 <h2 id="sv-cta" className="ax-h2">
                   Эхлэхэд <span className="serif">бэлэн үү?</span>

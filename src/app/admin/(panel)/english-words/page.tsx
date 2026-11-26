@@ -7,4 +7,4 @@ async function Content(){const auth=await requireAdminPage();if(auth.kind!=='ok'
  if(settings.error||orders.error||members.error)return <p className="p-8" role="alert">English Words-ийн membership migration-ийг Supabase дээр ажиллуулж, дахин нээнэ үү.</p>;
  return <EnglishWordsAdmin settings={settings.data} orders={orders.data||[]} members={members.data||[]}/>;
 }
-export default function Page(){return <Suspense fallback={<p className="p-8">English Words ачаалж байна…</p>}><Content/></Suspense>;}
+export default function Page(){return <main id="main" tabIndex={-1} className="min-w-0"><Suspense fallback={<p className="p-8">English Words ачаалж байна…</p>}><Content/></Suspense></main>;}

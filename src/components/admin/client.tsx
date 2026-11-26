@@ -1,5 +1,6 @@
 "use client";
 
+import { AxoraGlass } from "@/components/glass/AxoraGlass";
 import { Icon } from "@/components/ui/icon";
 
 import Link from "next/link";
@@ -12,7 +13,10 @@ export function RememberListUrl({ storageKey }: { storageKey: string }) {
   const sp = useSearchParams();
   useEffect(() => {
     try {
-      sessionStorage.setItem(storageKey, path + (sp.toString() ? `?${sp}` : ""));
+      sessionStorage.setItem(
+        storageKey,
+        path + (sp.toString() ? `?${sp}` : ""),
+      );
     } catch {
       /* ignore */
     }
@@ -20,7 +24,15 @@ export function RememberListUrl({ storageKey }: { storageKey: string }) {
   return null;
 }
 
-export function BackToList({ storageKey, fallback, label }: { storageKey: string; fallback: string; label: string }) {
+export function BackToList({
+  storageKey,
+  fallback,
+  label,
+}: {
+  storageKey: string;
+  fallback: string;
+  label: string;
+}) {
   const [href, setHref] = useState(fallback);
   useEffect(() => {
     try {
@@ -32,14 +44,25 @@ export function BackToList({ storageKey, fallback, label }: { storageKey: string
     }
   }, [storageKey, fallback]);
   return (
-    <Link href={href} className="ax-ghost ax-btn inline-flex min-h-11 items-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-bold text-ink no-underline">
+    <Link
+      href={href}
+      className="ax-ghost ax-btn inline-flex min-h-11 items-center gap-2 rounded-control border border-line-strong bg-surface px-4 text-sm font-bold text-ink no-underline"
+    >
       <Icon name="arrow-left" size={16} /> {label}
     </Link>
   );
 }
 
 /** Copies a value; reports success only after the clipboard accepted it. */
-export function CopyButton({ value, label }: { value: string; label: string }) {
+export function CopyButton({
+  value,
+  label,
+  optical = false,
+}: {
+  value: string;
+  label: string;
+  optical?: boolean;
+}) {
   const [state, setState] = useState<"idle" | "ok" | "fail">("idle");
   return (
     <button
@@ -54,17 +77,36 @@ export function CopyButton({ value, label }: { value: string; label: string }) {
         setTimeout(() => setState("idle"), 2000);
       }}
       aria-label={`${label} хуулах`}
-      className="inline-flex min-h-11 min-w-11 items-center justify-center rounded-control border border-line-strong bg-surface px-3 text-[13px] font-bold text-ink"
+      className={`inline-flex min-h-11 min-w-11 items-center justify-center rounded-control border border-line-strong bg-surface px-3 text-[13px] font-bold text-ink ${optical ? "ax-optical-host relative" : ""}`}
     >
-      <span aria-live="polite">{state === "ok" ? <>Хуулсан <Icon name="check" size={16} /></> : state === "fail" ? "Хуулж чадсангүй" : "Хуулах"}</span>
+      {optical && <AxoraGlass preset="control" />}
+      <span aria-live="polite">
+        {state === "ok" ? (
+          <>
+            Хуулсан <Icon name="check" size={16} />
+          </>
+        ) : state === "fail" ? (
+          "Хуулж чадсангүй"
+        ) : (
+          "Хуулах"
+        )}
+      </span>
     </button>
   );
 }
 
 /** Client-only tabs over server-rendered panels; the active tab lives in ?tab= for deep links. */
-export function Tabs({ tabs, initial }: { tabs: { id: string; label: string; content: React.ReactNode }[]; initial?: string }) {
+export function Tabs({
+  tabs,
+  initial,
+}: {
+  tabs: { id: string; label: string; content: React.ReactNode }[];
+  initial?: string;
+}) {
   const instanceId = useId();
-  const [cur, setCur] = useState(tabs.some((t) => t.id === initial) ? initial! : tabs[0].id);
+  const [cur, setCur] = useState(
+    tabs.some((t) => t.id === initial) ? initial! : tabs[0].id,
+  );
   function pick(id: string) {
     setCur(id);
     const u = new URL(location.href);
@@ -73,7 +115,11 @@ export function Tabs({ tabs, initial }: { tabs: { id: string; label: string; con
   }
   return (
     <div className="flex flex-col gap-4">
-      <div role="tablist" aria-label="Захиалгын хэсгүүд" className="ax-scroll gap-1 rounded-xl bg-soft-3 p-1">
+      <div
+        role="tablist"
+        aria-label="Захиалгын хэсгүүд"
+        className="ax-scroll gap-1 rounded-xl bg-soft-3 p-1"
+      >
         {tabs.map((t, i) => (
           <button
             key={t.id}
@@ -85,10 +131,18 @@ export function Tabs({ tabs, initial }: { tabs: { id: string; label: string; con
             tabIndex={cur === t.id ? 0 : -1}
             onClick={() => pick(t.id)}
             onKeyDown={(e) => {
-              const d = e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
+              const d =
+                e.key === "ArrowRight" ? 1 : e.key === "ArrowLeft" ? -1 : 0;
               if (!d && e.key !== "Home" && e.key !== "End") return;
               e.preventDefault();
-              const n = tabs[e.key === "Home" ? 0 : e.key === "End" ? tabs.length - 1 : (i + d + tabs.length) % tabs.length];
+              const n =
+                tabs[
+                  e.key === "Home"
+                    ? 0
+                    : e.key === "End"
+                      ? tabs.length - 1
+                      : (i + d + tabs.length) % tabs.length
+                ];
               pick(n.id);
               document.getElementById(`${instanceId}-tab-${n.id}`)?.focus();
             }}
@@ -99,7 +153,14 @@ export function Tabs({ tabs, initial }: { tabs: { id: string; label: string; con
         ))}
       </div>
       {tabs.map((t) => (
-        <div key={t.id} id={`${instanceId}-panel-${t.id}`} role="tabpanel" aria-labelledby={`${instanceId}-tab-${t.id}`} hidden={cur !== t.id} tabIndex={0}>
+        <div
+          key={t.id}
+          id={`${instanceId}-panel-${t.id}`}
+          role="tabpanel"
+          aria-labelledby={`${instanceId}-tab-${t.id}`}
+          hidden={cur !== t.id}
+          tabIndex={0}
+        >
           {t.content}
         </div>
       ))}

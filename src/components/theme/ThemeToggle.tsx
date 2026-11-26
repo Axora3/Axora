@@ -1,15 +1,32 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, useSyncExternalStore } from "react";
+import {
+  useEffect,
+  useId,
+  useRef,
+  useState,
+  useSyncExternalStore,
+} from "react";
+import { AxoraGlass } from "@/components/glass/AxoraGlass";
 import { Check, Monitor, Moon, Sun } from "@/components/icons";
 import { m, useReducedMotion } from "motion/react";
 import type { ThemePref } from "./theme-script";
 import { getThemePref, setThemePref, subscribeTheme } from "./theme-store";
 
-const OPTIONS: { id: ThemePref; label: string; hint: string; Icon: typeof Sun }[] = [
+const OPTIONS: {
+  id: ThemePref;
+  label: string;
+  hint: string;
+  Icon: typeof Sun;
+}[] = [
   { id: "light", label: "Цайвар", hint: "Үргэлж цайвар", Icon: Sun },
   { id: "dark", label: "Бараан", hint: "Үргэлж бараан", Icon: Moon },
-  { id: "system", label: "Систем", hint: "Төхөөрөмжийн тохиргоог дагана", Icon: Monitor },
+  {
+    id: "system",
+    label: "Систем",
+    hint: "Төхөөрөмжийн тохиргоог дагана",
+    Icon: Monitor,
+  },
 ];
 
 /** Keeps the OS/other-tab listeners alive on every page (mounted once in the root layout). */
@@ -23,10 +40,22 @@ export function ThemeSync() {
  * The icon is chosen by CSS from <html data-theme>, so server HTML and the
  * first client render are identical (no hydration mismatch, no flash).
  */
-export function ThemeToggle({ tone = "default", className = "", size = 19 }: { tone?: "default" | "band"; className?: string; size?: number }) {
+export function ThemeToggle({
+  tone = "default",
+  className = "",
+  size = 19,
+}: {
+  tone?: "default" | "band";
+  className?: string;
+  size?: number;
+}) {
   // null on the server and during hydration; the real value right after.
   const reduced = useReducedMotion();
-  const pref = useSyncExternalStore<ThemePref | null>(subscribeTheme, getThemePref, () => null);
+  const pref = useSyncExternalStore<ThemePref | null>(
+    subscribeTheme,
+    getThemePref,
+    () => null,
+  );
   const [open, setOpen] = useState(false);
   const btn = useRef<HTMLButtonElement>(null);
   const menu = useRef<HTMLDivElement>(null);
@@ -34,21 +63,44 @@ export function ThemeToggle({ tone = "default", className = "", size = 19 }: { t
 
   useEffect(() => {
     if (!open) return;
-    const items = () => Array.from(menu.current?.querySelectorAll<HTMLButtonElement>("[role=menuitemradio]") ?? []);
-    (items().find((el) => el.getAttribute("aria-checked") === "true") ?? items()[0])?.focus();
+    const items = () =>
+      Array.from(
+        menu.current?.querySelectorAll<HTMLButtonElement>(
+          "[role=menuitemradio]",
+        ) ?? [],
+      );
+    (
+      items().find((el) => el.getAttribute("aria-checked") === "true") ??
+      items()[0]
+    )?.focus();
     const onDown = (e: PointerEvent) => {
-      if (!menu.current?.contains(e.target as Node) && !btn.current?.contains(e.target as Node)) setOpen(false);
+      if (
+        !menu.current?.contains(e.target as Node) &&
+        !btn.current?.contains(e.target as Node)
+      )
+        setOpen(false);
     };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         e.stopPropagation();
         setOpen(false);
         btn.current?.focus();
-      } else if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Home" || e.key === "End") {
+      } else if (
+        e.key === "ArrowDown" ||
+        e.key === "ArrowUp" ||
+        e.key === "Home" ||
+        e.key === "End"
+      ) {
         e.preventDefault();
         const list = items();
         const i = list.indexOf(document.activeElement as HTMLButtonElement);
-        const n = e.key === "Home" ? 0 : e.key === "End" ? list.length - 1 : (i + (e.key === "ArrowDown" ? 1 : -1) + list.length) % list.length;
+        const n =
+          e.key === "Home"
+            ? 0
+            : e.key === "End"
+              ? list.length - 1
+              : (i + (e.key === "ArrowDown" ? 1 : -1) + list.length) %
+                list.length;
         list[n]?.focus();
       } else if (e.key === "Tab") setOpen(false);
     };
@@ -78,8 +130,9 @@ export function ThemeToggle({ tone = "default", className = "", size = 19 }: { t
         aria-expanded={open}
         aria-controls={open ? `${id}-menu` : undefined}
         onClick={() => setOpen((v) => !v)}
-        className={`ax-theme-btn inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border ${look}`}
+        className={`ax-theme-btn ax-optical-host relative inline-flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border ${look}`}
       >
+        <AxoraGlass preset="control" />
         <span className="ax-theme-moon ax-theme-ic">
           <Moon size={size} />
         </span>
@@ -96,8 +149,9 @@ export function ThemeToggle({ tone = "default", className = "", size = 19 }: { t
           id={`${id}-menu`}
           role="menu"
           aria-label="Өнгөний горим"
-          className="absolute top-[calc(100%+6px)] right-0 z-[80] flex w-[232px] flex-col gap-0.5 rounded-2xl border border-line bg-elevated p-1.5 text-ink shadow-[0_24px_48px_-24px_var(--ax-shadow)]"
+          className="ax-optical-host absolute top-[calc(100%+6px)] right-0 z-[80] flex w-[232px] flex-col gap-0.5 rounded-2xl border border-line bg-elevated p-1.5 text-ink shadow-[0_24px_48px_-24px_var(--ax-shadow)]"
         >
+          <AxoraGlass preset="panel" />
           {OPTIONS.map(({ id: o, label: l, hint, Icon }) => (
             <button
               key={o}

@@ -2,12 +2,13 @@
 
 import Image from "next/image";
 import { useEffect, useRef, type CSSProperties } from "react";
-import { m, useInView, useMotionValue, useMotionValueEvent, useReducedMotion, useScroll, useSpring, useTransform } from "motion/react";
+import { m, useInView, useMotionValue, useMotionValueEvent, useScroll, useSpring, useTransform } from "motion/react";
+import { useReducedMotionPreference } from "@/hooks/useReducedMotionPreference";
 
 /** Scroll parallax and ambient drift use separate layers; neither moves footer UI. */
 export function AnimatedCloudFooter() {
   const region = useRef<HTMLDivElement>(null);
-  const reducedMotion = useReducedMotion();
+  const reducedMotion = useReducedMotionPreference();
   const inView = useInView(region, { margin: "100px" });
   const { scrollY, scrollYProgress } = useScroll({ target: region, offset: ["start end", "end end"] });
   const progress = useSpring(scrollYProgress, { stiffness: 65, damping: 24, mass: 0.8 });
@@ -29,10 +30,10 @@ export function AnimatedCloudFooter() {
       tipY.set(innerHeight * (innerWidth < 700 ? 0.68 : 0.60) - region.current.getBoundingClientRect().top);
     };
     update();
-    const observer = new ResizeObserver(update);
-    if (region.current) observer.observe(region.current);
+    const observer = typeof ResizeObserver === "undefined" ? null : new ResizeObserver(update);
+    if (region.current) observer?.observe(region.current);
     window.addEventListener("resize", update);
-    return () => { observer.disconnect(); window.removeEventListener("resize", update); };
+    return () => { observer?.disconnect(); window.removeEventListener("resize", update); };
   }, [tipY]);
   const tipPosition = useTransform(tipY, (value) => `${value}px`);
 

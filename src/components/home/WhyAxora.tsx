@@ -14,8 +14,7 @@ const REASONS = [
  */
 export function WhyAxora() {
   return (
-    <section aria-labelledby="why-title" className="relative isolate overflow-hidden bg-band text-on-band">
-      <div aria-hidden="true" className="ax-aurora opacity-40" />
+    <section aria-labelledby="why-title" className="ax-content-section text-on-band">
       <div className="ax-container ax-section grid gap-10 nav:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] nav:gap-16">
         <div className="ax-reveal flex flex-col items-start gap-5 nav:sticky nav:top-24 nav:self-start">
           <span className="text-xs font-extrabold tracking-[0.12em] text-lime uppercase">Яагаад AXORA</span>

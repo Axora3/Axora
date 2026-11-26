@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { Suspense } from "react";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { SiteHeader } from "@/components/site/SiteHeader";
 import { Catalog } from "@/components/templates/Catalog";
 import { CardSkeletons, DemoNotice } from "@/components/templates/TemplateCard";
 import { buttonStyles } from "@/components/ui/button";
@@ -43,9 +42,9 @@ async function CatalogData() {
 export default function TemplatesPage() {
   return (
     <>
-      <SiteHeader active="/templates" />
+
       <main id="main" className="ax-container pt-[clamp(16px,3vw,32px)] pb-section">
-        <div className="ax-page-hero ax-in-sm flex flex-col gap-2 py-[clamp(20px,3vw,36px)]">
+        <div className="ax-content-section ax-in-sm flex flex-col gap-2 py-[clamp(20px,3vw,36px)]">
           <span className="ax-eyebrow">Marketplace</span>
           <h1 className="ax-h1">
             Бэлэн <span className="serif">загварууд</span>
@@ -57,7 +56,7 @@ export default function TemplatesPage() {
           <CatalogData />
         </Suspense>
 
-        <section aria-labelledby="custom-title" className="mt-[72px] flex flex-wrap items-center justify-between gap-5 rounded-panel bg-band p-[clamp(24px,4vw,48px)] text-on-band">
+        <section aria-labelledby="custom-title" className="mt-[72px] flex flex-wrap items-center justify-between gap-5 py-[clamp(24px,4vw,48px)] text-on-band">
           <div className="flex max-w-[560px] flex-col gap-2">
             <h2 id="custom-title" className="text-[clamp(22px,2.4vw,30px)] font-extrabold tracking-[-0.02em]">
               Загвар биш, <span className="serif text-lime">бүтэн веб</span> хэрэгтэй юу?

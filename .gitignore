@@ -44,6 +44,11 @@ next-env.d.ts
 !.env.example
 
 *.log
-/.next-ecosystem-qa/
+/.next-*/
 /test-results/
 /playwright-report/
+
+# Local audit captures, generated protocol bindings and CLI cache
+/artifacts/
+/qa-evidence/
+/supabase/.temp/

@@ -1,11 +1,10 @@
 import { SiteFooter } from "@/components/site/SiteFooter";
 import Link from "next/link";
-import { SiteHeader } from "@/components/site/SiteHeader";
 
 export default function NotFound() {
   return (
     <>
-      <SiteHeader />
+
       <main id="main" className="mx-auto flex max-w-[720px] flex-col items-start gap-4 px-[clamp(16px,4vw,40px)] py-24">
         <span className="text-[13px] font-extrabold tracking-[0.08em] text-brand uppercase">404</span>
         <h1 className="ax-h2">

@@ -18,6 +18,7 @@ export function TemplateCard({
   className = "",
   style,
   feature = false,
+  eager = false,
   favorite = false,
   comparing = false,
   comparisonFull = false,
@@ -29,6 +30,8 @@ export function TemplateCard({
   className?: string;
   style?: React.CSSProperties;
   feature?: boolean;
+  /** Only the leading above-fold catalog image should bypass lazy loading. */
+  eager?: boolean;
   favorite?: boolean;
   comparing?: boolean;
   comparisonFull?: boolean;
@@ -42,7 +45,7 @@ export function TemplateCard({
     <article className={`ax-card relative isolate flex flex-col overflow-hidden rounded-card border border-line bg-surface ${feature ? "min-[640px]:flex-row" : ""} ${className}`} style={style}>
       <div className={`ax-light relative overflow-hidden ${feature ? "aspect-[4/3] min-[640px]:aspect-auto min-[640px]:min-h-[340px] min-[640px]:flex-[1.35]" : "aspect-[4/3]"}`} style={{ background: t.previewStyle.tint }}>
         {img ? (
-          <Image src={img.url} alt={img.alt} fill sizes={feature ? "(max-width: 640px) 100vw, 560px" : "(max-width: 700px) 100vw, 400px"} className="ax-prev object-cover" />
+          <Image src={img.url} alt={img.alt} fill loading={eager ? "eager" : "lazy"} sizes={feature ? "(max-width: 640px) 100vw, 560px" : "(max-width: 700px) 100vw, 400px"} className="ax-prev object-cover" />
         ) : (
           <div className="ax-prev flex h-full items-center justify-center p-[22px]" aria-hidden="true">
             <TemplatePreview category={t.category} s={t.previewStyle} size={feature ? "lg" : undefined} />

@@ -1,3 +1,4 @@
+import { BrandIntroduction } from "@/components/brand/BrandIntroduction";
 import Link from "next/link";
 import { Suspense } from "react";
 import { Faq } from "@/components/home/Faq";
@@ -8,7 +9,6 @@ import { Services } from "@/components/home/Services";
 import { WhyAxora } from "@/components/home/WhyAxora";
 import { ArrowRight } from "@/components/icons";
 import { SiteFooter } from "@/components/site/SiteFooter";
-import { SiteHeader } from "@/components/site/SiteHeader";
 import { CardSkeletons, DemoNotice, TemplateCard } from "@/components/templates/TemplateCard";
 import { getSiteContent } from "@/lib/content/service";
 import { getPublishedTemplates } from "@/lib/templates/service";
@@ -24,7 +24,7 @@ async function Bento() {
 
 function FeaturedShell({ children }: { children: React.ReactNode }) {
   return (
-    <section aria-labelledby="feat-title" className="border-y border-line bg-surface">
+    <section aria-labelledby="feat-title" className="ax-content-section">
       <div className="ax-container ax-section">
         <div className="ax-reveal flex flex-wrap items-end justify-between gap-x-8 gap-y-4">
           <div className="flex max-w-[640px] flex-col gap-3">
@@ -78,18 +78,17 @@ async function FeaturedTemplates() {
 function FinalCta() {
   return (
     <section aria-labelledby="cta-title" className="px-gutter py-section">
-      <div className="ax-reveal relative isolate mx-auto max-w-[1160px] overflow-hidden rounded-panel bg-lime p-[clamp(32px,7vw,88px)] text-center text-on-lime">
-        <div aria-hidden="true" className="absolute inset-0 -z-10 bg-[radial-gradient(70%_120%_at_50%_-10%,rgb(255_255_255_/_0.55),transparent_70%),radial-gradient(60%_90%_at_100%_110%,rgb(36_92_69_/_0.28),transparent_70%)]" />
+      <div className="ax-reveal mx-auto max-w-[1160px] py-8 text-center">
         <h2 id="cta-title" className="ax-h1 mx-auto max-w-[14em]">
           Санаагаа өнөөдөр <span className="serif">вебсайт болго.</span>
         </h2>
         <p className="mx-auto mt-5 max-w-[34em] text-[17px] leading-relaxed">Өнгө, хэв маягаа туршаад, хэрэгцээгээ анкетаар илгээгээрэй. Эсвэл бэлэн загвараас шууд эхэл.</p>
         <div className="mt-8 flex flex-wrap justify-center gap-3">
-          <Link href="/builder" className="ax-button ax-button-lg ax-btn border-forest-950 bg-forest-950 text-forest-50 hover:border-forest-900 hover:bg-forest-900 hover:text-forest-50 max-[480px]:w-full">
+          <Link href="/builder" className="ax-button ax-button-lg ax-button-primary ax-btn max-[480px]:w-full">
             Вебсайт бүтээх
             <span className="ax-arrow"><ArrowRight /></span>
           </Link>
-          <Link href="/templates" className="ax-button ax-button-lg ax-btn border-forest-950 bg-transparent text-forest-950 hover:bg-transparent max-[480px]:w-full">
+          <Link href="/templates" className="ax-button ax-button-lg ax-btn border-band-ring bg-transparent text-on-band hover:bg-band-hover max-[480px]:w-full">
             Загварууд үзэх
           </Link>
         </div>
@@ -102,7 +101,7 @@ export default async function HomePage() {
   const content = await getSiteContent();
   return (
     <>
-      <SiteHeader tone="band" active="/" />
+
       <main id="main">
         <HomeHero c={content} />
 
@@ -113,8 +112,9 @@ export default async function HomePage() {
           </Suspense>
         </div>
 
+        <BrandIntroduction />
         <Services />
-        <section className="ax-container py-section"><div className="rounded-panel border border-line bg-surface p-8 md:p-12"><p className="text-sm font-bold tracking-widest text-brand">AXORA · ENGLISH WORDS</p><h2 className="ax-h2 my-4">Өдөр бүр нэг үг. Шинэ боломж.</h2><p className="ax-lead mb-6">Англи үг, давталт, дуудлага, хувийн ахиц, найзын challenge — нэг аппад.</p><Link href="/english-words" className="ax-button ax-button-primary">English Words-ийг үзэх</Link></div></section>
+        <section className="ax-container py-section"><div className="flex flex-col items-start gap-4"><p className="text-sm font-bold tracking-widest text-brand">AXORA · ENGLISH WORDS</p><h2 className="ax-h2 my-4">Өдөр бүр нэг үг. Шинэ боломж.</h2><p className="ax-lead mb-6">Англи үг, давталт, дуудлага, хувийн ахиц, найзын challenge — нэг аппад.</p><Link href="/english-words" className="ax-button ax-button-primary">English Words-ийг үзэх</Link></div></section>
 
         <Process />
 

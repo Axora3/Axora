@@ -1,0 +1,244 @@
+/* Admin calendar uses the same theme tokens as its parent dashboard. */
+.ax-date-field {
+  position: relative;
+  display: block;
+  width: 100%;
+  min-width: 0;
+}
+.ax-date-field .ax-date-input {
+  padding-right: 44px;
+}
+.ax-date-input::-webkit-calendar-picker-indicator {
+  display: none;
+}
+.ax-date-trigger {
+  position: absolute;
+  top: 50%;
+  right: 6px;
+  transform: translateY(-50%);
+  display: inline-grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: 7px;
+  background: transparent;
+  color: var(--ax-muted);
+  cursor: pointer;
+}
+.ax-date-trigger:hover,
+.ax-date-trigger[data-state="open"] {
+  background: var(--ax-soft);
+  color: var(--ax-brand);
+}
+.ax-date-trigger:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ax-schedule-icon {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: currentColor;
+  mask: url("/icons/schedule.png") center / contain no-repeat;
+}
+.ax-date-calendar {
+  --calendar-accent: var(--ax-primary);
+  --calendar-ink: var(--ax-on-primary);
+  z-index: 110;
+  width: 320px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100dvh - 24px);
+  overflow-y: auto;
+  padding: 16px;
+  border: 1px solid var(--ax-line);
+  border-radius: 16px;
+  outline: none;
+  background: var(--ax-surface);
+  color: var(--ax-ink);
+  box-shadow: var(--ax-shadow-popover);
+  font-family: var(--font-manrope), sans-serif;
+  font-variant-numeric: tabular-nums;
+  scrollbar-width: thin;
+  color-scheme: inherit;
+}
+.ax-calendar-heading {
+  display: grid;
+  grid-template-columns: 36px minmax(0, 1fr) 36px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 16px;
+}
+body:has(.ax-admin) .ax-date-calendar .ax-calendar-heading h2 {
+  margin: 0;
+  text-align: center;
+  color: var(--ax-ink);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.ax-calendar-heading > button {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border: 0;
+  border-radius: 11px;
+  background: var(--ax-elevated);
+  color: var(--ax-ink);
+  cursor: pointer;
+  transition: background-color 140ms;
+}
+.ax-calendar-heading > button:hover {
+  background: var(--ax-soft);
+}
+.ax-calendar-heading > button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.ax-calendar-weekdays,
+.ax-calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+}
+.ax-calendar-weekdays {
+  margin-bottom: 8px;
+}
+.ax-calendar-weekdays > span {
+  display: grid;
+  height: 28px;
+  place-items: center;
+  color: var(--ax-muted);
+  font-size: 12px;
+  font-weight: 600;
+}
+.ax-calendar-week {
+  margin-block: 3px;
+}
+.ax-calendar-cell {
+  position: relative;
+  display: grid;
+  height: 40px;
+  place-items: center;
+}
+.ax-calendar-cell[data-in-range] {
+  background: var(--ax-soft);
+}
+.ax-calendar-cell[data-range-start],
+.ax-calendar-cell[data-in-range]:first-child {
+  border-radius: 13px 0 0 13px;
+}
+.ax-calendar-cell[data-range-end],
+.ax-calendar-cell[data-in-range]:last-child {
+  border-radius: 0 13px 13px 0;
+}
+.ax-calendar-cell[data-range-start][data-range-end] {
+  border-radius: 13px;
+}
+.ax-calendar-cell > button {
+  position: relative;
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  padding: 0 0 2px;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: var(--ax-ink);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition:
+    background-color 140ms,
+    color 140ms;
+}
+.ax-calendar-cell > button:hover {
+  background: var(--ax-soft);
+}
+.ax-calendar-cell > button[data-outside] {
+  color: var(--ax-faint);
+}
+.ax-calendar-cell > button[data-selected] {
+  background: var(--calendar-accent);
+  color: var(--calendar-ink);
+  font-weight: 600;
+}
+.ax-calendar-cell > button:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+.ax-calendar-cell > button[aria-current="date"]::after,
+.ax-calendar-cell > button[data-selected]::after {
+  content: "";
+  position: absolute;
+  bottom: 5px;
+  left: calc(50% - 2px);
+  width: 4px;
+  height: 4px;
+  border-radius: 1px;
+  background: var(--ax-muted);
+}
+.ax-calendar-cell > button[data-selected]::after {
+  background: var(--calendar-ink);
+}
+.ax-calendar-shortcuts {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+}
+.ax-calendar-shortcuts > button {
+  min-height: 36px;
+  padding: 4px 6px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--ax-muted);
+  font-size: 12px;
+  cursor: pointer;
+}
+.ax-calendar-shortcuts > button:hover {
+  color: var(--ax-ink);
+}
+.ax-calendar-shortcuts > button:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+.ax-calendar-apply {
+  width: 100%;
+  min-height: 48px;
+  margin-top: 8px;
+  border: 0;
+  border-radius: 14px;
+  background: var(--calendar-accent);
+  color: var(--calendar-ink);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 140ms;
+}
+.ax-calendar-apply:hover {
+  background: var(--ax-primary-hover);
+}
+.ax-calendar-apply:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.ax-date-calendar button:focus-visible {
+  outline: 2px solid var(--ax-line-strong);
+  outline-offset: 2px;
+}
+@media (max-width: 599px) {
+  .ax-date-trigger {
+    width: 40px;
+    height: 40px;
+    right: 2px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ax-date-calendar *,
+  .ax-date-trigger {
+    transition: none;
+  }
+}

@@ -1,24 +1,45 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { useEffect } from "react";
 import { Form, Grid, Home, Sliders } from "@/components/icons";
+import { AxoraGlass } from "@/components/glass/AxoraGlass";
+import { GlassActiveIndicator } from "@/components/glass/GlassActiveIndicator";
 
 const TABS = [
   { href: "/", label: "Нүүр", Icon: Home, match: (p: string) => p === "/" },
-  { href: "/templates", label: "Загварууд", Icon: Grid, match: (p: string) => p.startsWith("/templates") },
-  { href: "/builder", label: "Builder", Icon: Sliders, match: (p: string) => p.startsWith("/builder") || p.startsWith("/services") },
-  { href: "/order", label: "Анкет", Icon: Form, match: (p: string) => p.startsWith("/order") },
+  {
+    href: "/templates",
+    label: "Загварууд",
+    Icon: Grid,
+    match: (p: string) => p.startsWith("/templates"),
+  },
+  {
+    href: "/builder",
+    label: "Builder",
+    Icon: Sliders,
+    match: (p: string) => p.startsWith("/builder") || p.startsWith("/services"),
+  },
+  {
+    href: "/order",
+    label: "Анкет",
+    Icon: Form,
+    match: (p: string) => p.startsWith("/order"),
+  },
 ];
 
 /**
  * Bottom navigation for phones and small tablets (<900px), as in the mobile
  * design. Hidden on pages with their own sticky action bar (template detail, order, builder).
  */
-export function MobileTabBar() {
-  const pathname = usePathname();
-  const hidden = /^\/templates\/[^/]+/.test(pathname) || /^\/learn\/[^/]+/.test(pathname) || pathname.startsWith("/order") || pathname.startsWith("/builder") || pathname.startsWith("/admin") || pathname.startsWith("/dev");
+export function MobileTabBar({ pathname }: { pathname: string }) {
+  const hidden =
+    /^\/templates\/[^/]+/.test(pathname) ||
+    /^\/learn\/[^/]+/.test(pathname) ||
+    pathname.startsWith("/order") ||
+    pathname.startsWith("/builder") ||
+    pathname.startsWith("/admin") ||
+    pathname.startsWith("/dev");
 
   useEffect(() => {
     document.body.classList.toggle("has-tabbar", !hidden);
@@ -29,8 +50,10 @@ export function MobileTabBar() {
   return (
     <nav
       aria-label="Доод цэс"
-      className="ax-mobile-dock fixed inset-x-0 bottom-0 z-40 grid grid-cols-4 border-t border-line bg-tabbar px-2 pt-1.5 pb-[calc(8px+env(safe-area-inset-bottom))] backdrop-blur-[12px] min-[900px]:hidden"
+      className="ax-mobile-dock ax-optical-host ax-optical-nav fixed z-40 grid grid-cols-4 min-[900px]:hidden"
     >
+      <AxoraGlass preset="navigation" />
+      <GlassActiveIndicator selection={pathname} />
       {TABS.map(({ href, label, Icon, match }) => {
         const on = match(pathname);
         return (
@@ -38,9 +61,9 @@ export function MobileTabBar() {
             key={href}
             href={href}
             aria-current={on ? "page" : undefined}
-            className={`ax-btn flex min-h-13 flex-col items-center justify-center gap-[3px] text-[11px] no-underline ${on ? "font-extrabold text-ink" : "font-bold text-muted"}`}
+            className={`ax-dock-link ax-btn flex flex-col items-center justify-center gap-[3px] text-[11px] no-underline ${on ? "font-extrabold text-ink" : "font-bold text-muted"}`}
           >
-            <span className={`inline-flex h-7 w-[52px] items-center justify-center rounded-control ${on ? "bg-lime" : ""}`}>
+            <span className="inline-flex h-7 w-[52px] items-center justify-center">
               <Icon size={20} />
             </span>
             {label}
